@@ -1,4 +1,4 @@
-// Courier Routes App
+﻿// Courier Routes App
 const MAPBOX_TOKEN = 'pk.eyJ1IjoibXBieDE1IiwiYSI6ImNta2Y1a3dxZzAzZ3AzZ29qNXQ1bmpiaGsifQ.tCkudl7SJNzzHCARPEzC9w';
 
 let appData = null;
@@ -23,11 +23,8 @@ async function init() {
 // Render all app components
 function renderApp() {
     const stats = appData.stats;
-    
-    // Nav stats
     document.getElementById('navEarnings').textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
     document.getElementById('navTripCount').textContent = stats.total_trips.toLocaleString();
-    
     renderHomePage();
     renderRoutesPage();
     renderReportsPage();
@@ -36,25 +33,21 @@ function renderApp() {
 // Render home page
 function renderHomePage() {
     const stats = appData.stats;
-    
     document.getElementById('homeEarnings').textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
     document.getElementById('homeTrips').textContent = stats.total_trips.toLocaleString();
     document.getElementById('homeDays').textContent = stats.total_days;
-    
-    // Render recent days (last 5)
+
     const recentDays = appData.days.slice(-5).reverse();
     const container = document.getElementById('recentDays');
-    
     container.innerHTML = recentDays.map((day, idx) => {
         const date = new Date(day.date + 'T12:00:00');
         const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
         const realIdx = appData.days.length - 1 - idx;
-        
         return `
             <div class="recent-day-card" onclick="openDay(${realIdx})">
                 <div class="recent-day-info">
                     <h4>${dateStr}</h4>
-                    <span>${day.stats.trip_count} trips · ${day.stats.total_distance.toFixed(1)} mi</span>
+                    <span>${day.stats.trip_count} trips - ${day.stats.total_distance.toFixed(1)} mi</span>
                 </div>
                 <div class="recent-day-earnings">$${day.stats.total_earnings.toFixed(2)}</div>
             </div>
@@ -72,7 +65,7 @@ function renderDaysGrid() {
     const container = document.getElementById('daysGrid');
     const days = appData.days;
     const maxEarnings = Math.max(...days.map(d => d.stats.total_earnings));
-    
+
     let currentMonth = '';
     let html = '';
     
@@ -80,27 +73,29 @@ function renderDaysGrid() {
         const date = new Date(day.date + 'T12:00:00');
         const month = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         const monthLower = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
-        
+        const weekdayFull = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
         if (month !== currentMonth) {
             currentMonth = month;
             html += `<div class="month-header" data-month="${monthLower}">${month}</div>`;
         }
-        
+
         const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
         const dayNum = date.getDate();
         const barWidth = (day.stats.total_earnings / maxEarnings) * 100;
         const realIdx = days.length - 1 - idx;
-        
-        // Build search data
+
+        // Build search data with full weekday names
         const searchData = [
             day.date,
             monthLower,
             weekday.toLowerCase(),
+            weekdayFull,
             day.stats.total_earnings.toFixed(2),
             day.stats.trip_count + ' trips',
             day.stats.total_distance.toFixed(1) + ' miles'
         ].join(' ');
-        
+
         html += `
             <div class="day-card" onclick="openDay(${realIdx})" data-search="${searchData}" data-month="${monthLower}" data-earnings="${day.stats.total_earnings}">
                 <div class="day-date">
@@ -117,7 +112,7 @@ function renderDaysGrid() {
             </div>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
@@ -125,14 +120,14 @@ function renderDaysGrid() {
 function renderReportsPage() {
     const stats = appData.stats;
     const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
-    
+
     document.getElementById('reportEarnings').textContent = '$' + stats.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('reportTrips').textContent = stats.total_trips.toLocaleString();
     document.getElementById('reportMiles').textContent = Math.round(stats.total_distance).toLocaleString();
     document.getElementById('reportAvg').textContent = '$' + avgPerTrip.toFixed(2);
     document.getElementById('reportTips').textContent = '$' + stats.total_tips.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('reportDays').textContent = stats.total_days;
-    
+
     renderMonthlyTable();
     renderTopDays();
     renderWeekdayChart();
@@ -141,23 +136,19 @@ function renderReportsPage() {
 // Render monthly breakdown table
 function renderMonthlyTable() {
     const monthlyData = {};
-    
     appData.days.forEach(day => {
         const date = new Date(day.date + 'T12:00:00');
         const monthKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        
         if (!monthlyData[monthKey]) {
             monthlyData[monthKey] = { earnings: 0, trips: 0, days: 0 };
         }
-        
         monthlyData[monthKey].earnings += day.stats.total_earnings;
         monthlyData[monthKey].trips += day.stats.trip_count;
         monthlyData[monthKey].days += 1;
     });
-    
+
     const container = document.getElementById('monthlyTable');
     const months = Object.entries(monthlyData).reverse();
-    
     container.innerHTML = months.map(([month, data]) => {
         const avg = data.trips > 0 ? data.earnings / data.trips : 0;
         return `
@@ -177,13 +168,11 @@ function renderTopDays() {
         .map((day, idx) => ({ ...day, idx }))
         .sort((a, b) => b.stats.total_earnings - a.stats.total_earnings)
         .slice(0, 10);
-    
+
     const container = document.getElementById('topDays');
-    
     container.innerHTML = sortedDays.map((day, rank) => {
         const date = new Date(day.date + 'T12:00:00');
         const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        
         return `
             <div class="top-day-row" onclick="openDay(${day.idx})">
                 <div class="top-day-info">
@@ -208,21 +197,19 @@ function renderWeekdayChart() {
         'Fri': { earnings: 0, count: 0 },
         'Sat': { earnings: 0, count: 0 }
     };
-    
+
     appData.days.forEach(day => {
         const date = new Date(day.date + 'T12:00:00');
         const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
         weekdayData[weekday].earnings += day.stats.total_earnings;
         weekdayData[weekday].count += 1;
     });
-    
+
     const maxEarnings = Math.max(...Object.values(weekdayData).map(d => d.earnings));
     const container = document.getElementById('weekdayChart');
-    
+
     container.innerHTML = Object.entries(weekdayData).map(([day, data]) => {
         const height = maxEarnings > 0 ? (data.earnings / maxEarnings) * 100 : 0;
-        const avg = data.count > 0 ? data.earnings / data.count : 0;
-        
         return `
             <div class="weekday-bar">
                 <div class="weekday-value">$${Math.round(data.earnings)}</div>
@@ -235,59 +222,89 @@ function renderWeekdayChart() {
     }).join('');
 }
 
-// Smart search
+// Soft search - fuzzy matching with smart earnings filters
 function smartSearch(query) {
     const q = query.toLowerCase().trim();
-    
+
     // Clear active filter tags
     document.querySelectorAll('.search-tag').forEach(tag => {
         tag.classList.toggle('active', tag.dataset.filter === 'all' && !q);
     });
-    
+
     if (!q) {
         document.querySelectorAll('.day-card, .month-header').forEach(el => {
             el.style.display = '';
         });
         return;
     }
-    
-    // Parse smart queries
+
+    // Parse smart queries for earnings
     let minEarnings = 0;
     let maxEarnings = Infinity;
     let textQuery = q;
-    
-    // Match "over $100" or "> 100"
-    const overMatch = q.match(/(?:over|above|>)\s*\$?(\d+)/i);
+
+    // Match "over $100", "> 100", "100+", "above 100"
+    const overMatch = q.match(/(?:over|above|>|more\s*than)\s*\$?(\d+)|\$?(\d+)\+/i);
     if (overMatch) {
-        minEarnings = parseFloat(overMatch[1]);
+        minEarnings = parseFloat(overMatch[1] || overMatch[2]);
         textQuery = q.replace(overMatch[0], '').trim();
     }
-    
-    // Match "under $100" or "< 100"
-    const underMatch = q.match(/(?:under|below|<)\s*\$?(\d+)/i);
+
+    // Match "under $100", "< 100", "below 100", "less than 100"
+    const underMatch = q.match(/(?:under|below|<|less\s*than)\s*\$?(\d+)/i);
     if (underMatch) {
         maxEarnings = parseFloat(underMatch[1]);
         textQuery = q.replace(underMatch[0], '').trim();
     }
-    
+
+    // Match range "50-100" or "$50-$100"
+    const rangeMatch = q.match(/\$?(\d+)\s*[-to]+\s*\$?(\d+)/i);
+    if (rangeMatch) {
+        minEarnings = parseFloat(rangeMatch[1]);
+        maxEarnings = parseFloat(rangeMatch[2]);
+        textQuery = q.replace(rangeMatch[0], '').trim();
+    }
+
+    // Split text query into tokens for soft matching
+    const tokens = textQuery.split(/\s+/).filter(t => t.length > 0);
+
     let visibleMonths = new Set();
-    
+
     document.querySelectorAll('.day-card').forEach(card => {
         const searchText = card.dataset.search || '';
         const earnings = parseFloat(card.dataset.earnings) || 0;
         const month = card.dataset.month;
-        
-        const matchesText = !textQuery || searchText.includes(textQuery);
+
+        // Soft match: all tokens must be found
+        const matchesText = tokens.length === 0 || tokens.every(token => {
+            // Direct match
+            if (searchText.includes(token)) return true;
+            
+            // Abbreviation expansion
+            const abbrevMap = {
+                'mon': 'monday', 'tue': 'tuesday', 'wed': 'wednesday',
+                'thu': 'thursday', 'fri': 'friday', 'sat': 'saturday', 'sun': 'sunday',
+                'jan': 'january', 'feb': 'february', 'mar': 'march', 'apr': 'april',
+                'jun': 'june', 'jul': 'july', 'aug': 'august', 'sep': 'september',
+                'oct': 'october', 'nov': 'november', 'dec': 'december'
+            };
+            const expanded = abbrevMap[token];
+            if (expanded && searchText.includes(expanded)) return true;
+            
+            // Prefix match on words
+            const words = searchText.split(/\s+/);
+            return words.some(word => word.startsWith(token));
+        });
+
         const matchesEarnings = earnings >= minEarnings && earnings <= maxEarnings;
-        
         const show = matchesText && matchesEarnings;
         card.style.display = show ? '' : 'none';
-        
+
         if (show && month) {
             visibleMonths.add(month);
         }
     });
-    
+
     // Show/hide month headers
     document.querySelectorAll('.month-header').forEach(header => {
         const month = header.dataset.month;
@@ -297,58 +314,40 @@ function smartSearch(query) {
 
 // Filter by month (tag click)
 function filterByMonth(month) {
-    // Update active tag
     document.querySelectorAll('.search-tag').forEach(tag => {
         tag.classList.toggle('active', tag.dataset.filter === month);
     });
-    
-    // Clear search input
     document.getElementById('routeSearch').value = '';
-    
+
     if (month === 'all') {
         document.querySelectorAll('.day-card, .month-header').forEach(el => {
             el.style.display = '';
         });
         return;
     }
-    
+
     document.querySelectorAll('.day-card').forEach(card => {
-        const cardMonth = card.dataset.month;
-        card.style.display = cardMonth === month ? '' : 'none';
+        card.style.display = card.dataset.month === month ? '' : 'none';
     });
-    
     document.querySelectorAll('.month-header').forEach(header => {
-        const headerMonth = header.dataset.month;
-        header.style.display = headerMonth === month ? '' : 'none';
+        header.style.display = header.dataset.month === month ? '' : 'none';
     });
 }
 
 // Page navigation
 function showPage(page) {
     currentPage = page;
-    
-    // Hide all pages
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('mapView').classList.remove('active');
+
+    if (page === 'home') document.getElementById('pageHome').classList.add('active');
+    else if (page === 'routes') document.getElementById('pageRoutes').classList.add('active');
+    else if (page === 'reports') document.getElementById('pageReports').classList.add('active');
     
-    // Show target page
-    if (page === 'home') {
-        document.getElementById('pageHome').classList.add('active');
-    } else if (page === 'routes') {
-        document.getElementById('pageRoutes').classList.add('active');
-    } else if (page === 'reports') {
-        document.getElementById('pageReports').classList.add('active');
-    }
-    
-    // Update nav
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
-    
-    // Cleanup map if leaving map view
-    if (map) {
-        map.remove();
-        map = null;
-    }
+
+    if (map) { map.remove(); map = null; }
     mapMarkers = [];
     activeTrip = null;
 }
@@ -357,15 +356,13 @@ function showPage(page) {
 function openDay(dayIndex) {
     currentDayIndex = dayIndex;
     const day = appData.days[dayIndex];
-    
-    // Hide all pages
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('mapView').classList.add('active');
-    
-    // Update nav to routes
+
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
     document.getElementById('navRoutes').classList.add('active');
-    
+
     renderMapView(day);
 }
 
@@ -373,10 +370,7 @@ function openDay(dayIndex) {
 function navigateDay(direction) {
     const newIndex = currentDayIndex + direction;
     if (newIndex >= 0 && newIndex < appData.days.length) {
-        if (map) {
-            map.remove();
-            map = null;
-        }
+        if (map) { map.remove(); map = null; }
         mapMarkers = [];
         activeTrip = null;
         openDay(newIndex);
@@ -387,22 +381,22 @@ function navigateDay(direction) {
 function renderMapView(day) {
     const date = new Date(day.date + 'T12:00:00');
     const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-    
+
     document.getElementById('mapDate').textContent = dateStr;
     document.getElementById('prevBtn').disabled = currentDayIndex <= 0;
     document.getElementById('nextBtn').disabled = currentDayIndex >= appData.days.length - 1;
-    
+
     document.getElementById('dayEarnings').textContent = '$' + day.stats.total_earnings.toFixed(2);
     document.getElementById('dayTrips').textContent = day.stats.trip_count;
     document.getElementById('dayMiles').textContent = day.stats.total_distance.toFixed(1) + ' mi';
     document.getElementById('dayTips').textContent = '$' + day.stats.total_tips.toFixed(2);
-    
+
     const trips = day.trips;
     if (trips.length > 0) {
         document.getElementById('dayStart').textContent = trips[0].request_time;
         document.getElementById('dayEnd').textContent = trips[trips.length - 1].dropoff_time;
     }
-    
+
     renderTripCards(trips);
     initMap(trips);
 }
@@ -410,7 +404,6 @@ function renderMapView(day) {
 // Render trip cards
 function renderTripCards(trips) {
     const container = document.getElementById('tripList');
-    
     container.innerHTML = trips.map((t, i) => `
         <div class="trip-card" data-trip-id="${i}" data-search="${t.restaurant.toLowerCase()} ${t.pickup_address.toLowerCase()} ${t.dropoff_address.toLowerCase()}" onclick="selectTrip(${i})">
             <div class="trip-header">
@@ -446,68 +439,46 @@ function renderTripCards(trips) {
 // Initialize map
 function initMap(trips) {
     mapboxgl.accessToken = MAPBOX_TOKEN;
-    
     const coords = [];
     trips.forEach(t => {
         if (t.pickup_coords) coords.push(t.pickup_coords);
         if (t.dropoff_coords) coords.push(t.dropoff_coords);
     });
-    
     if (coords.length === 0) return;
-    
+
     const centerLng = coords.reduce((sum, c) => sum + c[0], 0) / coords.length;
     const centerLat = coords.reduce((sum, c) => sum + c[1], 0) / coords.length;
-    
+
     map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/dark-v11',
         center: [centerLng, centerLat],
         zoom: 11
     });
-    
     map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-    
+
     map.on('load', () => {
         const lineCoords = [];
         trips.forEach(t => {
             if (t.pickup_coords) lineCoords.push(t.pickup_coords);
             if (t.dropoff_coords) lineCoords.push(t.dropoff_coords);
         });
-        
+
         map.addSource('route', {
             type: 'geojson',
-            data: {
-                type: 'Feature',
-                geometry: {
-                    type: 'LineString',
-                    coordinates: lineCoords
-                }
-            }
+            data: { type: 'Feature', geometry: { type: 'LineString', coordinates: lineCoords } }
         });
-        
         map.addLayer({
-            id: 'route-line',
-            type: 'line',
-            source: 'route',
-            paint: {
-                'line-color': '#4a9eff',
-                'line-width': 3,
-                'line-opacity': 0.6
-            }
+            id: 'route-line', type: 'line', source: 'route',
+            paint: { 'line-color': '#4a9eff', 'line-width': 3, 'line-opacity': 0.6 }
         });
-        
+
         let markerNum = 0;
         trips.forEach((t, tripId) => {
-            if (t.pickup_coords) {
-                markerNum++;
-                addMarker(t.pickup_coords, 'pickup', markerNum, tripId);
-            }
-            if (t.dropoff_coords) {
-                markerNum++;
-                addMarker(t.dropoff_coords, 'dropoff', markerNum, tripId);
-            }
+            if (t.pickup_coords) { markerNum++; addMarker(t.pickup_coords, 'pickup', markerNum, tripId); }
+            if (t.dropoff_coords) { markerNum++; addMarker(t.dropoff_coords, 'dropoff', markerNum, tripId); }
         });
-        
+
         const bounds = new mapboxgl.LngLatBounds();
         coords.forEach(c => bounds.extend(c));
         map.fitBounds(bounds, { padding: 60 });
@@ -519,15 +490,8 @@ function addMarker(coords, type, number, tripId) {
     const el = document.createElement('div');
     el.className = `marker ${type}`;
     el.textContent = number;
-    el.onclick = (e) => {
-        e.stopPropagation();
-        selectTrip(tripId);
-    };
-    
-    const marker = new mapboxgl.Marker(el)
-        .setLngLat(coords)
-        .addTo(map);
-    
+    el.onclick = (e) => { e.stopPropagation(); selectTrip(tripId); };
+    const marker = new mapboxgl.Marker(el).setLngLat(coords).addTo(map);
     mapMarkers.push({ marker, element: el, tripId });
 }
 
@@ -535,15 +499,12 @@ function addMarker(coords, type, number, tripId) {
 function selectTrip(tripId) {
     activeTrip = tripId;
     const trip = appData.days[currentDayIndex].trips[tripId];
-    
+
     document.querySelectorAll('.trip-card').forEach(card => {
         card.classList.toggle('active', parseInt(card.dataset.tripId) === tripId);
     });
-    
-    mapMarkers.forEach(m => {
-        m.element.classList.toggle('highlight', m.tripId === tripId);
-    });
-    
+    mapMarkers.forEach(m => { m.element.classList.toggle('highlight', m.tripId === tripId); });
+
     document.getElementById('detailNumber').textContent = tripId + 1;
     document.getElementById('detailEarnings').textContent = trip.total_pay > 0 ? '$' + trip.total_pay.toFixed(2) : '-';
     document.getElementById('detailDistance').textContent = trip.distance.toFixed(1) + ' mi';
@@ -555,13 +516,10 @@ function selectTrip(tripId) {
     document.getElementById('detailTime').textContent = trip.request_time + ' - ' + trip.dropoff_time;
     document.getElementById('detailPickup').textContent = trip.pickup_address;
     document.getElementById('detailDropoff').textContent = trip.dropoff_address;
-    
     document.getElementById('tripDetail').classList.add('show');
-    
+
     if (trip.pickup_coords && trip.dropoff_coords) {
-        const bounds = new mapboxgl.LngLatBounds()
-            .extend(trip.pickup_coords)
-            .extend(trip.dropoff_coords);
+        const bounds = new mapboxgl.LngLatBounds().extend(trip.pickup_coords).extend(trip.dropoff_coords);
         map.fitBounds(bounds, { padding: 100, maxZoom: 14 });
     } else if (trip.pickup_coords) {
         map.flyTo({ center: trip.pickup_coords, zoom: 14 });

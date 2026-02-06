@@ -10,56 +10,151 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Splash Page -->
-    <div class="splash">
-        <div class="splash-hero">
-            <h1 class="splash-logo">Courier<span>Routes</span></h1>
-            <p class="splash-tagline">Interactive delivery route visualization and analytics</p>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value earnings" id="statEarnings">$0.00</div>
-                    <div class="stat-label">Total Earned</div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">Courier<span>Routes</span></div>
+        <div class="nav-links">
+            <button class="nav-link active" id="navHome" onclick="showPage('home')">Home</button>
+            <button class="nav-link" id="navRoutes" onclick="showPage('routes')">Routes</button>
+            <button class="nav-link" id="navReports" onclick="showPage('reports')">Reports</button>
+        </div>
+        <div class="nav-info">
+            <div class="nav-stat">
+                <span>Total:</span>
+                <span class="nav-stat-value" id="navEarnings">$0</span>
+            </div>
+            <div class="nav-stat">
+                <span id="navTripCount">0</span> trips
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div class="page page-home active" id="pageHome">
+        <div class="home-hero">
+            <div class="home-hero-content">
+                <h1 class="home-title">Your delivery routes,<br><span>visualized.</span></h1>
+                <p class="home-subtitle">Track earnings, analyze patterns, and optimize your delivery game with interactive route maps and detailed analytics.</p>
+                <div class="home-actions">
+                    <button class="btn btn-primary" onclick="showPage('routes')">View Routes</button>
+                    <button class="btn btn-secondary" onclick="showPage('reports')">See Reports</button>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statTrips">0</div>
-                    <div class="stat-label">Deliveries</div>
+            </div>
+            <div class="home-hero-stats">
+                <div class="hero-stat-card">
+                    <div class="hero-stat-value" id="homeEarnings">$0</div>
+                    <div class="hero-stat-label">Total Earned</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statMiles">0</div>
-                    <div class="stat-label">Miles</div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-value" id="homeTrips">0</div>
+                    <div class="hero-stat-label">Deliveries</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statAvg">$0.00</div>
-                    <div class="stat-label">Avg / Trip</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value tips" id="statTips">$0.00</div>
-                    <div class="stat-label">Tips</div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-value" id="homeDays">0</div>
+                    <div class="hero-stat-label">Active Days</div>
                 </div>
             </div>
         </div>
         
-        <div class="main-content">
-            <div class="section-header">
-                <h2 class="section-title">Daily Routes</h2>
-                <div class="search-box">
-                    <span class="search-icon">S</span>
-                    <input type="text" class="search-input" placeholder="Search by date..." oninput="filterDays(this.value)">
-                </div>
+        <div class="home-features">
+            <div class="feature-card">
+                <div class="feature-icon">M</div>
+                <h3>Interactive Maps</h3>
+                <p>Visualize your daily routes with Mapbox-powered maps showing every pickup and dropoff.</p>
             </div>
-            
-            <div class="days-grid" id="daysGrid">
-                <!-- Days will be rendered here -->
+            <div class="feature-card">
+                <div class="feature-icon">$</div>
+                <h3>Earnings Breakdown</h3>
+                <p>See base fare, tips, incentives, and refunds for every trip you complete.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">R</div>
+                <h3>Detailed Reports</h3>
+                <p>Analyze your performance with monthly summaries and earnings trends.</p>
             </div>
         </div>
+        
+        <div class="home-recent">
+            <h2>Recent Activity</h2>
+            <div class="recent-days" id="recentDays"></div>
+        </div>
     </div>
-    
+
+    <!-- Routes Page -->
+    <div class="page page-routes" id="pageRoutes">
+        <div class="routes-header">
+            <h1>Daily Routes</h1>
+            <div class="search-container">
+                <input type="text" class="search-input" id="routeSearch" placeholder="Search dates, months, earnings..." oninput="smartSearch(this.value)">
+                <div class="search-tags" id="searchTags">
+                    <button class="search-tag active" data-filter="all" onclick="filterByMonth('all')">All</button>
+                    <button class="search-tag" data-filter="december" onclick="filterByMonth('december')">Dec</button>
+                    <button class="search-tag" data-filter="november" onclick="filterByMonth('november')">Nov</button>
+                    <button class="search-tag" data-filter="october" onclick="filterByMonth('october')">Oct</button>
+                    <button class="search-tag" data-filter="september" onclick="filterByMonth('september')">Sep</button>
+                    <button class="search-tag" data-filter="august" onclick="filterByMonth('august')">Aug</button>
+                </div>
+            </div>
+        </div>
+        <div class="days-grid" id="daysGrid"></div>
+    </div>
+
+    <!-- Reports Page -->
+    <div class="page page-reports" id="pageReports">
+        <div class="reports-header">
+            <h1>Reports</h1>
+            <p>Performance analytics and earnings breakdown</p>
+        </div>
+        
+        <div class="reports-stats">
+            <div class="report-stat-card primary">
+                <div class="report-stat-value" id="reportEarnings">$0</div>
+                <div class="report-stat-label">Total Earnings</div>
+            </div>
+            <div class="report-stat-card">
+                <div class="report-stat-value" id="reportTrips">0</div>
+                <div class="report-stat-label">Total Trips</div>
+            </div>
+            <div class="report-stat-card">
+                <div class="report-stat-value" id="reportMiles">0</div>
+                <div class="report-stat-label">Total Miles</div>
+            </div>
+            <div class="report-stat-card">
+                <div class="report-stat-value" id="reportAvg">$0</div>
+                <div class="report-stat-label">Avg / Trip</div>
+            </div>
+            <div class="report-stat-card">
+                <div class="report-stat-value" id="reportTips">$0</div>
+                <div class="report-stat-label">Total Tips</div>
+            </div>
+            <div class="report-stat-card">
+                <div class="report-stat-value" id="reportDays">0</div>
+                <div class="report-stat-label">Active Days</div>
+            </div>
+        </div>
+        
+        <div class="reports-grid">
+            <div class="report-section">
+                <h2>Monthly Breakdown</h2>
+                <div class="monthly-table" id="monthlyTable"></div>
+            </div>
+            <div class="report-section">
+                <h2>Top Earning Days</h2>
+                <div class="top-days" id="topDays"></div>
+            </div>
+        </div>
+        
+        <div class="report-section full-width">
+            <h2>Earnings by Day of Week</h2>
+            <div class="weekday-chart" id="weekdayChart"></div>
+        </div>
+    </div>
+
     <!-- Map View -->
-    <div class="map-view">
+    <div class="map-view" id="mapView">
         <div class="map-header">
-            <button class="back-btn" onclick="goBack()">
-                <span>&larr;</span> Back
+            <button class="back-btn" onclick="showPage('routes')">
+                <span>&larr;</span> Back to Routes
             </button>
             <div class="map-title">
                 <h2 id="mapDate">Loading...</h2>
@@ -103,13 +198,10 @@
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">Trips</h3>
                     <div class="sidebar-search">
-                        <span class="icon">S</span>
                         <input type="text" placeholder="Search trips..." oninput="filterTrips(this.value)">
                     </div>
                 </div>
-                <div class="trip-list" id="tripList">
-                    <!-- Trips will be rendered here -->
-                </div>
+                <div class="trip-list" id="tripList"></div>
             </div>
             
             <div class="map-container">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,7 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
     <!-- Navigation -->
@@ -55,7 +56,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="home-features">
             <div class="feature-card">
                 <div class="feature-icon">M</div>
@@ -73,7 +74,7 @@
                 <p>Analyze your performance with monthly summaries and earnings trends.</p>
             </div>
         </div>
-        
+
         <div class="home-recent">
             <h2>Recent Activity</h2>
             <div class="recent-days" id="recentDays"></div>
@@ -104,8 +105,13 @@
         <div class="reports-header">
             <h1>Reports</h1>
             <p>Performance analytics and earnings breakdown</p>
+            <div class="reports-actions">
+                <button class="btn btn-secondary" onclick="printReport('summary')">Print Summary</button>
+                <button class="btn btn-secondary" onclick="printReport('monthly')">Print Monthly</button>
+                <button class="btn btn-secondary" onclick="printReport('trips')">Print All Trips</button>
+            </div>
         </div>
-        
+
         <div class="reports-stats">
             <div class="report-stat-card primary">
                 <div class="report-stat-value" id="reportEarnings">$0</div>
@@ -132,7 +138,7 @@
                 <div class="report-stat-label">Active Days</div>
             </div>
         </div>
-        
+
         <div class="reports-grid">
             <div class="report-section">
                 <h2>Monthly Breakdown</h2>
@@ -143,7 +149,7 @@
                 <div class="top-days" id="topDays"></div>
             </div>
         </div>
-        
+
         <div class="report-section full-width">
             <h2>Earnings by Day of Week</h2>
             <div class="weekday-chart" id="weekdayChart"></div>
@@ -160,11 +166,12 @@
                 <h2 id="mapDate">Loading...</h2>
             </div>
             <div class="nav-buttons">
+                <button class="nav-btn" onclick="printDayReport()">Print Day</button>
                 <button class="nav-btn" id="prevBtn" onclick="navigateDay(-1)">&larr; Prev</button>
                 <button class="nav-btn" id="nextBtn" onclick="navigateDay(1)">Next &rarr;</button>
             </div>
         </div>
-        
+
         <div class="stats-bar">
             <div class="stat">
                 <span class="stat-icon">$</span>
@@ -192,7 +199,7 @@
                 <span class="stat-val" id="dayEnd">-</span>
             </div>
         </div>
-        
+
         <div class="map-layout">
             <div class="sidebar">
                 <div class="sidebar-header">
@@ -203,56 +210,56 @@
                 </div>
                 <div class="trip-list" id="tripList"></div>
             </div>
-            
+
             <div class="map-container">
                 <div id="map"></div>
-                
+
                 <div class="detail-panel" id="tripDetail">
                     <div class="detail-header">
                         <span class="detail-title">Trip #<span id="detailNumber">1</span></span>
                         <button class="detail-close" onclick="closeDetail()">&times;</button>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Earnings</div>
                         <div class="detail-value earnings" id="detailEarnings">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Distance</div>
                         <div class="detail-value" id="detailDistance">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Duration</div>
                         <div class="detail-value" id="detailDuration">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Base Fare</div>
                         <div class="detail-value" id="detailBase">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Tip</div>
                         <div class="detail-value tip" id="detailTip">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Incentives</div>
                         <div class="detail-value" id="detailIncentive">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Order Refund</div>
                         <div class="detail-value refund" id="detailRefund">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Time</div>
                         <div class="detail-value" id="detailTime">-</div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Pickup</div>
                         <div class="detail-addr">
@@ -260,7 +267,7 @@
                             <div class="detail-addr-text" id="detailPickup">-</div>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <div class="detail-label">Drop-off</div>
                         <div class="detail-addr">
@@ -268,11 +275,18 @@
                             <div class="detail-addr-text" id="detailDropoff">-</div>
                         </div>
                     </div>
+
+                    <button class="btn btn-secondary btn-print-trip" onclick="printTripTicket()">Print Trip Ticket</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Print Modal -->
+    <div class="print-modal" id="printModal">
+        <div class="print-modal-content" id="printContent"></div>
+    </div>
+
     <script src="js/app.js"></script>
 </body>
 </html>

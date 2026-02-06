@@ -1241,3 +1241,21 @@ body {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+/* Reports Actions */
+.reports-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.reports-actions .btn {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+}
+
+/* Print Trip Button in Detail Panel */
+.btn-print-trip {
+    width: 100%;
+    margin-top: 16px;
+}

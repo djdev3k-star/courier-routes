@@ -545,3 +545,445 @@ function filterTrips(query) {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', init);
+
+// ========== PRINT FUNCTIONS ==========
+
+// Show print modal with content
+function showPrintModal(content) {
+    const modal = document.getElementById('printModal');
+    const printContent = document.getElementById('printContent');
+    
+    printContent.innerHTML = `
+        <button class="print-modal-close" onclick="closePrintModal()">&times;</button>
+        ${content}
+        <div class="print-modal-actions">
+            <button class="btn-print" onclick="window.print()">Print</button>
+            <button class="btn-close" onclick="closePrintModal()">Close</button>
+        </div>
+    `;
+    
+    modal.classList.add('show');
+}
+
+// Close print modal
+function closePrintModal() {
+    document.getElementById('printModal').classList.remove('show');
+}
+
+// Format currency
+function formatCurrency(amount) {
+    return '$' + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Get current date for reports
+function getReportDate() {
+    return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Print summary report
+function printReport(type) {
+    const stats = appData.stats;
+    let content = '';
+    
+    if (type === 'summary') {
+        content = generateSummaryReport(stats);
+    } else if (type === 'monthly') {
+        content = generateMonthlyReport();
+    } else if (type === 'trips') {
+        content = generateAllTripsReport();
+    }
+    
+    showPrintModal(content);
+}
+
+// Generate summary report
+function generateSummaryReport(stats) {
+    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
+    const avgPerDay = stats.total_days > 0 ? stats.total_earnings / stats.total_days : 0;
+    const avgPerMile = stats.total_distance > 0 ? stats.total_earnings / stats.total_distance : 0;
+    
+    return `
+        <div class="print-document">
+            <div class="print-header">
+                <h1>COURIER ROUTES</h1>
+                <p class="print-subtitle">Earnings Summary Report</p>
+                <p class="print-date">Generated: ${getReportDate()}</p>
+            </div>
+            
+            <div class="print-section">
+                <h2>Executive Summary</h2>
+                <div class="print-stats">
+                    <div class="print-stat">
+                        <div class="print-stat-value">${formatCurrency(stats.total_earnings)}</div>
+                        <div class="print-stat-label">Total Earnings</div>
+                    </div>
+                    <div class="print-stat">
+                        <div class="print-stat-value">${stats.total_trips.toLocaleString()}</div>
+                        <div class="print-stat-label">Total Trips</div>
+                    </div>
+                    <div class="print-stat">
+                        <div class="print-stat-value">${stats.total_days}</div>
+                        <div class="print-stat-label">Active Days</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="print-section">
+                <h2>Financial Breakdown</h2>
+                <table class="print-table">
+                    <tr><th>Category</th><th>Amount</th></tr>
+                    <tr><td>Total Earnings</td><td class="number">${formatCurrency(stats.total_earnings)}</td></tr>
+                    <tr><td>Total Tips</td><td class="number">${formatCurrency(stats.total_tips)}</td></tr>
+                    <tr><td>Base Fares</td><td class="number">${formatCurrency(stats.total_earnings - stats.total_tips)}</td></tr>
+                </table>
+            </div>
+            
+            <div class="print-section">
+                <h2>Performance Metrics</h2>
+                <table class="print-table">
+                    <tr><th>Metric</th><th>Value</th></tr>
+                    <tr><td>Average per Trip</td><td class="number">${formatCurrency(avgPerTrip)}</td></tr>
+                    <tr><td>Average per Day</td><td class="number">${formatCurrency(avgPerDay)}</td></tr>
+                    <tr><td>Average per Mile</td><td class="number">${formatCurrency(avgPerMile)}</td></tr>
+                    <tr><td>Total Distance</td><td class="number">${Math.round(stats.total_distance).toLocaleString()} miles</td></tr>
+                </table>
+            </div>
+            
+            <div class="print-footer">
+                Courier Routes - ${getReportDate()}
+            </div>
+        </div>
+    `;
+}
+
+// Generate monthly breakdown report
+function generateMonthlyReport() {
+    const monthlyData = {};
+    
+    appData.days.forEach(day => {
+        const date = new Date(day.date + 'T12:00:00');
+        const monthKey = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = { earnings: 0, trips: 0, tips: 0, distance: 0, days: 0 };
+        }
+        
+        monthlyData[monthKey].earnings += day.stats.total_earnings;
+        monthlyData[monthKey].trips += day.stats.trip_count;
+        monthlyData[monthKey].tips += day.stats.total_tips;
+        monthlyData[monthKey].distance += day.stats.total_distance;
+        monthlyData[monthKey].days += 1;
+    });
+    
+    const months = Object.entries(monthlyData).reverse();
+    let totalEarnings = 0, totalTrips = 0, totalTips = 0, totalDistance = 0;
+    
+    let tableRows = months.map(([month, data]) => {
+        totalEarnings += data.earnings;
+        totalTrips += data.trips;
+        totalTips += data.tips;
+        totalDistance += data.distance;
+        const avg = data.trips > 0 ? data.earnings / data.trips : 0;
+        
+        return `
+            <tr>
+                <td>${month}</td>
+                <td class="number">${data.days}</td>
+                <td class="number">${data.trips}</td>
+                <td class="number">${Math.round(data.distance)}</td>
+                <td class="number">${formatCurrency(data.tips)}</td>
+                <td class="number">${formatCurrency(data.earnings)}</td>
+                <td class="number">${formatCurrency(avg)}</td>
+            </tr>
+        `;
+    }).join('');
+    
+    return `
+        <div class="print-document">
+            <div class="print-header">
+                <h1>COURIER ROUTES</h1>
+                <p class="print-subtitle">Monthly Breakdown Report</p>
+                <p class="print-date">Generated: ${getReportDate()}</p>
+            </div>
+            
+            <div class="print-section">
+                <h2>Monthly Performance</h2>
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Days</th>
+                            <th>Trips</th>
+                            <th>Miles</th>
+                            <th>Tips</th>
+                            <th>Earnings</th>
+                            <th>Avg/Trip</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>TOTAL</strong></td>
+                            <td class="number">${appData.stats.total_days}</td>
+                            <td class="number">${totalTrips}</td>
+                            <td class="number">${Math.round(totalDistance)}</td>
+                            <td class="number">${formatCurrency(totalTips)}</td>
+                            <td class="number">${formatCurrency(totalEarnings)}</td>
+                            <td class="number">${formatCurrency(totalEarnings / totalTrips)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="print-footer">
+                Courier Routes - ${getReportDate()}
+            </div>
+        </div>
+    `;
+}
+
+// Generate all trips report
+function generateAllTripsReport() {
+    let tripRows = '';
+    let tripNum = 0;
+    
+    appData.days.slice().reverse().forEach(day => {
+        const date = new Date(day.date + 'T12:00:00');
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        
+        day.trips.forEach(trip => {
+            tripNum++;
+            tripRows += `
+                <tr class="no-break">
+                    <td>${tripNum}</td>
+                    <td>${dateStr}</td>
+                    <td>${trip.request_time}</td>
+                    <td>${trip.restaurant.substring(0, 25)}${trip.restaurant.length > 25 ? '...' : ''}</td>
+                    <td class="number">${trip.distance.toFixed(1)}</td>
+                    <td class="number">${formatCurrency(trip.base_fare)}</td>
+                    <td class="number">${formatCurrency(trip.tip)}</td>
+                    <td class="number">${formatCurrency(trip.total_pay)}</td>
+                </tr>
+            `;
+        });
+    });
+    
+    return `
+        <div class="print-document">
+            <div class="print-header">
+                <h1>COURIER ROUTES</h1>
+                <p class="print-subtitle">Complete Trip Log</p>
+                <p class="print-date">Generated: ${getReportDate()}</p>
+            </div>
+            
+            <div class="print-section">
+                <h2>All Trips (${appData.stats.total_trips} total)</h2>
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Restaurant</th>
+                            <th>Miles</th>
+                            <th>Fare</th>
+                            <th>Tip</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tripRows}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4"><strong>TOTALS</strong></td>
+                            <td class="number">${Math.round(appData.stats.total_distance)}</td>
+                            <td class="number">${formatCurrency(appData.stats.total_earnings - appData.stats.total_tips)}</td>
+                            <td class="number">${formatCurrency(appData.stats.total_tips)}</td>
+                            <td class="number">${formatCurrency(appData.stats.total_earnings)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="print-footer">
+                Courier Routes - ${getReportDate()}
+            </div>
+        </div>
+    `;
+}
+
+// Print single day report
+function printDayReport() {
+    if (currentDayIndex < 0) return;
+    
+    const day = appData.days[currentDayIndex];
+    const date = new Date(day.date + 'T12:00:00');
+    const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    
+    let tripRows = day.trips.map((trip, i) => `
+        <tr class="no-break">
+            <td>${i + 1}</td>
+            <td>${trip.request_time}</td>
+            <td>${trip.restaurant.substring(0, 30)}${trip.restaurant.length > 30 ? '...' : ''}</td>
+            <td class="number">${trip.distance.toFixed(1)}</td>
+            <td class="number">${formatCurrency(trip.base_fare)}</td>
+            <td class="number">${formatCurrency(trip.tip)}</td>
+            <td class="number">${formatCurrency(trip.total_pay)}</td>
+        </tr>
+    `).join('');
+    
+    const content = `
+        <div class="print-document">
+            <div class="print-header">
+                <h1>DAILY ROUTE REPORT</h1>
+                <p class="print-subtitle">${dateStr}</p>
+                <p class="print-date">Generated: ${getReportDate()}</p>
+            </div>
+            
+            <div class="print-section">
+                <h2>Day Summary</h2>
+                <div class="print-stats">
+                    <div class="print-stat">
+                        <div class="print-stat-value">${formatCurrency(day.stats.total_earnings)}</div>
+                        <div class="print-stat-label">Earnings</div>
+                    </div>
+                    <div class="print-stat">
+                        <div class="print-stat-value">${day.stats.trip_count}</div>
+                        <div class="print-stat-label">Trips</div>
+                    </div>
+                    <div class="print-stat">
+                        <div class="print-stat-value">${day.stats.total_distance.toFixed(1)} mi</div>
+                        <div class="print-stat-label">Distance</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="print-section">
+                <h2>Trip Details</h2>
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Time</th>
+                            <th>Restaurant</th>
+                            <th>Miles</th>
+                            <th>Fare</th>
+                            <th>Tip</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tripRows}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>TOTALS</strong></td>
+                            <td class="number">${day.stats.total_distance.toFixed(1)}</td>
+                            <td class="number">${formatCurrency(day.stats.total_earnings - day.stats.total_tips)}</td>
+                            <td class="number">${formatCurrency(day.stats.total_tips)}</td>
+                            <td class="number">${formatCurrency(day.stats.total_earnings)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="print-footer">
+                Courier Routes - ${getReportDate()}
+            </div>
+        </div>
+    `;
+    
+    showPrintModal(content);
+}
+
+// Print trip ticket
+function printTripTicket() {
+    if (activeTrip === null || currentDayIndex < 0) return;
+    
+    const trip = appData.days[currentDayIndex].trips[activeTrip];
+    const day = appData.days[currentDayIndex];
+    const date = new Date(day.date + 'T12:00:00');
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    const content = `
+        <div class="print-document">
+            <div class="print-ticket">
+                <div class="print-ticket-header">
+                    <h2>DELIVERY RECEIPT</h2>
+                    <div class="ticket-number">Trip #${activeTrip + 1} - ${dateStr}</div>
+                </div>
+                
+                <div class="print-ticket-row">
+                    <span class="print-ticket-label">Restaurant</span>
+                    <span class="print-ticket-value">${trip.restaurant}</span>
+                </div>
+                
+                <div class="print-ticket-row">
+                    <span class="print-ticket-label">Time</span>
+                    <span class="print-ticket-value">${trip.request_time} - ${trip.dropoff_time}</span>
+                </div>
+                
+                <div class="print-ticket-row">
+                    <span class="print-ticket-label">Duration</span>
+                    <span class="print-ticket-value">${trip.duration}</span>
+                </div>
+                
+                <div class="print-ticket-row">
+                    <span class="print-ticket-label">Distance</span>
+                    <span class="print-ticket-value">${trip.distance.toFixed(1)} miles</span>
+                </div>
+                
+                <div class="print-ticket-address">
+                    <div class="addr-label">Pickup</div>
+                    <div>${trip.pickup_address}</div>
+                </div>
+                
+                <div class="print-ticket-address">
+                    <div class="addr-label">Drop-off</div>
+                    <div>${trip.dropoff_address}</div>
+                </div>
+                
+                <div style="margin-top: 15px; border-top: 1px dashed #999; padding-top: 10px;">
+                    <div class="print-ticket-row">
+                        <span class="print-ticket-label">Base Fare</span>
+                        <span class="print-ticket-value">${formatCurrency(trip.base_fare)}</span>
+                    </div>
+                    ${trip.tip > 0 ? `
+                    <div class="print-ticket-row">
+                        <span class="print-ticket-label">Tip</span>
+                        <span class="print-ticket-value">${formatCurrency(trip.tip)}</span>
+                    </div>
+                    ` : ''}
+                    ${trip.incentive > 0 ? `
+                    <div class="print-ticket-row">
+                        <span class="print-ticket-label">Incentive</span>
+                        <span class="print-ticket-value">${formatCurrency(trip.incentive)}</span>
+                    </div>
+                    ` : ''}
+                    ${trip.order_refund > 0 ? `
+                    <div class="print-ticket-row">
+                        <span class="print-ticket-label">Refund</span>
+                        <span class="print-ticket-value">${formatCurrency(trip.order_refund)}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="print-ticket-total">
+                    TOTAL: ${formatCurrency(trip.total_pay)}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    showPrintModal(content);
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closePrintModal();
+    }
+});

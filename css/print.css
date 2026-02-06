@@ -1,0 +1,332 @@
+﻿/* Print Styles for Courier Routes */
+
+@media print {
+    /* Hide non-printable elements */
+    .nav,
+    .search-container,
+    .search-tags,
+    .back-btn,
+    .nav-buttons,
+    .map-container,
+    .sidebar-search,
+    .detail-close,
+    .btn,
+    .btn-print-trip,
+    .home-hero,
+    .home-features,
+    .reports-actions {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    .page,
+    .map-view {
+        display: none !important;
+    }
+
+    /* Show print modal */
+    .print-modal {
+        display: block !important;
+        position: static !important;
+        background: white !important;
+    }
+
+    .print-modal-content {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Print document styles */
+    .print-document {
+        padding: 20px;
+        max-width: 8.5in;
+        margin: 0 auto;
+    }
+
+    .print-header {
+        text-align: center;
+        border-bottom: 2px solid #333;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+    .print-header h1 {
+        font-size: 24pt;
+        margin: 0 0 5px 0;
+        color: #000;
+    }
+
+    .print-header .print-subtitle {
+        font-size: 14pt;
+        color: #444;
+        margin: 0;
+    }
+
+    .print-header .print-date {
+        font-size: 10pt;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    .print-section {
+        margin-bottom: 25px;
+        page-break-inside: avoid;
+    }
+
+    .print-section h2 {
+        font-size: 16pt;
+        border-bottom: 1px solid #999;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        color: #000;
+    }
+
+    .print-section h3 {
+        font-size: 14pt;
+        margin: 15px 0 10px 0;
+        color: #333;
+    }
+
+    /* Summary stats */
+    .print-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .print-stat {
+        text-align: center;
+        padding: 15px;
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+    }
+
+    .print-stat-value {
+        font-size: 18pt;
+        font-weight: bold;
+        color: #000;
+    }
+
+    .print-stat-label {
+        font-size: 10pt;
+        color: #666;
+        text-transform: uppercase;
+    }
+
+    /* Tables */
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .print-table th,
+    .print-table td {
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        text-align: left;
+    }
+
+    .print-table th {
+        background: #f0f0f0;
+        font-weight: bold;
+    }
+
+    .print-table td.number {
+        text-align: right;
+        font-family: 'Courier New', monospace;
+    }
+
+    .print-table tr:nth-child(even) {
+        background: #f9f9f9;
+    }
+
+    .print-table tfoot {
+        font-weight: bold;
+        background: #e0e0e0;
+    }
+
+    /* Trip ticket */
+    .print-ticket {
+        border: 2px solid #333;
+        padding: 20px;
+        max-width: 4in;
+        margin: 0 auto;
+    }
+
+    .print-ticket-header {
+        text-align: center;
+        border-bottom: 1px dashed #999;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+
+    .print-ticket-header h2 {
+        margin: 0;
+        font-size: 14pt;
+    }
+
+    .print-ticket-header .ticket-number {
+        font-size: 12pt;
+        color: #666;
+    }
+
+    .print-ticket-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px dotted #ddd;
+    }
+
+    .print-ticket-row:last-child {
+        border-bottom: none;
+    }
+
+    .print-ticket-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .print-ticket-value {
+        text-align: right;
+    }
+
+    .print-ticket-total {
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 2px solid #333;
+        font-size: 14pt;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .print-ticket-address {
+        margin: 10px 0;
+        padding: 10px;
+        background: #f5f5f5;
+        font-size: 10pt;
+    }
+
+    .print-ticket-address .addr-label {
+        font-weight: bold;
+        font-size: 8pt;
+        text-transform: uppercase;
+        color: #666;
+    }
+
+    /* Day report */
+    .print-day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .print-day-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* Page breaks */
+    .page-break {
+        page-break-after: always;
+    }
+
+    .no-break {
+        page-break-inside: avoid;
+    }
+
+    /* Footer */
+    .print-footer {
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #ccc;
+        text-align: center;
+        font-size: 9pt;
+        color: #666;
+    }
+}
+
+/* Screen styles for print modal preview */
+@media screen {
+    .print-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 40px;
+    }
+
+    .print-modal.show {
+        display: block;
+    }
+
+    .print-modal-content {
+        background: white;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 8px;
+        color: black;
+    }
+
+    .print-modal-close {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .print-modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .print-modal-actions {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+    }
+
+    .print-modal-actions button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .print-modal-actions .btn-print {
+        background: #4a9eff;
+        color: white;
+    }
+
+    .print-modal-actions .btn-close {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+}

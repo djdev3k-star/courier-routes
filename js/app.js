@@ -13,6 +13,10 @@ async function init() {
     try {
         const response = await fetch('data/routes.json');
         appData = await response.json();
+        
+        // Load any manually entered offline trips
+        loadOfflineTrips();
+        
         renderApp();
     } catch (error) {
         console.error('Failed to load data:', error);
@@ -33,9 +37,12 @@ function renderApp() {
 // Render home page
 function renderHomePage() {
     const stats = appData.stats;
-    document.getElementById('homeEarnings').textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
-    document.getElementById('homeTrips').textContent = stats.total_trips.toLocaleString();
-    document.getElementById('homeDays').textContent = stats.total_days;
+    const homeEarnings = document.getElementById('homeEarnings');
+    const homeTrips = document.getElementById('homeTrips');
+    const homeDays = document.getElementById('homeDays');
+    if (homeEarnings) homeEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
+    if (homeTrips) homeTrips.textContent = stats.total_trips.toLocaleString();
+    if (homeDays) homeDays.textContent = stats.total_days;
 
     const recentDays = appData.days.slice(-5).reverse();
     const container = document.getElementById('recentDays');
@@ -343,9 +350,13 @@ function showPage(page) {
     if (page === 'home') document.getElementById('pageHome').classList.add('active');
     else if (page === 'routes') document.getElementById('pageRoutes').classList.add('active');
     else if (page === 'reports') document.getElementById('pageReports').classList.add('active');
+    else if (page === 'feature-maps') document.getElementById('pageFeatureMaps').classList.add('active');
+    else if (page === 'feature-earnings') document.getElementById('pageFeatureEarnings').classList.add('active');
+    else if (page === 'feature-reports') document.getElementById('pageFeatureReports').classList.add('active');
     
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+    const navEl = document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1));
+    if (navEl) navEl.classList.add('active');
 
     if (map) { map.remove(); map = null; }
     mapMarkers = [];
@@ -453,7 +464,8 @@ function initMap(trips) {
         container: 'map',
         style: 'mapbox://styles/mapbox/dark-v11',
         center: [centerLng, centerLat],
-        zoom: 11
+        zoom: 11,
+        preserveDrawingBuffer: true // Enable for print/screenshot capture
     });
     map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
@@ -548,26 +560,19 @@ document.addEventListener('DOMContentLoaded', init);
 
 // ========== PRINT FUNCTIONS ==========
 
-// Show print modal with content
-function showPrintModal(content) {
-    const modal = document.getElementById('printModal');
-    const printContent = document.getElementById('printContent');
+// Print content directly (no modal)
+function printContent(content) {
+    const printArea = document.getElementById('printArea');
+    printArea.innerHTML = content;
     
-    printContent.innerHTML = `
-        <button class="print-modal-close" onclick="closePrintModal()">&times;</button>
-        ${content}
-        <div class="print-modal-actions">
-            <button class="btn-print" onclick="window.print()">Print</button>
-            <button class="btn-close" onclick="closePrintModal()">Close</button>
-        </div>
-    `;
-    
-    modal.classList.add('show');
-}
-
-// Close print modal
-function closePrintModal() {
-    document.getElementById('printModal').classList.remove('show');
+    // Small delay to ensure content is rendered
+    setTimeout(() => {
+        window.print();
+        // Clear print area after printing
+        setTimeout(() => {
+            printArea.innerHTML = '';
+        }, 1000);
+    }, 100);
 }
 
 // Format currency
@@ -593,7 +598,7 @@ function printReport(type) {
         content = generateAllTripsReport();
     }
     
-    showPrintModal(content);
+    printContent(content);
 }
 
 // Generate summary report
@@ -817,21 +822,36 @@ function generateAllTripsReport() {
 
 // Print single day report
 function printDayReport() {
-    if (currentDayIndex < 0) return;
+    if (currentDayIndex < 0 || !appData || !appData.days[currentDayIndex]) {
+        console.error('Cannot print: no day selected', { currentDayIndex, appData });
+        alert('Please select a day first');
+        return;
+    }
     
     const day = appData.days[currentDayIndex];
     const date = new Date(day.date + 'T12:00:00');
     const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     
+    // Capture map as image
+    let mapImage = '';
+    if (map) {
+        try {
+            const canvas = map.getCanvas();
+            mapImage = canvas.toDataURL('image/png');
+        } catch (e) {
+            console.warn('Could not capture map image:', e);
+        }
+    }
+    
     let tripRows = day.trips.map((trip, i) => `
         <tr class="no-break">
             <td>${i + 1}</td>
-            <td>${trip.request_time}</td>
-            <td>${trip.restaurant.substring(0, 30)}${trip.restaurant.length > 30 ? '...' : ''}</td>
-            <td class="number">${trip.distance.toFixed(1)}</td>
-            <td class="number">${formatCurrency(trip.base_fare)}</td>
-            <td class="number">${formatCurrency(trip.tip)}</td>
-            <td class="number">${formatCurrency(trip.total_pay)}</td>
+            <td>${trip.request_time || '-'}</td>
+            <td>${(trip.restaurant || 'Unknown').substring(0, 30)}${(trip.restaurant || '').length > 30 ? '...' : ''}</td>
+            <td class="number">${(trip.distance || 0).toFixed(1)}</td>
+            <td class="number">${formatCurrency(trip.base_fare || 0)}</td>
+            <td class="number">${formatCurrency(trip.tip || 0)}</td>
+            <td class="number">${formatCurrency(trip.total_pay || 0)}</td>
         </tr>
     `).join('');
     
@@ -860,6 +880,15 @@ function printDayReport() {
                     </div>
                 </div>
             </div>
+            
+            ${mapImage ? `
+            <div class="print-section">
+                <h2>Route Map</h2>
+                <div class="print-map">
+                    <img src="${mapImage}" alt="Route Map" style="width: 100%; max-width: 100%; height: auto; border: 1px solid #ccc;">
+                </div>
+            </div>
+            ` : ''}
             
             <div class="print-section">
                 <h2>Trip Details</h2>
@@ -896,7 +925,7 @@ function printDayReport() {
         </div>
     `;
     
-    showPrintModal(content);
+    printContent(content);
 }
 
 // Print trip ticket
@@ -978,12 +1007,400 @@ function printTripTicket() {
         </div>
     `;
     
-    showPrintModal(content);
+    printContent(content);
 }
 
 // Close modal on escape key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        closePrintModal();
+        closeTripEntry();
     }
 });
+
+// ========== TRIP ENTRY FUNCTIONS ==========
+
+// Open trip entry modal
+function openTripEntry() {
+    document.getElementById('tripEntryModal').classList.add('active');
+    // Set default date to today
+    document.getElementById('entryDate').valueAsDate = new Date();
+}
+
+// Close trip entry modal
+function closeTripEntry() {
+    document.getElementById('tripEntryModal').classList.remove('active');
+    document.getElementById('tripEntryForm').reset();
+}
+
+// Save trip entry
+function saveTripEntry(event) {
+    event.preventDefault();
+    
+    const date = document.getElementById('entryDate').value;
+    const time = document.getElementById('entryTime').value;
+    const restaurant = document.getElementById('entryRestaurant').value;
+    const pickup = document.getElementById('entryPickup').value || 'Not specified';
+    const dropoff = document.getElementById('entryDropoff').value || 'Not specified';
+    const distance = parseFloat(document.getElementById('entryDistance').value) || 0;
+    const duration = parseInt(document.getElementById('entryDuration').value) || 0;
+    const baseFare = parseFloat(document.getElementById('entryBase').value) || 0;
+    const tip = parseFloat(document.getElementById('entryTip').value) || 0;
+    const incentive = parseFloat(document.getElementById('entryIncentive').value) || 0;
+    const platform = document.getElementById('entryPlatform').value;
+    const notes = document.getElementById('entryNotes').value || '';
+    
+    // Calculate total pay
+    const totalPay = baseFare + tip + incentive;
+    
+    // Create trip object
+    const newTrip = {
+        restaurant: restaurant,
+        request_time: time,
+        dropoff_time: time, // Will be calculated if duration provided
+        duration: duration > 0 ? `${duration} min` : 'N/A',
+        distance: distance,
+        pickup_address: pickup,
+        dropoff_address: dropoff,
+        base_fare: baseFare,
+        tip: tip,
+        incentive: incentive,
+        order_refund: 0,
+        total_pay: totalPay,
+        platform: platform,
+        notes: notes,
+        manual_entry: true
+    };
+    
+    // Find or create the day in appData
+    let dayIndex = appData.days.findIndex(d => d.date === date);
+    
+    if (dayIndex === -1) {
+        // Create new day entry
+        const newDay = {
+            date: date,
+            trips: [newTrip],
+            stats: {
+                trip_count: 1,
+                total_earnings: totalPay,
+                total_tips: tip,
+                total_distance: distance,
+                start_time: time,
+                end_time: time
+            }
+        };
+        
+        // Insert in correct position (sorted by date)
+        let insertIndex = appData.days.findIndex(d => d.date < date);
+        if (insertIndex === -1) {
+            appData.days.push(newDay);
+        } else {
+            appData.days.splice(insertIndex, 0, newDay);
+        }
+    } else {
+        // Add to existing day
+        appData.days[dayIndex].trips.push(newTrip);
+        
+        // Update day stats
+        const day = appData.days[dayIndex];
+        day.stats.trip_count++;
+        day.stats.total_earnings += totalPay;
+        day.stats.total_tips += tip;
+        day.stats.total_distance += distance;
+    }
+    
+    // Update global stats
+    appData.stats.total_trips++;
+    appData.stats.total_earnings += totalPay;
+    appData.stats.total_tips += tip;
+    appData.stats.total_distance += distance;
+    
+    // Save to localStorage
+    saveOfflineTrips();
+    
+    // Refresh the UI
+    updateAllStats();
+    renderDaysGrid();
+    
+    // Close modal
+    closeTripEntry();
+    
+    // Show success message
+    showToast(`Trip added: ${restaurant} - ${formatCurrency(totalPay)}`);
+}
+
+// Save offline trips to localStorage
+function saveOfflineTrips() {
+    const offlineTrips = [];
+    appData.days.forEach(day => {
+        day.trips.forEach(trip => {
+            if (trip.manual_entry) {
+                offlineTrips.push({
+                    date: day.date,
+                    ...trip
+                });
+            }
+        });
+    });
+    localStorage.setItem('courierRoutes_offlineTrips', JSON.stringify(offlineTrips));
+}
+
+// Load offline trips from localStorage
+function loadOfflineTrips() {
+    const saved = localStorage.getItem('courierRoutes_offlineTrips');
+    if (!saved) return;
+    
+    const offlineTrips = JSON.parse(saved);
+    
+    offlineTrips.forEach(savedTrip => {
+        const { date, ...tripData } = savedTrip;
+        
+        let dayIndex = appData.days.findIndex(d => d.date === date);
+        
+        // Check if trip already exists (avoid duplicates on reload)
+        if (dayIndex !== -1) {
+            const exists = appData.days[dayIndex].trips.some(t => 
+                t.manual_entry && 
+                t.request_time === tripData.request_time && 
+                t.restaurant === tripData.restaurant
+            );
+            if (exists) return;
+        }
+        
+        if (dayIndex === -1) {
+            // Create new day
+            const newDay = {
+                date: date,
+                trips: [tripData],
+                stats: {
+                    trip_count: 1,
+                    total_earnings: tripData.total_pay,
+                    total_tips: tripData.tip,
+                    total_distance: tripData.distance,
+                    start_time: tripData.request_time,
+                    end_time: tripData.request_time
+                }
+            };
+            
+            let insertIndex = appData.days.findIndex(d => d.date < date);
+            if (insertIndex === -1) {
+                appData.days.push(newDay);
+            } else {
+                appData.days.splice(insertIndex, 0, newDay);
+            }
+            appData.stats.total_days++;
+        } else {
+            appData.days[dayIndex].trips.push(tripData);
+            
+            const day = appData.days[dayIndex];
+            day.stats.trip_count++;
+            day.stats.total_earnings += tripData.total_pay;
+            day.stats.total_tips += tripData.tip;
+            day.stats.total_distance += tripData.distance;
+        }
+        
+        appData.stats.total_trips++;
+        appData.stats.total_earnings += tripData.total_pay;
+        appData.stats.total_tips += tripData.tip;
+        appData.stats.total_distance += tripData.distance;
+    });
+}
+
+// Show toast notification
+function showToast(message) {
+    // Create toast element if it doesn't exist
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Update all stats displays
+function updateAllStats() {
+    // Nav stats
+    document.getElementById('navEarnings').textContent = formatCurrency(appData.stats.total_earnings);
+    document.getElementById('navTripCount').textContent = appData.stats.total_trips;
+    
+    // Home stats (elements may not exist)
+    const homeEarnings = document.getElementById('homeEarnings');
+    const homeTrips = document.getElementById('homeTrips');
+    const homeDays = document.getElementById('homeDays');
+    if (homeEarnings) homeEarnings.textContent = formatCurrency(appData.stats.total_earnings);
+    if (homeTrips) homeTrips.textContent = appData.stats.total_trips;
+    if (homeDays) homeDays.textContent = appData.stats.total_days || appData.days.length;
+    
+    // Reports stats
+    renderReportsPage();
+}
+// ==================== BATCH UPLOAD FUNCTIONS ====================
+
+let batchTrips = [];
+
+function openBatchUpload() {
+    document.getElementById('batchUploadModal').style.display = 'flex';
+    batchTrips = [];
+    document.getElementById('batchPreview').style.display = 'none';
+    document.getElementById('importBtn').disabled = true;
+}
+
+function closeBatchUpload() {
+    document.getElementById('batchUploadModal').style.display = 'none';
+    batchTrips = [];
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('uploadArea').classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    document.getElementById('uploadArea').classList.remove('dragover');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('uploadArea').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+        parseCSV(file);
+    } else {
+        showToast('Please upload a CSV file', 'error');
+    }
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        parseCSV(file);
+    }
+}
+
+function parseCSV(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+        
+        batchTrips = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            const values = parseCSVLine(lines[i]);
+            if (values.length >= 8) {
+                const trip = {
+                    date: values[headers.indexOf('date')] || '',
+                    time: values[headers.indexOf('time')] || '12:00',
+                    restaurant: values[headers.indexOf('restaurant')] || 'Unknown',
+                    pickup: values[headers.indexOf('pickup_address')] || '',
+                    dropoff: values[headers.indexOf('dropoff_address')] || '',
+                    distance: parseFloat(values[headers.indexOf('distance_miles')]) || 0,
+                    duration: parseInt(values[headers.indexOf('duration_mins')]) || 0,
+                    baseFare: parseFloat(values[headers.indexOf('base_fare')]) || 0,
+                    tip: parseFloat(values[headers.indexOf('tip')]) || 0,
+                    incentive: parseFloat(values[headers.indexOf('incentive')]) || 0,
+                    platform: values[headers.indexOf('platform')] || 'other',
+                    notes: values[headers.indexOf('notes')] || ''
+                };
+                trip.total = trip.baseFare + trip.tip + trip.incentive;
+                batchTrips.push(trip);
+            }
+        }
+        
+        showBatchPreview();
+    };
+    reader.readAsText(file);
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+function showBatchPreview() {
+    if (batchTrips.length === 0) {
+        showToast('No valid trips found in CSV', 'error');
+        return;
+    }
+    
+    document.getElementById('previewCount').textContent = batchTrips.length;
+    const tbody = document.getElementById('previewBody');
+    tbody.innerHTML = '';
+    
+    batchTrips.forEach(trip => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${trip.date}</td>
+            <td>${trip.time}</td>
+            <td>${trip.restaurant}</td>
+            <td>${trip.platform}</td>
+            <td>$${trip.total.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('batchPreview').style.display = 'block';
+    document.getElementById('importBtn').disabled = false;
+}
+
+function importBatchTrips() {
+    let imported = 0;
+    
+    batchTrips.forEach(trip => {
+        const offlineTrip = {
+            id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            date: trip.date,
+            time: trip.time,
+            restaurant: trip.restaurant,
+            pickup: trip.pickup,
+            dropoff: trip.dropoff,
+            distance: trip.distance,
+            duration: trip.duration,
+            baseFare: trip.baseFare,
+            tip: trip.tip,
+            incentive: trip.incentive,
+            platform: trip.platform,
+            notes: trip.notes,
+            total: trip.total,
+            isOffline: true
+        };
+        
+        // Get existing offline trips
+        let offlineTrips = JSON.parse(localStorage.getItem('offlineTrips') || '[]');
+        offlineTrips.push(offlineTrip);
+        localStorage.setItem('offlineTrips', JSON.stringify(offlineTrips));
+        imported++;
+    });
+    
+    closeBatchUpload();
+    showToast(`Successfully imported ${imported} trips!`, 'success');
+    
+    // Refresh the view
+    if (typeof loadAllData === 'function') {
+        loadAllData();
+    }
+}

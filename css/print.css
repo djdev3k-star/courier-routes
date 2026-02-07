@@ -1,8 +1,28 @@
 ﻿/* Print Styles for Courier Routes */
 
+/* SCREEN: Hide print area completely */
+@media screen {
+    .print-area {
+        display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+}
+
+/* PRINT: Show only print area */
 @media print {
-    /* Hide non-printable elements */
+    /* Hide everything except print area */
+    body > *:not(.print-area) {
+        display: none !important;
+    }
+
     .nav,
+    .page,
+    .map-view,
     .search-container,
     .search-tags,
     .back-btn,
@@ -14,8 +34,20 @@
     .btn-print-trip,
     .home-hero,
     .home-features,
-    .reports-actions {
+    .reports-actions,
+    .trip-entry-modal {
         display: none !important;
+    }
+
+    /* Show print area */
+    .print-area {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+        left: auto !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
     }
 
     body {
@@ -24,23 +56,8 @@
         font-family: 'Times New Roman', Times, serif;
         font-size: 12pt;
         line-height: 1.5;
-    }
-
-    .page,
-    .map-view {
-        display: none !important;
-    }
-
-    /* Show print modal */
-    .print-modal {
-        display: block !important;
-        position: static !important;
-        background: white !important;
-    }
-
-    .print-modal-content {
-        max-width: 100% !important;
-        padding: 0 !important;
+        margin: 0;
+        padding: 0;
     }
 
     /* Print document styles */
@@ -96,15 +113,15 @@
 
     /* Summary stats */
     .print-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        justify-content: space-around;
         gap: 15px;
         margin-bottom: 25px;
     }
 
     .print-stat {
         text-align: center;
-        padding: 15px;
+        padding: 15px 25px;
         border: 1px solid #ccc;
         background: #f9f9f9;
     }
@@ -222,21 +239,6 @@
         color: #666;
     }
 
-    /* Day report */
-    .print-day-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .print-day-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
     /* Page breaks */
     .page-break {
         page-break-after: always;
@@ -254,79 +256,5 @@
         text-align: center;
         font-size: 9pt;
         color: #666;
-    }
-}
-
-/* Screen styles for print modal preview */
-@media screen {
-    .print-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.9);
-        z-index: 1000;
-        overflow-y: auto;
-        padding: 40px;
-    }
-
-    .print-modal.show {
-        display: block;
-    }
-
-    .print-modal-content {
-        background: white;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 40px;
-        border-radius: 8px;
-        color: black;
-    }
-
-    .print-modal-close {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        font-size: 24px;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        cursor: pointer;
-    }
-
-    .print-modal-close:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .print-modal-actions {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 12px;
-    }
-
-    .print-modal-actions button {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        cursor: pointer;
-    }
-
-    .print-modal-actions .btn-print {
-        background: #4a9eff;
-        color: white;
-    }
-
-    .print-modal-actions .btn-close {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
     }
 }

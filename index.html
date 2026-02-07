@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/print.css" media="print">
+    <link rel="stylesheet" href="css/print.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -41,34 +41,20 @@
                     <button class="btn btn-secondary" onclick="showPage('reports')">See Reports</button>
                 </div>
             </div>
-            <div class="home-hero-stats">
-                <div class="hero-stat-card">
-                    <div class="hero-stat-value" id="homeEarnings">$0</div>
-                    <div class="hero-stat-label">Total Earned</div>
-                </div>
-                <div class="hero-stat-card">
-                    <div class="hero-stat-value" id="homeTrips">0</div>
-                    <div class="hero-stat-label">Deliveries</div>
-                </div>
-                <div class="hero-stat-card">
-                    <div class="hero-stat-value" id="homeDays">0</div>
-                    <div class="hero-stat-label">Active Days</div>
-                </div>
-            </div>
         </div>
 
         <div class="home-features">
-            <div class="feature-card">
+            <div class="feature-card" onclick="showPage('feature-maps')">
                 <div class="feature-icon">M</div>
                 <h3>Interactive Maps</h3>
                 <p>Visualize your daily routes with Mapbox-powered maps showing every pickup and dropoff.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card" onclick="showPage('feature-earnings')">
                 <div class="feature-icon">$</div>
                 <h3>Earnings Breakdown</h3>
                 <p>See base fare, tips, incentives, and refunds for every trip you complete.</p>
             </div>
-            <div class="feature-card">
+            <div class="feature-card" onclick="showPage('feature-reports')">
                 <div class="feature-icon">R</div>
                 <h3>Detailed Reports</h3>
                 <p>Analyze your performance with monthly summaries and earnings trends.</p>
@@ -94,8 +80,9 @@
                     <button class="search-tag" data-filter="october" onclick="filterByMonth('october')">Oct</button>
                     <button class="search-tag" data-filter="september" onclick="filterByMonth('september')">Sep</button>
                     <button class="search-tag" data-filter="august" onclick="filterByMonth('august')">Aug</button>
-                </div>
-            </div>
+                </div></div>
+            <button class="btn btn-add-trip" onclick="openTripEntry()">+ Add Trip</button>
+            <button class="btn btn-batch-upload" onclick="openBatchUpload()">?? Batch Upload</button>
         </div>
         <div class="days-grid" id="daysGrid"></div>
     </div>
@@ -153,6 +140,93 @@
         <div class="report-section full-width">
             <h2>Earnings by Day of Week</h2>
             <div class="weekday-chart" id="weekdayChart"></div>
+        </div>
+    </div>
+
+    <!-- Feature: Interactive Maps -->
+    <div class="page page-feature" id="pageFeatureMaps">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">M</div>
+                <h1>Interactive Maps</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">Visualize your daily routes with Mapbox-powered maps showing every pickup and dropoff.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Route Visualization</h3>
+                        <p>See your entire day's journey plotted on a dark-themed map with connected route lines.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Pickup & Dropoff Markers</h3>
+                        <p>Each stop is marked with numbered pins—pickup points and delivery destinations clearly distinguished.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Trip-by-Trip Navigation</h3>
+                        <p>Click any trip to zoom in and see the exact route, addresses, and earnings for that delivery.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('routes')">Explore Your Routes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature: Earnings Breakdown -->
+    <div class="page page-feature" id="pageFeatureEarnings">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">$</div>
+                <h1>Earnings Breakdown</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">See base fare, tips, incentives, and refunds for every trip you complete.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Complete Payment Details</h3>
+                        <p>Every trip shows base fare, customer tip, promotions, incentives, and any order refunds.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Daily Totals</h3>
+                        <p>Quick stats bar shows your day's total earnings, trip count, miles driven, and tips received.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Trip Comparison</h3>
+                        <p>Scrollable trip list lets you compare earnings across deliveries and spot your best performers.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('routes')">View Your Earnings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature: Detailed Reports -->
+    <div class="page page-feature" id="pageFeatureReports">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">R</div>
+                <h1>Detailed Reports</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">Analyze your performance with monthly summaries and earnings trends.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Monthly Breakdown</h3>
+                        <p>See earnings, trips, and averages grouped by month to track your progress over time.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Top Earning Days</h3>
+                        <p>Quickly identify your best days and analyze what made them successful.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Day of Week Analysis</h3>
+                        <p>Visual chart reveals which weekdays bring the highest earnings so you can plan accordingly.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('reports')">See Your Reports</button>
+            </div>
         </div>
     </div>
 
@@ -282,9 +356,132 @@
         </div>
     </div>
 
-    <!-- Print Modal -->
-    <div class="print-modal" id="printModal">
-        <div class="print-modal-content" id="printContent"></div>
+    <!-- Hidden Print Area (only shows during print) -->
+    <div class="print-area" id="printArea"></div>
+
+    <!-- Trip Entry Modal -->
+    <div class="trip-entry-modal" id="tripEntryModal">
+        <div class="trip-entry-overlay" onclick="closeTripEntry()"></div>
+        <div class="trip-entry-content">
+            <div class="trip-entry-header">
+                <h2>Add Offline Trip</h2>
+                <button class="trip-entry-close" onclick="closeTripEntry()">&times;</button>
+            </div>
+            <form id="tripEntryForm" onsubmit="saveTripEntry(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="entryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="entryTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Restaurant / Pickup Name</label>
+                    <input type="text" id="entryRestaurant" placeholder="e.g., McDonald's, Chipotle" required>
+                </div>
+                <div class="form-group">
+                    <label>Pickup Address</label>
+                    <input type="text" id="entryPickup" placeholder="123 Main St, City, State">
+                </div>
+                <div class="form-group">
+                    <label>Drop-off Address</label>
+                    <input type="text" id="entryDropoff" placeholder="456 Oak Ave, City, State">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Distance (miles)</label>
+                        <input type="number" id="entryDistance" step="0.1" min="0" placeholder="3.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (mins)</label>
+                        <input type="number" id="entryDuration" step="1" min="0" placeholder="15">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Base Fare ($)</label>
+                        <input type="number" id="entryBase" step="0.01" min="0" placeholder="5.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tip ($)</label>
+                        <input type="number" id="entryTip" step="0.01" min="0" placeholder="3.00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Incentive ($)</label>
+                        <input type="number" id="entryIncentive" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="entryPlatform">
+                            <option value="uber">Uber Eats</option>
+                            <option value="doordash">DoorDash</option>
+                            <option value="grubhub">Grubhub</option>
+                            <option value="spark">Spark</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes (optional)</label>
+                    <textarea id="entryNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTripEntry()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Batch Upload Modal -->
+    <div class="trip-entry-modal" id="batchUploadModal">
+        <div class="trip-entry-overlay" onclick="closeBatchUpload()"></div>
+        <div class="trip-entry-content">
+            <div class="trip-entry-header">
+                <h2>Batch Upload Trips</h2>
+                <button class="trip-entry-close" onclick="closeBatchUpload()">&times;</button>
+            </div>
+            <div class="batch-upload-content">
+                <p class="batch-info">Upload a CSV file with multiple offline trips. <a href="data/offline_trips_template.csv" download>Download template</a></p>
+                
+                <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="upload-icon">??</div>
+                    <p>Drag & drop CSV file here</p>
+                    <p class="upload-or">or</p>
+                    <label class="btn btn-secondary upload-btn">
+                        Browse Files
+                        <input type="file" id="batchFileInput" accept=".csv" onchange="handleFileSelect(event)" hidden>
+                    </label>
+                </div>
+                
+                <div class="batch-preview" id="batchPreview" style="display: none;">
+                    <h3>Preview (<span id="previewCount">0</span> trips)</h3>
+                    <div class="preview-table-wrap">
+                        <table class="preview-table" id="previewTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Restaurant</th>
+                                    <th>Platform</th>
+                                    <th>Earnings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeBatchUpload()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="importBtn" onclick="importBatchTrips()" disabled>Import Trips</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/app.js"></script>

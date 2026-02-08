@@ -175,7 +175,24 @@ function renderDaysGrid() {
         const barWidth = (day.stats.total_earnings / maxEarnings) * 100;
         const realIdx = days.length - 1 - idx;
 
-        // Build search data with full weekday names
+        // Build search data with full weekday names and restaurant/address info
+        const tripSearchData = day.trips.map(t => {
+            const parts = [t.restaurant || ''];
+            // Extract city from addresses
+            if (t.pickup_address) {
+                const cityMatch = t.pickup_address.match(/,\s*([^,]+),\s*TX/i);
+                if (cityMatch) parts.push(cityMatch[1]);
+            }
+            if (t.dropoff_address) {
+                const cityMatch = t.dropoff_address.match(/,\s*([^,]+),\s*TX/i);
+                if (cityMatch) parts.push(cityMatch[1]);
+                // Also include street names
+                const streetMatch = t.dropoff_address.match(/^([^,]+)/);
+                if (streetMatch) parts.push(streetMatch[1]);
+            }
+            return parts.join(' ');
+        }).join(' ');
+        
         const searchData = [
             day.date,
             monthLower,
@@ -183,8 +200,9 @@ function renderDaysGrid() {
             weekdayFull,
             day.stats.total_earnings.toFixed(2),
             day.stats.trip_count + ' trips',
-            day.stats.total_distance.toFixed(1) + ' miles'
-        ].join(' ');
+            day.stats.total_distance.toFixed(1) + ' miles',
+            tripSearchData
+        ].join(' ').toLowerCase();
 
         html += `
             <div class="day-card" onclick="openDay(${realIdx})" data-search="${searchData}" data-month="${monthLower}" data-earnings="${day.stats.total_earnings}" data-date="${day.date}">
@@ -444,12 +462,12 @@ function globalSearchHandler(query) {
     smartSearch(q);
 }
 
-// Soft search - fuzzy matching with smart earnings filters
+// Powerful search - fuzzy matching with smart earnings filters and restaurant/address search
 function smartSearch(query) {
     const q = query.toLowerCase().trim();
 
     // Clear active filter tags
-    document.querySelectorAll('.search-tag').forEach(tag => {
+    document.querySelectorAll('.search-tag, .filter-tag').forEach(tag => {
         tag.classList.toggle('active', tag.dataset.filter === 'all' && !q);
     });
 
@@ -457,12 +475,14 @@ function smartSearch(query) {
         document.querySelectorAll('.day-card, .month-header').forEach(el => {
             el.style.display = '';
         });
+        updateSearchResultsCount(null);
         return;
     }
 
     // Parse smart queries for earnings
     let minEarnings = 0;
     let maxEarnings = Infinity;
+    let minTrips = 0;
     let textQuery = q;
 
     // Match "over $100", "> 100", "100+", "above 100"
@@ -486,44 +506,78 @@ function smartSearch(query) {
         maxEarnings = parseFloat(rangeMatch[2]);
         textQuery = q.replace(rangeMatch[0], '').trim();
     }
+    
+    // Match trip count filters: "5+ trips", "10 trips", "trips > 5"
+    const tripsMatch = q.match(/(\d+)\+?\s*trips?|trips?\s*[>:]\s*(\d+)/i);
+    if (tripsMatch) {
+        minTrips = parseInt(tripsMatch[1] || tripsMatch[2]);
+        textQuery = q.replace(tripsMatch[0], '').trim();
+    }
 
     // Split text query into tokens for soft matching
-    const tokens = textQuery.split(/\s+/).filter(t => t.length > 0);
+    const tokens = textQuery.split(/\s+/).filter(t => t.length > 1); // min 2 chars
 
     let visibleMonths = new Set();
+    let matchCount = 0;
+    let totalEarnings = 0;
 
     document.querySelectorAll('.day-card').forEach(card => {
         const searchText = card.dataset.search || '';
         const earnings = parseFloat(card.dataset.earnings) || 0;
         const month = card.dataset.month;
+        const tripCount = parseInt(searchText.match(/(\d+)\s*trips/)?.[1] || 0);
 
         // Soft match: all tokens must be found
         const matchesText = tokens.length === 0 || tokens.every(token => {
-            // Direct match
+            // Direct substring match
             if (searchText.includes(token)) return true;
             
-            // Abbreviation expansion
+            // Abbreviation expansion for days and months
             const abbrevMap = {
                 'mon': 'monday', 'tue': 'tuesday', 'wed': 'wednesday',
                 'thu': 'thursday', 'fri': 'friday', 'sat': 'saturday', 'sun': 'sunday',
                 'jan': 'january', 'feb': 'february', 'mar': 'march', 'apr': 'april',
                 'jun': 'june', 'jul': 'july', 'aug': 'august', 'sep': 'september',
-                'oct': 'october', 'nov': 'november', 'dec': 'december'
+                'oct': 'october', 'nov': 'november', 'dec': 'december',
+                'mcdonalds': "mcdonald's", 'mcd': "mcdonald's",
+                'chilis': "chili's", 'wendys': "wendy's", 'arbys': "arby's",
+                'popeyes': "popeye's", 'churchs': "church's"
             };
             const expanded = abbrevMap[token];
             if (expanded && searchText.includes(expanded)) return true;
             
-            // Prefix match on words
+            // Fuzzy match: allow 1 character difference for longer tokens
+            if (token.length >= 4) {
+                const words = searchText.split(/\s+/);
+                return words.some(word => {
+                    if (word.startsWith(token)) return true;
+                    if (token.startsWith(word.substring(0, 3))) return true;
+                    // Simple Levenshtein-like check for typos
+                    if (Math.abs(word.length - token.length) <= 1) {
+                        let diff = 0;
+                        for (let i = 0; i < Math.min(word.length, token.length); i++) {
+                            if (word[i] !== token[i]) diff++;
+                        }
+                        return diff <= 1;
+                    }
+                    return false;
+                });
+            }
+            
+            // Prefix match on words for short tokens
             const words = searchText.split(/\s+/);
             return words.some(word => word.startsWith(token));
         });
 
         const matchesEarnings = earnings >= minEarnings && earnings <= maxEarnings;
-        const show = matchesText && matchesEarnings;
+        const matchesTrips = tripCount >= minTrips;
+        const show = matchesText && matchesEarnings && matchesTrips;
         card.style.display = show ? '' : 'none';
 
-        if (show && month) {
-            visibleMonths.add(month);
+        if (show) {
+            matchCount++;
+            totalEarnings += earnings;
+            if (month) visibleMonths.add(month);
         }
     });
 
@@ -532,6 +586,35 @@ function smartSearch(query) {
         const month = header.dataset.month;
         header.style.display = visibleMonths.has(month) ? '' : 'none';
     });
+    
+    // Update search results indicator
+    updateSearchResultsCount(matchCount, totalEarnings);
+}
+
+// Show search results count in the UI
+function updateSearchResultsCount(count, earnings) {
+    let indicator = document.getElementById('searchResultsIndicator');
+    
+    if (count === null) {
+        if (indicator) indicator.remove();
+        return;
+    }
+    
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'searchResultsIndicator';
+        indicator.className = 'search-results-indicator';
+        const routesList = document.querySelector('.routes-list');
+        if (routesList) {
+            routesList.parentNode.insertBefore(indicator, routesList);
+        }
+    }
+    
+    if (count === 0) {
+        indicator.innerHTML = '<span class="no-results">No matching days found</span>';
+    } else {
+        indicator.innerHTML = `<span class="results-count">${count} day${count !== 1 ? 's' : ''} found</span><span class="results-earnings">$${earnings.toFixed(2)} total</span>`;
+    }
 }
 
 // Filter by month (tag click)

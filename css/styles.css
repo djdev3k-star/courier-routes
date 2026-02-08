@@ -595,6 +595,34 @@ body {
     color: #fff;
 }
 
+/* Search Results Indicator */
+.search-results-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+}
+
+.search-results-indicator .results-count {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.search-results-indicator .results-earnings {
+    color: var(--accent-green);
+    font-weight: 600;
+}
+
+.search-results-indicator .no-results {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 /* Week Filter */
 .filter-week {
     display: flex;

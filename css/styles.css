@@ -137,6 +137,9 @@ body {
 }
 
 .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -144,11 +147,21 @@ body {
     color: var(--text-primary);
 }
 
+.nav-logo {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-blue);
+}
+
 .nav-brand:hover {
     opacity: 0.9;
 }
 
-.nav-brand span {
+.nav-brand-text {
+    font-weight: 700;
+}
+
+.brand-accent {
     color: var(--accent-blue);
 }
 
@@ -197,6 +210,28 @@ body {
 .nav-stat-value {
     color: var(--accent-green);
     font-weight: 600;
+}
+
+/* Nav Auth Buttons (for home/landing page) */
+.nav-auth {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-auth .btn {
+    white-space: nowrap;
+}
+
+/* Show auth on home page, hide nav-info */
+.page-home.active ~ .nav .nav-info,
+body.on-home .nav-info {
+    display: none;
+}
+
+.page-home.active ~ .nav .nav-auth,
+body.on-home .nav-auth {
+    display: flex;
 }
 
 /* Global Search */

@@ -63,6 +63,9 @@ function renderApp() {
     renderRoutesPage();
     renderReportsPage();
     initWeekNavigation();
+    
+    // Set initial nav state (home page shows auth, not stats)
+    updateNavForPage(currentPage);
 }
 
 // Render home page
@@ -833,9 +836,39 @@ function showPage(page) {
     const navEl = document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1));
     if (navEl) navEl.classList.add('active');
 
+    // Toggle nav elements based on page
+    updateNavForPage(page);
+
     if (map) { map.remove(); map = null; }
     mapMarkers = [];
     activeTrip = null;
+}
+
+// Update nav visibility based on current page
+function updateNavForPage(page) {
+    const navInfo = document.getElementById('navInfo');
+    const navAuth = document.getElementById('navAuth');
+    
+    if (page === 'home') {
+        // On home page: show auth buttons, hide stats
+        if (navInfo) navInfo.style.display = 'none';
+        if (navAuth) navAuth.style.display = 'flex';
+        document.body.classList.add('on-home');
+    } else {
+        // On other pages: show stats, hide auth
+        if (navInfo) navInfo.style.display = 'flex';
+        if (navAuth) navAuth.style.display = 'none';
+        document.body.classList.remove('on-home');
+    }
+}
+
+// Auth placeholder functions
+function showLogin() {
+    showToast('Login feature coming soon!');
+}
+
+function showSignup() {
+    showToast('Sign up feature coming soon!');
 }
 
 // Open day map

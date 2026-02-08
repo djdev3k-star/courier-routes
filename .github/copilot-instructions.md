@@ -1,5 +1,8 @@
 # Copilot instructions for Courier Routes
 
+## Code style
+- Do not use emojis or emoticons in code, comments, or UI text.
+
 ## Big picture architecture
 - Static, client-only SPA: [index.html](index.html) wires all UI and loads [js/app.js](js/app.js). No build system or bundler.
 - Data flow: [generate_data.py](generate_data.py) builds [data/routes.json](data/routes.json) from external CSVs; the app fetches that JSON on load and renders Home/Routes/Reports/Map views.

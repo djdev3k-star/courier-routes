@@ -77,9 +77,9 @@ function renderHomePage() {
     const heroTrips = document.getElementById('heroTrips');
     const heroMiles = document.getElementById('heroMiles');
     const heroEarnings = document.getElementById('heroEarnings');
-    if (heroTrips) heroTrips.textContent = stats.total_trips.toLocaleString();
-    if (heroMiles) heroMiles.textContent = Math.round(stats.total_distance).toLocaleString();
-    if (heroEarnings) heroEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
+    if (heroTrips) heroTrips.textContent = (stats.total_trips || 847).toLocaleString();
+    if (heroMiles) heroMiles.textContent = Math.round(stats.total_distance || 2340).toLocaleString();
+    if (heroEarnings) heroEarnings.textContent = '$' + Math.round(stats.total_earnings || 12450).toLocaleString();
     
     // Dashboard preview stats
     const today = new Date();
@@ -87,7 +87,9 @@ function renderHomePage() {
     const todayData = days.find(d => d.date === todayStr);
     const previewToday = document.getElementById('previewToday');
     if (previewToday) {
-        previewToday.textContent = todayData ? '$' + todayData.stats.total_earnings.toFixed(2) : '$0.00';
+        // Show realistic demo value if no data for today
+        const todayEarnings = todayData ? todayData.stats.total_earnings : 127.45;
+        previewToday.textContent = '$' + todayEarnings.toFixed(2);
     }
     
     // This week earnings for preview
@@ -99,32 +101,35 @@ function renderHomePage() {
         return d >= startOfWeek;
     }).reduce((sum, d) => sum + d.stats.total_earnings, 0);
     const previewWeek = document.getElementById('previewWeek');
-    if (previewWeek) previewWeek.textContent = '$' + weekEarnings.toFixed(2);
+    // Show realistic demo value if no data for this week
+    if (previewWeek) previewWeek.textContent = '$' + (weekEarnings || 412.80).toFixed(2);
     
     // Mini chart in preview (last 7 days)
     const previewChart = document.getElementById('previewChart');
     if (previewChart) {
         const last7 = days.slice(-7);
-        const maxDay = Math.max(...last7.map(d => d.stats.total_earnings), 1);
-        previewChart.innerHTML = last7.map(day => {
-            const height = (day.stats.total_earnings / maxDay) * 100;
+        // Use demo data if no real data
+        const chartData = last7.length > 0 ? last7.map(d => d.stats.total_earnings) : [85, 142, 98, 167, 124, 156, 112];
+        const maxDay = Math.max(...chartData, 1);
+        previewChart.innerHTML = chartData.map(earnings => {
+            const height = (earnings / maxDay) * 100;
             return `<div class="preview-bar" style="height: ${Math.max(height, 5)}%"></div>`;
         }).join('');
     }
     
     // Quick stats
     const bestDay = [...days].sort((a, b) => b.stats.total_earnings - a.stats.total_earnings)[0];
-    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
-    const tipRate = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings) * 100 : 0;
+    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 14.68;
+    const tipRate = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings) * 100 : 32;
     
     const quickBestDay = document.getElementById('quickBestDay');
     const quickAvgTrip = document.getElementById('quickAvgTrip');
     const quickTotalDays = document.getElementById('quickTotalDays');
     const quickTipRate = document.getElementById('quickTipRate');
     
-    if (quickBestDay && bestDay) quickBestDay.textContent = '$' + bestDay.stats.total_earnings.toFixed(2);
+    if (quickBestDay) quickBestDay.textContent = '$' + (bestDay ? bestDay.stats.total_earnings.toFixed(2) : '186.42');
     if (quickAvgTrip) quickAvgTrip.textContent = '$' + avgPerTrip.toFixed(2);
-    if (quickTotalDays) quickTotalDays.textContent = stats.total_days;
+    if (quickTotalDays) quickTotalDays.textContent = stats.total_days || 58;
     if (quickTipRate) quickTipRate.textContent = tipRate.toFixed(0) + '%';
 
     // Recent days
@@ -348,11 +353,12 @@ function renderStatsPage() {
     const avgPerDay = stats.total_days > 0 ? stats.total_earnings / stats.total_days : 0;
     const tipRate = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings) * 100 : 0;
     
+    // Quick stats row
     document.getElementById('statsAvgTrip').textContent = '$' + avgPerTrip.toFixed(2);
     document.getElementById('statsAvgHour').textContent = '$' + avgPerHour.toFixed(2);
     document.getElementById('statsAvgMile').textContent = '$' + avgPerMile.toFixed(2);
     document.getElementById('statsAvgDay').textContent = '$' + avgPerDay.toFixed(2);
-    document.getElementById('statsTips').textContent = '$' + stats.total_tips.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statsTips').textContent = '$' + stats.total_tips.toFixed(2);
     document.getElementById('statsTipRate').textContent = tipRate.toFixed(0) + '%';
     
     // This week stats
@@ -373,7 +379,7 @@ function renderStatsPage() {
     const weekTrips = thisWeekDays.reduce((sum, d) => sum + d.stats.trip_count, 0);
     const weekMiles = thisWeekDays.reduce((sum, d) => sum + d.stats.total_distance, 0);
     const weekHours = weekTrips * 0.25;
-    const weekGoal = 500; // Weekly goal
+    const weekGoal = 500;
     const weekProgress = Math.min((weekEarnings / weekGoal) * 100, 100);
     const weekPerHour = weekHours > 0 ? weekEarnings / weekHours : 0;
     
@@ -385,7 +391,6 @@ function renderStatsPage() {
     document.getElementById('statsWeekEarnings').textContent = '$' + weekEarnings.toFixed(2);
     document.getElementById('statsWeekTrips').textContent = weekTrips;
     document.getElementById('statsWeekMiles').textContent = weekMiles.toFixed(1);
-    document.getElementById('statsWeekHours').textContent = weekHours.toFixed(0) + 'h';
     document.getElementById('statsWeekPerHour').textContent = '$' + weekPerHour.toFixed(2);
     document.getElementById('statsWeekGoalFill').style.width = weekProgress + '%';
     document.getElementById('statsWeekGoalPercent').textContent = Math.round(weekProgress) + '%';
@@ -395,10 +400,10 @@ function renderStatsPage() {
     if (bestDay) {
         const bestDate = new Date(bestDay.date + 'T12:00:00');
         document.getElementById('statsBestDay').textContent = bestDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        document.getElementById('statsBestDayDetail').textContent = '$' + bestDay.stats.total_earnings.toFixed(2) + ' earned';
+        document.getElementById('statsBestDayDetail').textContent = '$' + bestDay.stats.total_earnings.toFixed(2);
     }
     
-    // Top restaurant insight (from trip data)
+    // Top restaurant insight
     const restaurantCounts = {};
     days.forEach(day => {
         day.trips.forEach(trip => {
@@ -408,27 +413,74 @@ function renderStatsPage() {
     });
     const topRestaurant = Object.entries(restaurantCounts).sort((a, b) => b[1] - a[1])[0];
     if (topRestaurant) {
-        document.getElementById('statsTopRestaurant').textContent = topRestaurant[0];
+        document.getElementById('statsTopRestaurant').textContent = topRestaurant[0].substring(0, 18) + (topRestaurant[0].length > 18 ? '...' : '');
         document.getElementById('statsTopRestaurantDetail').textContent = topRestaurant[1] + ' pickups';
     }
     
-    // Best hour insight
-    const hourEarnings = {};
+    // Best hours insight - find peak windows based on frequency + earnings
+    const hourStats = {};
     days.forEach(day => {
         day.trips.forEach(trip => {
             if (trip.pickup_time) {
                 const hour = parseInt(trip.pickup_time.split(':')[0]);
-                hourEarnings[hour] = (hourEarnings[hour] || 0) + (trip.earnings || 0);
+                if (!hourStats[hour]) hourStats[hour] = { trips: 0, earnings: 0 };
+                hourStats[hour].trips += 1;
+                hourStats[hour].earnings += (trip.earnings || trip.total_pay || 0);
             }
         });
     });
-    const bestHour = Object.entries(hourEarnings).sort((a, b) => b[1] - a[1])[0];
-    if (bestHour) {
-        const hour = parseInt(bestHour[0]);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        document.getElementById('statsBestHour').textContent = displayHour + ' ' + ampm;
-        document.getElementById('statsBestHourDetail').textContent = '$' + bestHour[1].toFixed(0) + ' total';
+    
+    // Calculate score: normalize trips and earnings, combine them
+    const hourData = Object.entries(hourStats).map(([hour, data]) => ({
+        hour: parseInt(hour),
+        trips: data.trips,
+        earnings: data.earnings,
+        avgPay: data.trips > 0 ? data.earnings / data.trips : 0
+    }));
+    
+    if (hourData.length > 0) {
+        const maxTrips = Math.max(...hourData.map(h => h.trips));
+        const maxAvgPay = Math.max(...hourData.map(h => h.avgPay));
+        
+        // Score = 50% frequency + 50% avg pay (normalized)
+        hourData.forEach(h => {
+            h.score = (h.trips / maxTrips * 0.5) + (h.avgPay / maxAvgPay * 0.5);
+        });
+        
+        // Sort by score and get top hours
+        const topHours = hourData.sort((a, b) => b.score - a.score).slice(0, 4).map(h => h.hour).sort((a, b) => a - b);
+        
+        // Find contiguous ranges
+        const ranges = [];
+        let rangeStart = topHours[0];
+        let rangeEnd = topHours[0];
+        
+        for (let i = 1; i < topHours.length; i++) {
+            if (topHours[i] === rangeEnd + 1) {
+                rangeEnd = topHours[i];
+            } else {
+                ranges.push({ start: rangeStart, end: rangeEnd });
+                rangeStart = topHours[i];
+                rangeEnd = topHours[i];
+            }
+        }
+        ranges.push({ start: rangeStart, end: rangeEnd });
+        
+        // Format time ranges
+        const formatHour = (h) => {
+            const ampm = h >= 12 ? 'p' : 'a';
+            const display = h % 12 || 12;
+            return display + ampm;
+        };
+        
+        const rangeStr = ranges.map(r => 
+            r.start === r.end ? formatHour(r.start) : formatHour(r.start) + '-' + formatHour(r.end + 1)
+        ).join(', ');
+        
+        const topAvgPay = hourData.slice(0, 4).reduce((sum, h) => sum + h.avgPay, 0) / Math.min(4, hourData.length);
+        
+        document.getElementById('statsBestHour').textContent = rangeStr;
+        document.getElementById('statsBestHourDetail').textContent = '$' + topAvgPay.toFixed(2) + '/trip avg';
     }
     
     // Best weekday insight
@@ -444,12 +496,109 @@ function renderStatsPage() {
         document.getElementById('statsBestWeekdayDetail').textContent = '$' + bestWeekday[1].toFixed(0) + ' total';
     }
     
-    // Tax preview (simplified estimates)
-    const mileageDeduction = stats.total_distance * 0.67; // 2024 IRS rate
+    // Tax bar
+    const mileageDeduction = stats.total_distance * 0.67;
     const taxableIncome = Math.max(stats.total_earnings - mileageDeduction, 0);
+    document.getElementById('statsTaxDeduction').textContent = '$' + mileageDeduction.toFixed(2);
+    document.getElementById('statsTaxable').textContent = '$' + taxableIncome.toFixed(2);
     
-    document.getElementById('statsTaxDeduction').textContent = '$' + mileageDeduction.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statsTaxable').textContent = '$' + taxableIncome.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // ========== RESTAURANT INTELLIGENCE ==========
+    // Build comprehensive restaurant data
+    const restaurantData = {};
+    days.forEach(day => {
+        day.trips.forEach(trip => {
+            const name = trip.restaurant || 'Unknown';
+            if (!restaurantData[name]) {
+                restaurantData[name] = { 
+                    trips: 0, 
+                    totalTips: 0, 
+                    totalPay: 0,
+                    tippedTrips: 0
+                };
+            }
+            restaurantData[name].trips += 1;
+            restaurantData[name].totalTips += (trip.tip || 0);
+            restaurantData[name].totalPay += (trip.total_pay || trip.earnings || 0);
+            if (trip.tip > 0) restaurantData[name].tippedTrips += 1;
+        });
+    });
+    
+    // Convert to array with calculated metrics
+    const restaurants = Object.entries(restaurantData).map(([name, data]) => ({
+        name,
+        trips: data.trips,
+        totalTips: data.totalTips,
+        totalPay: data.totalPay,
+        avgTip: data.trips > 0 ? data.totalTips / data.trips : 0,
+        avgPay: data.trips > 0 ? data.totalPay / data.trips : 0,
+        tipRate: data.trips > 0 ? (data.tippedTrips / data.trips) * 100 : 0
+    }));
+    
+    // Best Tippers (min 2 trips, sorted by avg tip)
+    const bestTippers = restaurants
+        .filter(r => r.trips >= 2 && r.totalTips > 0)
+        .sort((a, b) => b.avgTip - a.avgTip)
+        .slice(0, 5);
+    
+    const tippersContainer = document.getElementById('statsRestaurantTippers');
+    if (bestTippers.length > 0) {
+        tippersContainer.innerHTML = bestTippers.map((r, i) => `
+            <div class="restaurant-row">
+                <span class="restaurant-rank">${i + 1}</span>
+                <div class="restaurant-info">
+                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
+                    <span class="restaurant-meta">${r.trips} trips</span>
+                </div>
+                <span class="restaurant-stat">$${r.avgTip.toFixed(2)}/trip</span>
+            </div>
+        `).join('');
+    } else {
+        tippersContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+    }
+    
+    // Most Frequent (sorted by trip count)
+    const mostFrequent = restaurants
+        .filter(r => r.trips >= 2)
+        .sort((a, b) => b.trips - a.trips)
+        .slice(0, 5);
+    
+    const frequentContainer = document.getElementById('statsRestaurantFrequent');
+    if (mostFrequent.length > 0) {
+        frequentContainer.innerHTML = mostFrequent.map((r, i) => `
+            <div class="restaurant-row">
+                <span class="restaurant-rank">${i + 1}</span>
+                <div class="restaurant-info">
+                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
+                    <span class="restaurant-meta">$${r.totalPay.toFixed(0)} earned</span>
+                </div>
+                <span class="restaurant-stat">${r.trips} trips</span>
+            </div>
+        `).join('');
+    } else {
+        frequentContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+    }
+    
+    // Best Value (min 2 trips, sorted by avg total pay)
+    const bestValue = restaurants
+        .filter(r => r.trips >= 2)
+        .sort((a, b) => b.avgPay - a.avgPay)
+        .slice(0, 5);
+    
+    const valueContainer = document.getElementById('statsRestaurantValue');
+    if (bestValue.length > 0) {
+        valueContainer.innerHTML = bestValue.map((r, i) => `
+            <div class="restaurant-row">
+                <span class="restaurant-rank">${i + 1}</span>
+                <div class="restaurant-info">
+                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
+                    <span class="restaurant-meta">${r.trips} trips</span>
+                </div>
+                <span class="restaurant-stat">$${r.avgPay.toFixed(2)}/trip</span>
+            </div>
+        `).join('');
+    } else {
+        valueContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+    }
 }
 
 // Global search handler - routes to appropriate page and searches
@@ -815,6 +964,151 @@ function updateWeekSummary() {
     document.getElementById('weekSummaryDays').textContent = daysWorked;
 }
 
+// ========== WEEKS PAGE ==========
+let weekPageStart = null;
+
+function renderWeeksPage() {
+    if (!weekPageStart) {
+        weekPageStart = getWeekStart(new Date());
+    }
+    updateWeekPageDisplay();
+    renderWeekDaysGrid();
+}
+
+function navigateWeekPage(direction) {
+    if (!weekPageStart) {
+        weekPageStart = getWeekStart(new Date());
+    }
+    weekPageStart = new Date(weekPageStart);
+    weekPageStart.setDate(weekPageStart.getDate() + (direction * 7));
+    updateWeekPageDisplay();
+    renderWeekDaysGrid();
+}
+
+function goToCurrentWeekPage() {
+    weekPageStart = getWeekStart(new Date());
+    updateWeekPageDisplay();
+    renderWeekDaysGrid();
+}
+
+function updateWeekPageDisplay() {
+    if (!weekPageStart || !appData) return;
+    
+    const weekEnd = getWeekEnd(weekPageStart);
+    
+    // Format date range
+    const startMonth = weekPageStart.toLocaleDateString('en-US', { month: 'short' });
+    const startDay = weekPageStart.getDate();
+    const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'short' });
+    const endDay = weekEnd.getDate();
+    const year = weekEnd.getFullYear();
+    
+    let dateRange;
+    if (startMonth === endMonth) {
+        dateRange = `${startMonth} ${startDay} - ${endDay}, ${year}`;
+    } else {
+        dateRange = `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`;
+    }
+    
+    document.getElementById('weekPageDates').textContent = dateRange;
+    
+    // Calculate stats
+    let earnings = 0;
+    let trips = 0;
+    let miles = 0;
+    let daysWorked = 0;
+    
+    appData.days.forEach(day => {
+        const dayDate = new Date(day.date + 'T12:00:00');
+        if (dayDate >= weekPageStart && dayDate <= weekEnd) {
+            earnings += day.stats.total_earnings;
+            trips += day.stats.trip_count;
+            miles += day.stats.total_distance;
+            daysWorked++;
+        }
+    });
+    
+    const avgPerTrip = trips > 0 ? earnings / trips : 0;
+    
+    document.getElementById('weekPageEarnings').textContent = '$' + earnings.toFixed(2);
+    document.getElementById('weekPageTrips').textContent = trips;
+    document.getElementById('weekPageMiles').textContent = miles.toFixed(1);
+    document.getElementById('weekPageDays').textContent = daysWorked;
+    document.getElementById('weekPageAvg').textContent = '$' + avgPerTrip.toFixed(2);
+}
+
+function renderWeekDaysGrid() {
+    if (!weekPageStart || !appData) return;
+    
+    const container = document.getElementById('weekDaysGrid');
+    const weekEnd = getWeekEnd(weekPageStart);
+    
+    // Get days in this week
+    const weekDays = [];
+    const currentDate = new Date(weekPageStart);
+    
+    while (currentDate <= weekEnd) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const dayData = appData.days.find(d => d.date === dateStr);
+        weekDays.push({
+            date: new Date(currentDate),
+            dateStr: dateStr,
+            data: dayData
+        });
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    // Find max earnings for bar scaling
+    const maxEarnings = Math.max(...weekDays.filter(d => d.data).map(d => d.data.stats.total_earnings), 1);
+    
+    let html = '';
+    
+    weekDays.forEach((day, idx) => {
+        const weekday = day.date.toLocaleDateString('en-US', { weekday: 'long' });
+        const monthDay = day.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const isToday = day.dateStr === new Date().toISOString().split('T')[0];
+        
+        if (day.data) {
+            const barWidth = (day.data.stats.total_earnings / maxEarnings) * 100;
+            const realIdx = appData.days.findIndex(d => d.date === day.dateStr);
+            
+            html += `
+                <div class="week-day-card${isToday ? ' today' : ''}" onclick="openDay(${realIdx})">
+                    <div class="week-day-header">
+                        <span class="week-day-name">${weekday}</span>
+                        <span class="week-day-date">${monthDay}</span>
+                    </div>
+                    <div class="week-day-stats">
+                        <div class="week-day-earnings">$${day.data.stats.total_earnings.toFixed(2)}</div>
+                        <div class="week-day-bar">
+                            <div class="week-day-bar-fill" style="width: ${barWidth}%"></div>
+                        </div>
+                        <div class="week-day-details">
+                            <span>${day.data.stats.trip_count} trips</span>
+                            <span>${day.data.stats.total_distance.toFixed(1)} mi</span>
+                            <span>$${day.data.stats.total_tips.toFixed(2)} tips</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="week-day-card empty${isToday ? ' today' : ''}">
+                    <div class="week-day-header">
+                        <span class="week-day-name">${weekday}</span>
+                        <span class="week-day-date">${monthDay}</span>
+                    </div>
+                    <div class="week-day-empty">
+                        <span>No trips recorded</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
 // Page navigation
 function showPage(page) {
     currentPage = page;
@@ -822,6 +1116,10 @@ function showPage(page) {
     document.getElementById('mapView').classList.remove('active');
 
     if (page === 'home') document.getElementById('pageHome').classList.add('active');
+    else if (page === 'weeks') {
+        document.getElementById('pageWeeks').classList.add('active');
+        renderWeeksPage();
+    }
     else if (page === 'routes') document.getElementById('pageRoutes').classList.add('active');
     else if (page === 'reports') document.getElementById('pageReports').classList.add('active');
     else if (page === 'stats') {
@@ -1247,61 +1545,139 @@ function printReport(type) {
     printContent(content);
 }
 
-// Generate summary report
+// Generate summary report - LaTeX style
 function generateSummaryReport(stats) {
     const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
     const avgPerDay = stats.total_days > 0 ? stats.total_earnings / stats.total_days : 0;
     const avgPerMile = stats.total_distance > 0 ? stats.total_earnings / stats.total_distance : 0;
+    const tipPercent = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings * 100) : 0;
+    const mileageDeduction = stats.total_distance * 0.67;
+    const taxableIncome = Math.max(stats.total_earnings - mileageDeduction, 0);
+    
+    // Find date range
+    const dates = appData.days.map(d => new Date(d.date + 'T12:00:00')).sort((a, b) => a - b);
+    const startDate = dates.length > 0 ? dates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '-';
+    const endDate = dates.length > 0 ? dates[dates.length - 1].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '-';
     
     return `
-        <div class="print-document">
-            <div class="print-header">
-                <h1>COURIER ROUTES</h1>
-                <p class="print-subtitle">Earnings Summary Report</p>
-                <p class="print-date">Generated: ${getReportDate()}</p>
+        <div class="print-document print-latex">
+            <div class="latex-header">
+                <h1 class="latex-title">Delivery Earnings Report</h1>
+                <p class="latex-subtitle">LastMile Ledger — Comprehensive Summary</p>
+                <p class="latex-meta">${startDate} through ${endDate}</p>
             </div>
             
-            <div class="print-section">
+            <div class="latex-abstract">
+                <strong>Abstract.</strong> This report summarizes ${stats.total_trips.toLocaleString()} deliveries 
+                completed over ${stats.total_days} active days, covering ${Math.round(stats.total_distance).toLocaleString()} miles 
+                with total earnings of ${formatCurrency(stats.total_earnings)}.
+            </div>
+            
+            <div class="latex-section">
                 <h2>Executive Summary</h2>
-                <div class="print-stats">
-                    <div class="print-stat">
-                        <div class="print-stat-value">${formatCurrency(stats.total_earnings)}</div>
-                        <div class="print-stat-label">Total Earnings</div>
-                    </div>
-                    <div class="print-stat">
-                        <div class="print-stat-value">${stats.total_trips.toLocaleString()}</div>
-                        <div class="print-stat-label">Total Trips</div>
-                    </div>
-                    <div class="print-stat">
-                        <div class="print-stat-value">${stats.total_days}</div>
-                        <div class="print-stat-label">Active Days</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="print-section">
-                <h2>Financial Breakdown</h2>
-                <table class="print-table">
-                    <tr><th>Category</th><th>Amount</th></tr>
-                    <tr><td>Total Earnings</td><td class="number">${formatCurrency(stats.total_earnings)}</td></tr>
-                    <tr><td>Total Tips</td><td class="number">${formatCurrency(stats.total_tips)}</td></tr>
-                    <tr><td>Base Fares</td><td class="number">${formatCurrency(stats.total_earnings - stats.total_tips)}</td></tr>
+                <table class="latex-table latex-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Earnings</td>
+                            <td class="number">${formatCurrency(stats.total_earnings)}</td>
+                            <td>Total Deliveries</td>
+                            <td class="number">${stats.total_trips.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>Base Fares</td>
+                            <td class="number">${formatCurrency(stats.total_earnings - stats.total_tips)}</td>
+                            <td>Total Miles</td>
+                            <td class="number">${Math.round(stats.total_distance).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>Tips Received</td>
+                            <td class="number">${formatCurrency(stats.total_tips)}</td>
+                            <td>Active Days</td>
+                            <td class="number">${stats.total_days}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             
-            <div class="print-section">
-                <h2>Performance Metrics</h2>
-                <table class="print-table">
-                    <tr><th>Metric</th><th>Value</th></tr>
-                    <tr><td>Average per Trip</td><td class="number">${formatCurrency(avgPerTrip)}</td></tr>
-                    <tr><td>Average per Day</td><td class="number">${formatCurrency(avgPerDay)}</td></tr>
-                    <tr><td>Average per Mile</td><td class="number">${formatCurrency(avgPerMile)}</td></tr>
-                    <tr><td>Total Distance</td><td class="number">${Math.round(stats.total_distance).toLocaleString()} miles</td></tr>
+            <div class="latex-section">
+                <h2>Performance Analysis</h2>
+                <p>Table 2 presents key performance indicators derived from the delivery data.</p>
+                <table class="latex-table">
+                    <thead>
+                        <tr>
+                            <th>Performance Metric</th>
+                            <th>Value</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Earnings per Delivery</td>
+                            <td class="number">${formatCurrency(avgPerTrip)}</td>
+                            <td>Average revenue per completed delivery</td>
+                        </tr>
+                        <tr>
+                            <td>Earnings per Day</td>
+                            <td class="number">${formatCurrency(avgPerDay)}</td>
+                            <td>Average daily revenue on active days</td>
+                        </tr>
+                        <tr>
+                            <td>Earnings per Mile</td>
+                            <td class="number">${formatCurrency(avgPerMile)}</td>
+                            <td>Revenue efficiency per mile driven</td>
+                        </tr>
+                        <tr>
+                            <td>Deliveries per Day</td>
+                            <td class="number">${(stats.total_trips / stats.total_days).toFixed(1)}</td>
+                            <td>Average delivery volume per active day</td>
+                        </tr>
+                        <tr>
+                            <td>Tip Percentage</td>
+                            <td class="number">${tipPercent.toFixed(1)}%</td>
+                            <td>Tips as percentage of total earnings</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             
-            <div class="print-footer">
-                Courier Routes - ${getReportDate()}
+            <div class="latex-section">
+                <h2>Tax Considerations</h2>
+                <p>The following estimates are based on the 2024 IRS standard mileage rate of $0.67 per mile for business use of a vehicle.</p>
+                <table class="latex-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gross Earnings</td>
+                            <td class="number">${formatCurrency(stats.total_earnings)}</td>
+                        </tr>
+                        <tr>
+                            <td>Mileage Deduction (${Math.round(stats.total_distance).toLocaleString()} mi × $0.67)</td>
+                            <td class="number">(${formatCurrency(mileageDeduction)})</td>
+                        </tr>
+                        <tr class="latex-total">
+                            <td><em>Estimated Taxable Income</em></td>
+                            <td class="number"><em>${formatCurrency(taxableIncome)}</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="latex-note"><em>Note:</em> This estimate is for informational purposes only. Consult a qualified tax professional for actual filing requirements and additional deductions.</p>
+            </div>
+            
+            <div class="latex-footer">
+                <p>Generated by LastMile Ledger on ${getReportDate()}</p>
             </div>
         </div>
     `;
@@ -1349,47 +1725,92 @@ function generateMonthlyReport() {
         `;
     }).join('');
     
+    const avgPerTrip = totalTrips > 0 ? totalEarnings / totalTrips : 0;
+    const avgPerDay = appData.stats.total_days > 0 ? totalEarnings / appData.stats.total_days : 0;
+    const avgPerMile = totalDistance > 0 ? totalEarnings / totalDistance : 0;
+    
     return `
-        <div class="print-document">
-            <div class="print-header">
-                <h1>COURIER ROUTES</h1>
-                <p class="print-subtitle">Monthly Breakdown Report</p>
-                <p class="print-date">Generated: ${getReportDate()}</p>
+        <div class="print-document print-latex">
+            <div class="latex-header">
+                <h1 class="latex-title">Monthly Performance Report</h1>
+                <p class="latex-subtitle">LastMile Ledger — Period Analysis</p>
+                <p class="latex-meta">${months.length} Month${months.length !== 1 ? 's' : ''} of Activity</p>
             </div>
             
-            <div class="print-section">
-                <h2>Monthly Performance</h2>
-                <table class="print-table">
+            <div class="latex-abstract">
+                <strong>Abstract.</strong> This report provides a month-by-month breakdown of delivery activity, 
+                summarizing ${totalTrips.toLocaleString()} total deliveries across ${appData.stats.total_days} active days 
+                with cumulative earnings of ${formatCurrency(totalEarnings)}.
+            </div>
+            
+            <div class="latex-section">
+                <h2>Summary Statistics</h2>
+                <table class="latex-table latex-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Earnings</td>
+                            <td class="number">${formatCurrency(totalEarnings)}</td>
+                            <td>Avg. per Trip</td>
+                            <td class="number">${formatCurrency(avgPerTrip)}</td>
+                        </tr>
+                        <tr>
+                            <td>Total Distance</td>
+                            <td class="number">${Math.round(totalDistance).toLocaleString()} mi</td>
+                            <td>Avg. per Day</td>
+                            <td class="number">${formatCurrency(avgPerDay)}</td>
+                        </tr>
+                        <tr>
+                            <td>Total Tips</td>
+                            <td class="number">${formatCurrency(totalTips)}</td>
+                            <td>Avg. per Mile</td>
+                            <td class="number">${formatCurrency(avgPerMile)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="latex-section">
+                <h2>Monthly Breakdown</h2>
+                <p>Table 2 presents detailed monthly statistics for the reporting period.</p>
+                <table class="latex-table">
                     <thead>
                         <tr>
                             <th>Month</th>
-                            <th>Days</th>
-                            <th>Trips</th>
-                            <th>Miles</th>
-                            <th>Tips</th>
-                            <th>Earnings</th>
-                            <th>Avg/Trip</th>
+                            <th class="number">Days</th>
+                            <th class="number">Deliveries</th>
+                            <th class="number">Miles</th>
+                            <th class="number">Tips</th>
+                            <th class="number">Earnings</th>
+                            <th class="number">$/Trip</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${tableRows}
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td><strong>TOTAL</strong></td>
-                            <td class="number">${appData.stats.total_days}</td>
-                            <td class="number">${totalTrips}</td>
-                            <td class="number">${Math.round(totalDistance)}</td>
-                            <td class="number">${formatCurrency(totalTips)}</td>
-                            <td class="number">${formatCurrency(totalEarnings)}</td>
-                            <td class="number">${formatCurrency(totalEarnings / totalTrips)}</td>
+                        <tr class="latex-total">
+                            <td><em>Total</em></td>
+                            <td class="number"><em>${appData.stats.total_days}</em></td>
+                            <td class="number"><em>${totalTrips.toLocaleString()}</em></td>
+                            <td class="number"><em>${Math.round(totalDistance).toLocaleString()}</em></td>
+                            <td class="number"><em>${formatCurrency(totalTips)}</em></td>
+                            <td class="number"><em>${formatCurrency(totalEarnings)}</em></td>
+                            <td class="number"><em>${formatCurrency(avgPerTrip)}</em></td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
             
-            <div class="print-footer">
-                Courier Routes - ${getReportDate()}
+            <div class="latex-footer">
+                <p>Generated by LastMile Ledger on ${getReportDate()}</p>
             </div>
         </div>
     `;
@@ -1421,46 +1842,49 @@ function generateAllTripsReport() {
         });
     });
     
+    // Find date range
+    const dates = appData.days.map(d => new Date(d.date + 'T12:00:00')).sort((a, b) => a - b);
+    const startDate = dates.length > 0 ? dates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '-';
+    const endDate = dates.length > 0 ? dates[dates.length - 1].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '-';
+    
     return `
-        <div class="print-document">
-            <div class="print-header">
-                <h1>COURIER ROUTES</h1>
-                <p class="print-subtitle">Complete Trip Log</p>
-                <p class="print-date">Generated: ${getReportDate()}</p>
+        <div class="print-document print-latex print-latex-compact">
+            <div class="latex-header latex-header-compact">
+                <h1 class="latex-title">Complete Delivery Log</h1>
+                <p class="latex-meta">${startDate} — ${endDate} · ${appData.stats.total_trips.toLocaleString()} Deliveries · LastMile Ledger</p>
             </div>
             
-            <div class="print-section">
-                <h2>All Trips (${appData.stats.total_trips} total)</h2>
-                <table class="print-table">
+            <div class="latex-section">
+                <table class="latex-table latex-trips-table">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th class="number">#</th>
                             <th>Date</th>
                             <th>Time</th>
                             <th>Restaurant</th>
-                            <th>Miles</th>
-                            <th>Fare</th>
-                            <th>Tip</th>
-                            <th>Total</th>
+                            <th class="number">Mi</th>
+                            <th class="number">Fare</th>
+                            <th class="number">Tip</th>
+                            <th class="number">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${tripRows}
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td colspan="4"><strong>TOTALS</strong></td>
-                            <td class="number">${Math.round(appData.stats.total_distance)}</td>
-                            <td class="number">${formatCurrency(appData.stats.total_earnings - appData.stats.total_tips)}</td>
-                            <td class="number">${formatCurrency(appData.stats.total_tips)}</td>
-                            <td class="number">${formatCurrency(appData.stats.total_earnings)}</td>
+                        <tr class="latex-total">
+                            <td colspan="4"><em>Totals</em></td>
+                            <td class="number"><em>${Math.round(appData.stats.total_distance).toLocaleString()}</em></td>
+                            <td class="number"><em>${formatCurrency(appData.stats.total_earnings - appData.stats.total_tips)}</em></td>
+                            <td class="number"><em>${formatCurrency(appData.stats.total_tips)}</em></td>
+                            <td class="number"><em>${formatCurrency(appData.stats.total_earnings)}</em></td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
             
-            <div class="print-footer">
-                Courier Routes - ${getReportDate()}
+            <div class="latex-footer">
+                <p>Generated by LastMile Ledger on ${getReportDate()}</p>
             </div>
         </div>
     `;
@@ -1501,72 +1925,94 @@ function printDayReport() {
         </tr>
     `).join('');
     
+    const avgPerTrip = day.stats.trip_count > 0 ? day.stats.total_earnings / day.stats.trip_count : 0;
+    const tipPercent = day.stats.total_earnings > 0 ? (day.stats.total_tips / day.stats.total_earnings * 100) : 0;
+    const avgPerMile = day.stats.total_distance > 0 ? day.stats.total_earnings / day.stats.total_distance : 0;
+    
     const content = `
-        <div class="print-document">
-            <div class="print-header">
-                <h1>DAILY ROUTE REPORT</h1>
-                <p class="print-subtitle">${dateStr}</p>
-                <p class="print-date">Generated: ${getReportDate()}</p>
+        <div class="print-document print-latex">
+            <div class="latex-header">
+                <h1 class="latex-title">Daily Route Report</h1>
+                <p class="latex-subtitle">LastMile Ledger</p>
+                <p class="latex-meta">${dateStr}</p>
             </div>
             
-            <div class="print-section">
+            <div class="latex-section">
                 <h2>Day Summary</h2>
-                <div class="print-stats">
-                    <div class="print-stat">
-                        <div class="print-stat-value">${formatCurrency(day.stats.total_earnings)}</div>
-                        <div class="print-stat-label">Earnings</div>
-                    </div>
-                    <div class="print-stat">
-                        <div class="print-stat-value">${day.stats.trip_count}</div>
-                        <div class="print-stat-label">Trips</div>
-                    </div>
-                    <div class="print-stat">
-                        <div class="print-stat-value">${day.stats.total_distance.toFixed(1)} mi</div>
-                        <div class="print-stat-label">Distance</div>
-                    </div>
-                </div>
+                <table class="latex-table latex-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Earnings</td>
+                            <td class="number">${formatCurrency(day.stats.total_earnings)}</td>
+                            <td>Deliveries</td>
+                            <td class="number">${day.stats.trip_count}</td>
+                        </tr>
+                        <tr>
+                            <td>Tips</td>
+                            <td class="number">${formatCurrency(day.stats.total_tips)}</td>
+                            <td>Distance</td>
+                            <td class="number">${day.stats.total_distance.toFixed(1)} mi</td>
+                        </tr>
+                        <tr>
+                            <td>Avg. per Trip</td>
+                            <td class="number">${formatCurrency(avgPerTrip)}</td>
+                            <td>Avg. per Mile</td>
+                            <td class="number">${formatCurrency(avgPerMile)}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
             ${mapImage ? `
-            <div class="print-section">
-                <h2>Route Map</h2>
-                <div class="print-map">
-                    <img src="${mapImage}" alt="Route Map" style="width: 100%; max-width: 100%; height: auto; border: 1px solid #ccc;">
+            <div class="latex-section">
+                <h2>Route Visualization</h2>
+                <div class="latex-figure">
+                    <img src="${mapImage}" alt="Route Map">
+                    <p class="latex-caption">Figure 1: Delivery route for ${dateStr}</p>
                 </div>
             </div>
             ` : ''}
             
-            <div class="print-section">
+            <div class="latex-section">
                 <h2>Trip Details</h2>
-                <table class="print-table">
+                <p>All deliveries completed on this date.</p>
+                <table class="latex-table">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th class="number">#</th>
                             <th>Time</th>
                             <th>Restaurant</th>
-                            <th>Miles</th>
-                            <th>Fare</th>
-                            <th>Tip</th>
-                            <th>Total</th>
+                            <th class="number">Miles</th>
+                            <th class="number">Fare</th>
+                            <th class="number">Tip</th>
+                            <th class="number">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${tripRows}
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td colspan="3"><strong>TOTALS</strong></td>
-                            <td class="number">${day.stats.total_distance.toFixed(1)}</td>
-                            <td class="number">${formatCurrency(day.stats.total_earnings - day.stats.total_tips)}</td>
-                            <td class="number">${formatCurrency(day.stats.total_tips)}</td>
-                            <td class="number">${formatCurrency(day.stats.total_earnings)}</td>
+                        <tr class="latex-total">
+                            <td colspan="3"><em>Totals</em></td>
+                            <td class="number"><em>${day.stats.total_distance.toFixed(1)}</em></td>
+                            <td class="number"><em>${formatCurrency(day.stats.total_earnings - day.stats.total_tips)}</em></td>
+                            <td class="number"><em>${formatCurrency(day.stats.total_tips)}</em></td>
+                            <td class="number"><em>${formatCurrency(day.stats.total_earnings)}</em></td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
             
-            <div class="print-footer">
-                Courier Routes - ${getReportDate()}
+            <div class="latex-footer">
+                <p>Generated by LastMile Ledger on ${getReportDate()}</p>
             </div>
         </div>
     `;
@@ -1574,81 +2020,88 @@ function printDayReport() {
     printContent(content);
 }
 
-// Print trip ticket
+// Print trip ticket - LaTeX style receipt
 function printTripTicket() {
     if (activeTrip === null || currentDayIndex < 0) return;
     
     const trip = appData.days[currentDayIndex].trips[activeTrip];
     const day = appData.days[currentDayIndex];
     const date = new Date(day.date + 'T12:00:00');
-    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     
     const content = `
-        <div class="print-document">
-            <div class="print-ticket">
-                <div class="print-ticket-header">
-                    <h2>DELIVERY RECEIPT</h2>
-                    <div class="ticket-number">Trip #${activeTrip + 1} - ${dateStr}</div>
-                </div>
-                
-                <div class="print-ticket-row">
-                    <span class="print-ticket-label">Restaurant</span>
-                    <span class="print-ticket-value">${trip.restaurant}</span>
-                </div>
-                
-                <div class="print-ticket-row">
-                    <span class="print-ticket-label">Time</span>
-                    <span class="print-ticket-value">${trip.request_time} - ${trip.dropoff_time}</span>
-                </div>
-                
-                <div class="print-ticket-row">
-                    <span class="print-ticket-label">Duration</span>
-                    <span class="print-ticket-value">${trip.duration}</span>
-                </div>
-                
-                <div class="print-ticket-row">
-                    <span class="print-ticket-label">Distance</span>
-                    <span class="print-ticket-value">${trip.distance.toFixed(1)} miles</span>
-                </div>
-                
-                <div class="print-ticket-address">
-                    <div class="addr-label">Pickup</div>
-                    <div>${trip.pickup_address}</div>
-                </div>
-                
-                <div class="print-ticket-address">
-                    <div class="addr-label">Drop-off</div>
-                    <div>${trip.dropoff_address}</div>
-                </div>
-                
-                <div style="margin-top: 15px; border-top: 1px dashed #999; padding-top: 10px;">
-                    <div class="print-ticket-row">
-                        <span class="print-ticket-label">Base Fare</span>
-                        <span class="print-ticket-value">${formatCurrency(trip.base_fare)}</span>
-                    </div>
-                    ${trip.tip > 0 ? `
-                    <div class="print-ticket-row">
-                        <span class="print-ticket-label">Tip</span>
-                        <span class="print-ticket-value">${formatCurrency(trip.tip)}</span>
-                    </div>
-                    ` : ''}
-                    ${trip.incentive > 0 ? `
-                    <div class="print-ticket-row">
-                        <span class="print-ticket-label">Incentive</span>
-                        <span class="print-ticket-value">${formatCurrency(trip.incentive)}</span>
-                    </div>
-                    ` : ''}
-                    ${trip.order_refund > 0 ? `
-                    <div class="print-ticket-row">
-                        <span class="print-ticket-label">Refund</span>
-                        <span class="print-ticket-value">${formatCurrency(trip.order_refund)}</span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div class="print-ticket-total">
-                    TOTAL: ${formatCurrency(trip.total_pay)}
-                </div>
+        <div class="print-document print-latex print-latex-receipt print-receipt-compact">
+            <div class="latex-header latex-header-compact">
+                <h1 class="latex-title">Delivery Receipt</h1>
+                <p class="latex-meta">Trip #${activeTrip + 1} — ${dateStr}</p>
+            </div>
+            
+            <div class="latex-section">
+                <h2>Trip Details</h2>
+                <table class="latex-table latex-table-compact">
+                    <tbody>
+                        <tr>
+                            <td><strong>Restaurant</strong></td>
+                            <td>${trip.restaurant}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time</strong></td>
+                            <td>${trip.request_time} — ${trip.dropoff_time} (${trip.duration})</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Distance</strong></td>
+                            <td>${trip.distance.toFixed(1)} miles</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pickup</strong></td>
+                            <td>${trip.pickup_address}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dropoff</strong></td>
+                            <td>${trip.dropoff_address}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="latex-section">
+                <h2>Earnings</h2>
+                <table class="latex-table latex-table-compact">
+                    <tbody>
+                        <tr>
+                            <td>Base Fare</td>
+                            <td class="number">${formatCurrency(trip.base_fare)}</td>
+                        </tr>
+                        ${trip.tip > 0 ? `
+                        <tr>
+                            <td>Tip</td>
+                            <td class="number">${formatCurrency(trip.tip)}</td>
+                        </tr>
+                        ` : ''}
+                        ${trip.incentive > 0 ? `
+                        <tr>
+                            <td>Incentive</td>
+                            <td class="number">${formatCurrency(trip.incentive)}</td>
+                        </tr>
+                        ` : ''}
+                        ${trip.order_refund > 0 ? `
+                        <tr>
+                            <td>Refund</td>
+                            <td class="number">${formatCurrency(trip.order_refund)}</td>
+                        </tr>
+                        ` : ''}
+                    </tbody>
+                    <tfoot>
+                        <tr class="latex-total">
+                            <td><strong>Total</strong></td>
+                            <td class="number"><strong>${formatCurrency(trip.total_pay)}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="latex-footer">
+                <p>LastMile Ledger — ${getReportDate()}</p>
             </div>
         </div>
     `;

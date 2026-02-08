@@ -432,32 +432,68 @@
                 <div class="stats-card">
                     <div class="stats-card-header">
                         <h2>Key Insights</h2>
+                        <span class="stats-card-meta">Click for details</span>
                     </div>
                     <div class="stats-card-content">
                         <div class="stats-insights-grid">
-                            <div class="stats-insight-item">
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestDay')" data-insight="bestDay">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
                                 <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Day</span>
                                     <span class="stats-insight-value" id="statsBestDay">-</span>
-                                    <span class="stats-insight-label">Best Day <span class="stats-insight-sub" id="statsBestDayDetail">-</span></span>
+                                    <span class="stats-insight-sub" id="statsBestDayDetail">-</span>
                                 </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
                             </div>
-                            <div class="stats-insight-item">
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('topRestaurant')" data-insight="topRestaurant">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                                        <path d="M7 2v20"></path>
+                                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                                    </svg>
+                                </div>
                                 <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Top Restaurant</span>
                                     <span class="stats-insight-value" id="statsTopRestaurant">-</span>
-                                    <span class="stats-insight-label">Top Restaurant <span class="stats-insight-sub" id="statsTopRestaurantDetail">-</span></span>
+                                    <span class="stats-insight-sub" id="statsTopRestaurantDetail">-</span>
                                 </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
                             </div>
-                            <div class="stats-insight-item">
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestHours')" data-insight="bestHours">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </div>
                                 <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Hours</span>
                                     <span class="stats-insight-value" id="statsBestHour">-</span>
-                                    <span class="stats-insight-label">Best Hours <span class="stats-insight-sub" id="statsBestHourDetail">-</span></span>
+                                    <span class="stats-insight-sub" id="statsBestHourDetail">-</span>
                                 </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
                             </div>
-                            <div class="stats-insight-item">
-                                <div class="stats-insight-text">
-                                    <span class="stats-insight-value" id="statsBestWeekday">-</span>
-                                    <span class="stats-insight-label">Best Weekday <span class="stats-insight-sub" id="statsBestWeekdayDetail">-</span></span>
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestWeekday')" data-insight="bestWeekday">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
                                 </div>
+                                <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Weekday</span>
+                                    <span class="stats-insight-value" id="statsBestWeekday">-</span>
+                                    <span class="stats-insight-sub" id="statsBestWeekdayDetail">-</span>
+                                </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
                             </div>
                         </div>
                     </div>
@@ -468,14 +504,19 @@
             <div class="stats-card stats-card-full">
                 <div class="stats-card-header">
                     <h2>Restaurant Intelligence</h2>
-                    <span class="stats-card-meta">Based on your delivery history</span>
+                    <span class="stats-card-meta">Click any restaurant for trip history</span>
                 </div>
                 <div class="stats-card-content">
                     <div class="restaurant-intel-grid">
                         <!-- Best Tippers Column -->
                         <div class="restaurant-intel-col">
-                            <h3>Best Tippers</h3>
-                            <p class="restaurant-intel-desc">Restaurants where customers tip the most</p>
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon tip">$</span>
+                                <div>
+                                    <h3>Best Tippers</h3>
+                                    <p class="restaurant-intel-desc">Highest average tips</p>
+                                </div>
+                            </div>
                             <div class="restaurant-list" id="statsRestaurantTippers">
                                 <div class="restaurant-list-empty">Loading...</div>
                             </div>
@@ -483,8 +524,13 @@
                         
                         <!-- Most Frequent Column -->
                         <div class="restaurant-intel-col">
-                            <h3>Repeat Pickups</h3>
-                            <p class="restaurant-intel-desc">Your most common pickup locations</p>
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon freq">#</span>
+                                <div>
+                                    <h3>Repeat Pickups</h3>
+                                    <p class="restaurant-intel-desc">Most frequent locations</p>
+                                </div>
+                            </div>
                             <div class="restaurant-list" id="statsRestaurantFrequent">
                                 <div class="restaurant-list-empty">Loading...</div>
                             </div>
@@ -492,8 +538,13 @@
                         
                         <!-- Best Value Column -->
                         <div class="restaurant-intel-col">
-                            <h3>Best Value</h3>
-                            <p class="restaurant-intel-desc">Highest total pay per trip</p>
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon value">*</span>
+                                <div>
+                                    <h3>Best Value</h3>
+                                    <p class="restaurant-intel-desc">Highest pay per trip</p>
+                                </div>
+                            </div>
                             <div class="restaurant-list" id="statsRestaurantValue">
                                 <div class="restaurant-list-empty">Loading...</div>
                             </div>
@@ -515,6 +566,75 @@
                 </div>
                 <span class="stats-tax-bar-note">Based on $0.67/mile IRS rate</span>
             </div>
+
+            <!-- Weekday Efficiency Analysis (moved from Reports) -->
+            <div class="stats-card stats-card-full">
+                <div class="stats-card-header">
+                    <h2>Weekday Efficiency</h2>
+                    <span class="stats-card-meta">Earnings normalized per trip</span>
+                </div>
+                <div class="stats-card-content" id="statsWeekdayChart"></div>
+            </div>
+
+            <!-- Trip Efficiency Analysis -->
+            <div class="stats-card stats-card-full">
+                <div class="stats-card-header">
+                    <h2>Trip Efficiency Analysis</h2>
+                    <span class="stats-card-meta">Optimal: 15-25 min, $15+ | Target: $30/hr, $2/mi</span>
+                </div>
+                <div class="trip-efficiency-summary" id="tripEfficiencySummary">
+                    <div class="efficiency-stat optimal">
+                        <span class="efficiency-stat-value" id="effOptimalCount">0</span>
+                        <span class="efficiency-stat-label">Optimal Trips</span>
+                        <span class="efficiency-stat-detail">15-25 min, $15+</span>
+                    </div>
+                    <div class="efficiency-stat acceptable">
+                        <span class="efficiency-stat-value" id="effAcceptableCount">0</span>
+                        <span class="efficiency-stat-label">Acceptable</span>
+                        <span class="efficiency-stat-detail">$8+ any duration</span>
+                    </div>
+                    <div class="efficiency-stat short">
+                        <span class="efficiency-stat-value" id="effShortCount">0</span>
+                        <span class="efficiency-stat-label">Short</span>
+                        <span class="efficiency-stat-detail">&lt;15 min</span>
+                    </div>
+                    <div class="efficiency-stat long">
+                        <span class="efficiency-stat-value" id="effLongCount">0</span>
+                        <span class="efficiency-stat-label">Long</span>
+                        <span class="efficiency-stat-detail">&gt;25 min</span>
+                    </div>
+                    <div class="efficiency-stat low-pay">
+                        <span class="efficiency-stat-value" id="effLowPayCount">0</span>
+                        <span class="efficiency-stat-label">Low Pay</span>
+                        <span class="efficiency-stat-detail">&lt;$8</span>
+                    </div>
+                </div>
+                <div class="trip-efficiency-metrics">
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg $/Hour</span>
+                        <span class="efficiency-metric-value" id="effAvgPerHour">$0</span>
+                        <span class="efficiency-metric-target">Target: $30</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg $/Mile</span>
+                        <span class="efficiency-metric-value" id="effAvgPerMile">$0</span>
+                        <span class="efficiency-metric-target">Target: $2</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg Trip Duration</span>
+                        <span class="efficiency-metric-value" id="effAvgDuration">0 min</span>
+                        <span class="efficiency-metric-target">Optimal: 15-25</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Efficiency Score</span>
+                        <span class="efficiency-metric-value" id="effScore">0%</span>
+                        <span class="efficiency-metric-target">% optimal trips</span>
+                    </div>
+                </div>
+                <div class="trip-efficiency-list" id="tripEfficiencyList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -533,7 +653,7 @@
                 </div>
             </div>
 
-            <!-- Stats Overview -->
+            <!-- Totals Overview (for reports/exports) -->
             <div class="reports-stats-grid">
                 <div class="report-stat-card primary">
                     <span class="report-stat-label">Total Earned</span>
@@ -548,10 +668,6 @@
                     <span class="report-stat-value" id="reportMiles">0</span>
                 </div>
                 <div class="report-stat-card">
-                    <span class="report-stat-label">Avg Per Trip</span>
-                    <span class="report-stat-value" id="reportAvg">$0</span>
-                </div>
-                <div class="report-stat-card">
                     <span class="report-stat-label">Total Tips</span>
                     <span class="report-stat-value" id="reportTips">$0</span>
                 </div>
@@ -559,9 +675,13 @@
                     <span class="report-stat-label">Active Days</span>
                     <span class="report-stat-value" id="reportDays">0</span>
                 </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Date Range</span>
+                    <span class="report-stat-value report-stat-value-sm" id="reportDateRange">-</span>
+                </div>
             </div>
 
-            <!-- Data Sections -->
+            <!-- Historical Data Sections -->
             <div class="reports-grid">
                 <div class="report-card">
                     <div class="report-card-header">
@@ -577,11 +697,138 @@
                 </div>
             </div>
 
+            <!-- Weekday Totals (simple, for reports - efficiency analysis is on Stats) -->
             <div class="report-card report-card-full">
                 <div class="report-card-header">
-                    <h2>Weekday Analysis</h2>
+                    <h2>Weekday Totals</h2>
+                    <span class="report-card-meta">Total earnings by day of week</span>
                 </div>
                 <div class="report-card-content" id="weekdayChart"></div>
+            </div>
+
+            <!-- Refunds Tracking Section -->
+            <div class="report-card report-card-full refunds-section">
+                <div class="report-card-header">
+                    <h2>Refunds Tracker</h2>
+                    <span class="report-card-meta">Track order value refunds and receipts</span>
+                    <button class="btn btn-sm btn-primary" onclick="showAddRefundModal()">+ Add Refund</button>
+                </div>
+                <div class="refunds-summary" id="refundsSummary">
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Total Refunds</span>
+                        <span class="refund-stat-value" id="totalRefundsCount">0</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Total Value</span>
+                        <span class="refund-stat-value refund-value-negative" id="totalRefundsValue">$0.00</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Pending</span>
+                        <span class="refund-stat-value" id="pendingRefundsCount">0</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Resolved</span>
+                        <span class="refund-stat-value" id="resolvedRefundsCount">0</span>
+                    </div>
+                </div>
+                <div class="report-card-content refunds-list" id="refundsList">
+                    <div class="refunds-empty">No refunds recorded yet. Click "+ Add Refund" to track one.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Refund Modal -->
+    <div class="modal" id="addRefundModal">
+        <div class="modal-backdrop" onclick="closeAddRefundModal()"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h2>Add Refund</h2>
+                <button class="modal-close" onclick="closeAddRefundModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addRefundForm" onsubmit="submitRefund(event)">
+                    <div class="form-group">
+                        <label for="refundDate">Date</label>
+                        <input type="date" id="refundDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundPlatform">Platform</label>
+                        <select id="refundPlatform" required>
+                            <option value="">Select platform...</option>
+                            <option value="DoorDash">DoorDash</option>
+                            <option value="Uber Eats">Uber Eats</option>
+                            <option value="Grubhub">Grubhub</option>
+                            <option value="Instacart">Instacart</option>
+                            <option value="Amazon Flex">Amazon Flex</option>
+                            <option value="Spark">Spark</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundAmount">Refund Amount</label>
+                        <input type="number" id="refundAmount" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundReason">Reason</label>
+                        <select id="refundReason" required>
+                            <option value="">Select reason...</option>
+                            <option value="Order cancelled">Order cancelled</option>
+                            <option value="Customer unavailable">Customer unavailable</option>
+                            <option value="Restaurant closed">Restaurant closed</option>
+                            <option value="Wrong order">Wrong order</option>
+                            <option value="Missing items">Missing items</option>
+                            <option value="Damaged items">Damaged items</option>
+                            <option value="Late delivery">Late delivery</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundNotes">Notes (optional)</label>
+                        <textarea id="refundNotes" rows="2" placeholder="Additional details..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundReceipt">Receipt/Screenshot (optional)</label>
+                        <div class="file-upload-area" id="receiptUploadArea">
+                            <input type="file" id="refundReceipt" accept="image/*,.pdf" onchange="handleReceiptUpload(event)">
+                            <div class="file-upload-placeholder" id="receiptPlaceholder">
+                                <span class="file-upload-icon">+</span>
+                                <span>Click or drag to upload receipt</span>
+                            </div>
+                            <div class="file-upload-preview" id="receiptPreview" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundStatus">Status</label>
+                        <select id="refundStatus">
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="disputed">Disputed</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddRefundModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Refund</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Refund Modal -->
+    <div class="modal" id="viewRefundModal">
+        <div class="modal-backdrop" onclick="closeViewRefundModal()"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h2>Refund Details</h2>
+                <button class="modal-close" onclick="closeViewRefundModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewRefundBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeViewRefundModal()">Close</button>
+                <button class="btn btn-danger" id="deleteRefundBtn" onclick="deleteCurrentRefund()">Delete</button>
             </div>
         </div>
     </div>

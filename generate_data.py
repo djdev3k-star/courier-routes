@@ -83,7 +83,8 @@ def load_all_payments():
         return pd.DataFrame()
     
     combined = pd.concat(all_payments, ignore_index=True)
-    combined = combined[combined['Description'].str.contains('completed order|fare adjust', case=False, na=False)].copy()
+    # Include completed orders, fare adjustments, and business orders (Connect)
+    combined = combined[combined['Description'].str.contains('completed order|fare adjust|business order|business adjustment', case=False, na=False)].copy()
     
     payment_agg = combined.groupby('Trip UUID').agg({
         'Paid to you': 'sum',
@@ -212,7 +213,7 @@ def main():
             'distance': float(trip['Trip distance']) if pd.notna(trip['Trip distance']) else 0,
             'service_type': str(trip['Service type']) if pd.notna(trip['Service type']) else 'N/A',
             'product_type': str(trip['Product Type']) if pd.notna(trip['Product Type']) else 'N/A',
-            'trip_uuid': str(trip['Trip UUID'])[:8] if pd.notna(trip['Trip UUID']) else 'N/A',
+            'trip_uuid': str(trip['Trip UUID']) if pd.notna(trip['Trip UUID']) else 'N/A',
             'pickup_coords': [pickup_coords[1], pickup_coords[0]] if pickup_coords else None,
             'dropoff_coords': [dropoff_coords[1], dropoff_coords[0]] if dropoff_coords else None,
             'total_pay': float(trip['total_pay']) if pd.notna(trip.get('total_pay')) else 0,

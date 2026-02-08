@@ -1,9 +1,8 @@
 {
-  "generated": "2026-02-07T21:14:32.919378",
+  "generated": "2026-02-08T13:50:38.915646",
   "stats": {
-    "total_earnings": 8990.22,
-    "total_tips": 4289.44,
-    "total_refunds": 1020.36,
+    "total_earnings": 10065.87,
+    "total_tips": 4306.44,
     "total_distance": 6451.0,
     "total_trips": 1045,
     "total_days": 98
@@ -170,9 +169,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 45.300000000000004,
+        "total_earnings": 91.67999999999999,
         "total_tips": 20.310000000000002,
-        "total_refunds": 46.38,
         "total_distance": 37.58,
         "trip_count": 6
       }
@@ -273,7 +271,6 @@
       "stats": {
         "total_earnings": 18.05,
         "total_tips": 5.2,
-        "total_refunds": 0.0,
         "total_distance": 20.39,
         "trip_count": 4
       }
@@ -621,9 +618,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 78.57000000000001,
+        "total_earnings": 91.94000000000001,
         "total_tips": 28.77,
-        "total_refunds": 13.37,
         "total_distance": 56.34000000000001,
         "trip_count": 13
       }
@@ -843,7 +839,6 @@
       "stats": {
         "total_earnings": 49.669999999999995,
         "total_tips": 26.069999999999997,
-        "total_refunds": 0.0,
         "total_distance": 51.81,
         "trip_count": 8
       }
@@ -1061,9 +1056,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 60.22999999999999,
+        "total_earnings": 79.83,
         "total_tips": 31.619999999999997,
-        "total_refunds": 19.6,
         "total_distance": 48.22,
         "trip_count": 8
       }
@@ -1335,7 +1329,6 @@
       "stats": {
         "total_earnings": 48.86,
         "total_tips": 15.12,
-        "total_refunds": 0.0,
         "total_distance": 44.59,
         "trip_count": 10
       }
@@ -1631,9 +1624,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 83.44000000000001,
+        "total_earnings": 151.11,
         "total_tips": 27.36,
-        "total_refunds": 67.67,
         "total_distance": 40.63999999999999,
         "trip_count": 11
       }
@@ -1955,9 +1947,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 66.91,
+        "total_earnings": 80.08999999999999,
         "total_tips": 20.689999999999998,
-        "total_refunds": 13.18,
         "total_distance": 56.18000000000001,
         "trip_count": 12
       }
@@ -2201,9 +2192,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 71.72999999999999,
+        "total_earnings": 118.56000000000002,
         "total_tips": 37.63,
-        "total_refunds": 46.83,
         "total_distance": 43.56,
         "trip_count": 9
       }
@@ -2267,7 +2257,6 @@
       "stats": {
         "total_earnings": 16.79,
         "total_tips": 6.15,
-        "total_refunds": 0.0,
         "total_distance": 3.97,
         "trip_count": 2
       }
@@ -2979,9 +2968,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 200.08999999999995,
+        "total_earnings": 255.91,
         "total_tips": 111.60999999999999,
-        "total_refunds": 55.82,
         "total_distance": 189.19,
         "trip_count": 27
       }
@@ -3331,7 +3319,6 @@
       "stats": {
         "total_earnings": 78.12,
         "total_tips": 40.75,
-        "total_refunds": 0.0,
         "total_distance": 42.8,
         "trip_count": 13
       }
@@ -3572,9 +3559,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 61.669999999999995,
+        "total_earnings": 106.77,
         "total_tips": 27.06,
-        "total_refunds": 45.1,
         "total_distance": 47.230000000000004,
         "trip_count": 9
       }
@@ -3736,7 +3722,6 @@
       "stats": {
         "total_earnings": 46.31999999999999,
         "total_tips": 8.25,
-        "total_refunds": 0.0,
         "total_distance": 57.24,
         "trip_count": 6
       }
@@ -3902,9 +3887,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 48.13,
+        "total_earnings": 66.34,
         "total_tips": 2.04,
-        "total_refunds": 18.21,
         "total_distance": 67.16,
         "trip_count": 6
       }
@@ -3966,9 +3950,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 14.549999999999999,
+        "total_earnings": 30.409999999999997,
         "total_tips": 8.48,
-        "total_refunds": 15.86,
         "total_distance": 12.94,
         "trip_count": 2
       }
@@ -4593,9 +4576,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 169.23999999999998,
+        "total_earnings": 234.28,
         "total_tips": 63.86000000000001,
-        "total_refunds": 65.03999999999999,
         "total_distance": 125.34,
         "trip_count": 24
       }
@@ -4787,9 +4769,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 61.669999999999995,
+        "total_earnings": 113.17999999999998,
         "total_tips": 14.99,
-        "total_refunds": 51.510000000000005,
         "total_distance": 37.09,
         "trip_count": 7
       }
@@ -5085,9 +5066,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 89.89000000000001,
+        "total_earnings": 106.63999999999999,
         "total_tips": 49.28,
-        "total_refunds": 16.75,
         "total_distance": 68.05,
         "trip_count": 11
       }
@@ -5218,9 +5198,9 @@
             -96.79955241665206,
             32.78196426706902
           ],
-          "total_pay": 0.0,
-          "base_fare": 0.0,
-          "tip": 0.0,
+          "total_pay": 8.1,
+          "base_fare": 5.1,
+          "tip": 3.0,
           "incentive": 0.0,
           "quest": 0.0,
           "order_refund": 0.0
@@ -5409,9 +5389,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 94.74,
-        "total_tips": 66.62,
-        "total_refunds": 54.56,
+        "total_earnings": 157.39999999999998,
+        "total_tips": 69.62,
         "total_distance": 71.56,
         "trip_count": 12
       }
@@ -5681,9 +5660,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 84.48999999999998,
+        "total_earnings": 100.57999999999998,
         "total_tips": 47.5,
-        "total_refunds": 16.09,
         "total_distance": 56.36000000000001,
         "trip_count": 10
       }
@@ -5898,9 +5876,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 77.64,
+        "total_earnings": 106.16999999999999,
         "total_tips": 29.91,
-        "total_refunds": 28.529999999999998,
         "total_distance": 58.830000000000005,
         "trip_count": 8
       }
@@ -6458,7 +6435,6 @@
       "stats": {
         "total_earnings": 158.36,
         "total_tips": 51.68000000000001,
-        "total_refunds": 0.0,
         "total_distance": 141.25,
         "trip_count": 21
       }
@@ -6849,9 +6825,9 @@
             -96.80639563800146,
             32.77672387510561
           ],
-          "total_pay": 0.0,
-          "base_fare": 0.0,
-          "tip": 0.0,
+          "total_pay": 10.54,
+          "base_fare": 7.54,
+          "tip": 3.0,
           "incentive": 0.0,
           "quest": 0.0,
           "order_refund": 0.0
@@ -6988,9 +6964,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 141.22,
-        "total_tips": 64.49000000000001,
-        "total_refunds": 0.0,
+        "total_earnings": 151.76,
+        "total_tips": 67.49,
         "total_distance": 122.96999999999998,
         "trip_count": 20
       }
@@ -7728,9 +7703,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 260.52,
+        "total_earnings": 343.52,
         "total_tips": 130.04,
-        "total_refunds": 83.0,
         "total_distance": 224.71,
         "trip_count": 28
       }
@@ -8052,9 +8026,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 74.04,
+        "total_earnings": 91.72000000000001,
         "total_tips": 24.35,
-        "total_refunds": 17.68,
         "total_distance": 58.27000000000002,
         "trip_count": 12
       }
@@ -8272,9 +8245,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 73.04,
+        "total_earnings": 90.71000000000001,
         "total_tips": 26.669999999999998,
-        "total_refunds": 17.67,
         "total_distance": 31.53,
         "trip_count": 8
       }
@@ -8674,9 +8646,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 113.38999999999999,
+        "total_earnings": 153.83,
         "total_tips": 52.88,
-        "total_refunds": 40.44,
         "total_distance": 56.580000000000005,
         "trip_count": 15
       }
@@ -9078,7 +9049,6 @@
       "stats": {
         "total_earnings": 119.42000000000002,
         "total_tips": 56.46,
-        "total_refunds": 0.0,
         "total_distance": 74.23,
         "trip_count": 15
       }
@@ -9426,9 +9396,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 108.46,
+        "total_earnings": 123.89,
         "total_tips": 49.78,
-        "total_refunds": 15.43,
         "total_distance": 72.92,
         "trip_count": 13
       }
@@ -9828,9 +9797,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 116.97000000000001,
+        "total_earnings": 132.53,
         "total_tips": 65.7,
-        "total_refunds": 15.56,
         "total_distance": 84.3,
         "trip_count": 15
       }
@@ -10253,9 +10221,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 133.54999999999998,
+        "total_earnings": 187.97999999999996,
         "total_tips": 61.9,
-        "total_refunds": 54.43,
         "total_distance": 99.96999999999998,
         "trip_count": 16
       }
@@ -10681,9 +10648,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 134.4,
+        "total_earnings": 247.00000000000006,
         "total_tips": 71.94,
-        "total_refunds": 112.6,
         "total_distance": 106.38000000000001,
         "trip_count": 16
       }
@@ -10840,9 +10806,9 @@
             -96.79784797043082,
             32.78213950857427
           ],
-          "total_pay": 0.0,
-          "base_fare": 0.0,
-          "tip": 0.0,
+          "total_pay": 12.05,
+          "base_fare": 7.05,
+          "tip": 5.0,
           "incentive": 0.0,
           "quest": 0.0,
           "order_refund": 0.0
@@ -11057,9 +11023,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 121.48999999999998,
-        "total_tips": 42.099999999999994,
-        "total_refunds": 23.03,
+        "total_earnings": 156.57,
+        "total_tips": 47.1,
         "total_distance": 105.66000000000003,
         "trip_count": 14
       }
@@ -11164,9 +11129,9 @@
             -96.79903585566196,
             32.7857693816908
           ],
-          "total_pay": 0.0,
-          "base_fare": 0.0,
-          "tip": 0.0,
+          "total_pay": 16.07,
+          "base_fare": 13.07,
+          "tip": 3.0,
           "incentive": 0.0,
           "quest": 0.0,
           "order_refund": 0.0
@@ -11872,9 +11837,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 279.84,
-        "total_tips": 121.17,
-        "total_refunds": 0.0,
+        "total_earnings": 295.91,
+        "total_tips": 124.17,
         "total_distance": 224.45,
         "trip_count": 31
       }
@@ -12325,7 +12289,6 @@
       "stats": {
         "total_earnings": 174.22000000000003,
         "total_tips": 58.419999999999995,
-        "total_refunds": 0.0,
         "total_distance": 76.01,
         "trip_count": 17
       }
@@ -12807,7 +12770,6 @@
       "stats": {
         "total_earnings": 165.26000000000002,
         "total_tips": 56.35999999999999,
-        "total_refunds": 0.0,
         "total_distance": 136.63,
         "trip_count": 19
       }
@@ -12917,7 +12879,6 @@
       "stats": {
         "total_earnings": 24.479999999999997,
         "total_tips": 15.169999999999998,
-        "total_refunds": 0.0,
         "total_distance": 13.099999999999998,
         "trip_count": 4
       }
@@ -13189,7 +13150,6 @@
       "stats": {
         "total_earnings": 84.98,
         "total_tips": 55.17,
-        "total_refunds": 0.0,
         "total_distance": 47.239999999999995,
         "trip_count": 10
       }
@@ -13851,7 +13811,6 @@
       "stats": {
         "total_earnings": 171.95000000000002,
         "total_tips": 83.95,
-        "total_refunds": 0.0,
         "total_distance": 142.71000000000004,
         "trip_count": 25
       }
@@ -14019,7 +13978,6 @@
       "stats": {
         "total_earnings": 50.279999999999994,
         "total_tips": 17.79,
-        "total_refunds": 0.0,
         "total_distance": 44.010000000000005,
         "trip_count": 6
       }
@@ -14759,7 +14717,6 @@
       "stats": {
         "total_earnings": 255.06,
         "total_tips": 141.31,
-        "total_refunds": 0.0,
         "total_distance": 139.07,
         "trip_count": 28
       }
@@ -14979,7 +14936,6 @@
       "stats": {
         "total_earnings": 68.13,
         "total_tips": 36.519999999999996,
-        "total_refunds": 0.0,
         "total_distance": 45.14,
         "trip_count": 8
       }
@@ -15511,7 +15467,6 @@
       "stats": {
         "total_earnings": 167.98000000000002,
         "total_tips": 89.71,
-        "total_refunds": 0.0,
         "total_distance": 111.87000000000002,
         "trip_count": 20
       }
@@ -15705,7 +15660,6 @@
       "stats": {
         "total_earnings": 82.75,
         "total_tips": 31.819999999999997,
-        "total_refunds": 0.0,
         "total_distance": 48.06999999999999,
         "trip_count": 7
       }
@@ -15977,7 +15931,6 @@
       "stats": {
         "total_earnings": 78.52,
         "total_tips": 43.760000000000005,
-        "total_refunds": 0.0,
         "total_distance": 77.41999999999999,
         "trip_count": 10
       }
@@ -16197,7 +16150,6 @@
       "stats": {
         "total_earnings": 70.82,
         "total_tips": 40.58,
-        "total_refunds": 0.0,
         "total_distance": 56.81,
         "trip_count": 8
       }
@@ -16469,7 +16421,6 @@
       "stats": {
         "total_earnings": 56.22,
         "total_tips": 27.689999999999998,
-        "total_refunds": 0.0,
         "total_distance": 37.730000000000004,
         "trip_count": 10
       }
@@ -16689,7 +16640,6 @@
       "stats": {
         "total_earnings": 79.61000000000001,
         "total_tips": 53.39,
-        "total_refunds": 0.0,
         "total_distance": 44.91,
         "trip_count": 8
       }
@@ -17481,7 +17431,6 @@
       "stats": {
         "total_earnings": 256.92,
         "total_tips": 143.44,
-        "total_refunds": 0.0,
         "total_distance": 143.64000000000001,
         "trip_count": 30
       }
@@ -17935,7 +17884,6 @@
       "stats": {
         "total_earnings": 143.78,
         "total_tips": 80.96000000000001,
-        "total_refunds": 0.0,
         "total_distance": 78.17999999999999,
         "trip_count": 17
       }
@@ -18311,7 +18259,6 @@
       "stats": {
         "total_earnings": 114.27999999999999,
         "total_tips": 49.480000000000004,
-        "total_refunds": 0.0,
         "total_distance": 78.64999999999999,
         "trip_count": 14
       }
@@ -18557,7 +18504,6 @@
       "stats": {
         "total_earnings": 77.75999999999999,
         "total_tips": 37.699999999999996,
-        "total_refunds": 0.0,
         "total_distance": 37.73,
         "trip_count": 9
       }
@@ -18751,7 +18697,6 @@
       "stats": {
         "total_earnings": 65.06,
         "total_tips": 38.01,
-        "total_refunds": 0.0,
         "total_distance": 48.410000000000004,
         "trip_count": 7
       }
@@ -18971,7 +18916,6 @@
       "stats": {
         "total_earnings": 71.04,
         "total_tips": 20.79,
-        "total_refunds": 0.0,
         "total_distance": 44.76,
         "trip_count": 8
       }
@@ -19261,9 +19205,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 123.17999999999999,
+        "total_earnings": 144.38,
         "total_tips": 43.10999999999999,
-        "total_refunds": 21.2,
         "total_distance": 107.57999999999998,
         "trip_count": 11
       }
@@ -19737,7 +19680,6 @@
       "stats": {
         "total_earnings": 231.23999999999995,
         "total_tips": 77.68,
-        "total_refunds": 0.0,
         "total_distance": 174.9,
         "trip_count": 18
       }
@@ -19827,7 +19769,6 @@
       "stats": {
         "total_earnings": 26.349999999999998,
         "total_tips": 15.78,
-        "total_refunds": 0.0,
         "total_distance": 7.62,
         "trip_count": 3
       }
@@ -19995,7 +19936,6 @@
       "stats": {
         "total_earnings": 44.69,
         "total_tips": 24.779999999999998,
-        "total_refunds": 0.0,
         "total_distance": 30.23,
         "trip_count": 6
       }
@@ -20111,7 +20051,6 @@
       "stats": {
         "total_earnings": 28.62,
         "total_tips": 11.42,
-        "total_refunds": 0.0,
         "total_distance": 22.21,
         "trip_count": 4
       }
@@ -20354,7 +20293,6 @@
       "stats": {
         "total_earnings": 77.25,
         "total_tips": 48.05,
-        "total_refunds": 0.0,
         "total_distance": 69.48,
         "trip_count": 9
       }
@@ -20730,7 +20668,6 @@
       "stats": {
         "total_earnings": 124.02,
         "total_tips": 69.09,
-        "total_refunds": 0.0,
         "total_distance": 81.05,
         "trip_count": 14
       }
@@ -20765,7 +20702,6 @@
       "stats": {
         "total_earnings": 7.85,
         "total_tips": 3.55,
-        "total_refunds": 0.0,
         "total_distance": 21.18,
         "trip_count": 1
       }
@@ -20843,7 +20779,6 @@
       "stats": {
         "total_earnings": 18.02,
         "total_tips": 8.75,
-        "total_refunds": 0.0,
         "total_distance": 9.11,
         "trip_count": 3
       }
@@ -21164,7 +21099,6 @@
       "stats": {
         "total_earnings": 96.92,
         "total_tips": 44.88,
-        "total_refunds": 0.0,
         "total_distance": 46.86,
         "trip_count": 12
       }
@@ -21228,7 +21162,6 @@
       "stats": {
         "total_earnings": 21.060000000000002,
         "total_tips": 9.48,
-        "total_refunds": 0.0,
         "total_distance": 19.35,
         "trip_count": 2
       }
@@ -21364,7 +21297,6 @@
       "stats": {
         "total_earnings": 31.860000000000003,
         "total_tips": 21.86,
-        "total_refunds": 0.0,
         "total_distance": 22.34,
         "trip_count": 5
       }
@@ -21506,7 +21438,6 @@
       "stats": {
         "total_earnings": 53.3,
         "total_tips": 31.54,
-        "total_refunds": 0.0,
         "total_distance": 25.9,
         "trip_count": 5
       }
@@ -21570,7 +21501,6 @@
       "stats": {
         "total_earnings": 12.65,
         "total_tips": 3.5,
-        "total_refunds": 0.0,
         "total_distance": 6.96,
         "trip_count": 2
       }
@@ -21735,7 +21665,6 @@
       "stats": {
         "total_earnings": 53.330000000000005,
         "total_tips": 26.84,
-        "total_refunds": 0.0,
         "total_distance": 47.42,
         "trip_count": 6
       }
@@ -21955,7 +21884,6 @@
       "stats": {
         "total_earnings": 90.53,
         "total_tips": 45.95,
-        "total_refunds": 0.0,
         "total_distance": 55.22,
         "trip_count": 8
       }
@@ -22250,7 +22178,6 @@
       "stats": {
         "total_earnings": 122.63,
         "total_tips": 51.35,
-        "total_refunds": 0.0,
         "total_distance": 101.83000000000001,
         "trip_count": 11
       }
@@ -22285,7 +22212,6 @@
       "stats": {
         "total_earnings": 20.07,
         "total_tips": 14.98,
-        "total_refunds": 0.0,
         "total_distance": 18.72,
         "trip_count": 1
       }
@@ -22375,7 +22301,6 @@
       "stats": {
         "total_earnings": 23.11,
         "total_tips": 18.93,
-        "total_refunds": 0.0,
         "total_distance": 16.83,
         "trip_count": 3
       }
@@ -22506,9 +22431,9 @@
             -96.7871508392248,
             32.774765195106326
           ],
-          "total_pay": 0.0,
-          "base_fare": 0.0,
-          "tip": 0.0,
+          "total_pay": 8.530000000000001,
+          "base_fare": 5.53,
+          "tip": 3.0,
           "incentive": 0.0,
           "quest": 0.0,
           "order_refund": 0.0
@@ -22749,9 +22674,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 110.16999999999999,
-        "total_tips": 56.89999999999999,
-        "total_refunds": 0.0,
+        "total_earnings": 118.69999999999999,
+        "total_tips": 59.89999999999999,
         "total_distance": 110.44,
         "trip_count": 14
       }
@@ -22810,9 +22734,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 22.19,
+        "total_earnings": 45.44,
         "total_tips": 5.45,
-        "total_refunds": 23.25,
         "total_distance": 5.05,
         "trip_count": 2
       }
@@ -22876,7 +22799,6 @@
       "stats": {
         "total_earnings": 21.72,
         "total_tips": 13.41,
-        "total_refunds": 0.0,
         "total_distance": 15.45,
         "trip_count": 2
       }
@@ -23044,7 +22966,6 @@
       "stats": {
         "total_earnings": 58.35,
         "total_tips": 38.14,
-        "total_refunds": 0.0,
         "total_distance": 43.97,
         "trip_count": 6
       }
@@ -23082,7 +23003,6 @@
       "stats": {
         "total_earnings": 6.609999999999999,
         "total_tips": 3.6,
-        "total_refunds": 0.0,
         "total_distance": 7.13,
         "trip_count": 1
       }
@@ -23325,7 +23245,6 @@
       "stats": {
         "total_earnings": 70.64,
         "total_tips": 38.400000000000006,
-        "total_refunds": 0.0,
         "total_distance": 48.45,
         "trip_count": 9
       }
@@ -23493,7 +23412,6 @@
       "stats": {
         "total_earnings": 51.279999999999994,
         "total_tips": 22.259999999999998,
-        "total_refunds": 0.0,
         "total_distance": 37.75,
         "trip_count": 6
       }
@@ -23999,7 +23917,6 @@
       "stats": {
         "total_earnings": 161.15000000000003,
         "total_tips": 82.16000000000001,
-        "total_refunds": 0.0,
         "total_distance": 96.69999999999999,
         "trip_count": 19
       }
@@ -24141,7 +24058,6 @@
       "stats": {
         "total_earnings": 57.709999999999994,
         "total_tips": 26.1,
-        "total_refunds": 0.0,
         "total_distance": 46.78,
         "trip_count": 5
       }
@@ -24358,7 +24274,6 @@
       "stats": {
         "total_earnings": 77.71,
         "total_tips": 64.58999999999999,
-        "total_refunds": 0.0,
         "total_distance": 38.74,
         "trip_count": 8
       }
@@ -24641,7 +24556,6 @@
       "stats": {
         "total_earnings": 97.49,
         "total_tips": 57.18,
-        "total_refunds": 0.0,
         "total_distance": 76.02,
         "trip_count": 11
       }
@@ -24939,7 +24853,6 @@
       "stats": {
         "total_earnings": 145.45,
         "total_tips": 74.03,
-        "total_refunds": 0.0,
         "total_distance": 117.56,
         "trip_count": 11
       }
@@ -25315,7 +25228,6 @@
       "stats": {
         "total_earnings": 129.46,
         "total_tips": 57.660000000000004,
-        "total_refunds": 0.0,
         "total_distance": 71.59,
         "trip_count": 14
       }
@@ -25611,9 +25523,8 @@
         }
       ],
       "stats": {
-        "total_earnings": 118.15000000000002,
+        "total_earnings": 139.72,
         "total_tips": 48.95,
-        "total_refunds": 21.57,
         "total_distance": 53.8,
         "trip_count": 11
       }
@@ -25677,7 +25588,6 @@
       "stats": {
         "total_earnings": 18.3,
         "total_tips": 9.84,
-        "total_refunds": 0.0,
         "total_distance": 13.010000000000002,
         "trip_count": 2
       }
@@ -26079,7 +25989,6 @@
       "stats": {
         "total_earnings": 153.88000000000002,
         "total_tips": 86.31,
-        "total_refunds": 0.0,
         "total_distance": 84.93,
         "trip_count": 15
       }
@@ -26169,7 +26078,6 @@
       "stats": {
         "total_earnings": 67.07,
         "total_tips": 13.91,
-        "total_refunds": 0.0,
         "total_distance": 27.490000000000002,
         "trip_count": 3
       }
@@ -26519,7 +26427,6 @@
       "stats": {
         "total_earnings": 150.95,
         "total_tips": 48.83,
-        "total_refunds": 0.0,
         "total_distance": 97.48,
         "trip_count": 13
       }
@@ -27074,7 +26981,6 @@
       "stats": {
         "total_earnings": 238.58000000000004,
         "total_tips": 132.99,
-        "total_refunds": 0.0,
         "total_distance": 219.52000000000004,
         "trip_count": 21
       }
@@ -27138,7 +27044,6 @@
       "stats": {
         "total_earnings": 23.94,
         "total_tips": 17.830000000000002,
-        "total_refunds": 0.0,
         "total_distance": 14.530000000000001,
         "trip_count": 2
       }
@@ -27514,7 +27419,6 @@
       "stats": {
         "total_earnings": 115.78999999999999,
         "total_tips": 65.92,
-        "total_refunds": 0.0,
         "total_distance": 67.95000000000002,
         "trip_count": 14
       }
@@ -27708,7 +27612,6 @@
       "stats": {
         "total_earnings": 57.31,
         "total_tips": 29.32,
-        "total_refunds": 0.0,
         "total_distance": 57.16,
         "trip_count": 7
       }
@@ -27928,7 +27831,6 @@
       "stats": {
         "total_earnings": 78.97,
         "total_tips": 54.19,
-        "total_refunds": 0.0,
         "total_distance": 50.33,
         "trip_count": 8
       }
@@ -28200,7 +28102,6 @@
       "stats": {
         "total_earnings": 90.77000000000001,
         "total_tips": 39.5,
-        "total_refunds": 0.0,
         "total_distance": 72.0,
         "trip_count": 10
       }

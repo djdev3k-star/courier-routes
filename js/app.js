@@ -862,13 +862,139 @@ function updateNavForPage(page) {
     }
 }
 
-// Auth placeholder functions
+// Auth functions
 function showLogin() {
-    showToast('Login feature coming soon!');
+    openOnboarding();
 }
 
 function showSignup() {
-    showToast('Sign up feature coming soon!');
+    openOnboarding();
+}
+
+// ========== ONBOARDING FLOW ==========
+let currentOnboardingStep = 1;
+let connectedPlatform = null;
+
+function openOnboarding() {
+    document.getElementById('onboardingModal').classList.add('active');
+    currentOnboardingStep = 1;
+    updateOnboardingUI();
+}
+
+function closeOnboarding() {
+    document.getElementById('onboardingModal').classList.remove('active');
+    // Reset state
+    currentOnboardingStep = 1;
+    connectedPlatform = null;
+    updateOnboardingUI();
+}
+
+function goToStep(step) {
+    currentOnboardingStep = step;
+    updateOnboardingUI();
+}
+
+function updateOnboardingUI() {
+    // Update progress indicators
+    document.querySelectorAll('.progress-step').forEach((el, idx) => {
+        const stepNum = idx + 1;
+        el.classList.remove('active', 'completed');
+        if (stepNum === currentOnboardingStep) {
+            el.classList.add('active');
+        } else if (stepNum < currentOnboardingStep) {
+            el.classList.add('completed');
+        }
+    });
+    
+    // Show correct step content
+    document.querySelectorAll('.onboarding-step').forEach((el, idx) => {
+        el.classList.toggle('active', idx + 1 === currentOnboardingStep);
+    });
+}
+
+function connectPlatform(platform) {
+    if (platform === 'doordash' || platform === 'instacart') {
+        showToast('Coming soon! Uber is currently the only supported platform.');
+        return;
+    }
+    
+    connectedPlatform = platform;
+    
+    // Simulate OAuth flow with Uber
+    if (platform === 'uber') {
+        showToast('Connecting to Uber...');
+        
+        // Simulate OAuth callback after 1.5 seconds
+        setTimeout(() => {
+            // Simulate getting driver data from Uber
+            simulateUberAuth();
+        }, 1500);
+    }
+}
+
+function simulateUberAuth() {
+    // In a real app, this would be an OAuth flow
+    // For demo, we'll populate with sample data
+    
+    const driverData = {
+        name: 'Demo Driver',
+        email: 'driver@example.com',
+        platform: 'Uber Eats',
+        trips: '1,045',
+        since: 'Aug 2025',
+        rating: '4.95'
+    };
+    
+    // Populate verification step
+    document.getElementById('verifyName').textContent = driverData.name;
+    document.getElementById('verifyEmail').textContent = driverData.email;
+    document.getElementById('verifyPlatform').textContent = driverData.platform;
+    document.getElementById('verifyTrips').textContent = driverData.trips;
+    document.getElementById('verifySince').textContent = driverData.since;
+    document.getElementById('verifyRating').textContent = driverData.rating;
+    
+    // Move to verification step
+    goToStep(2);
+    showToast('Connected to Uber successfully!');
+}
+
+function skipToManual() {
+    // Skip directly to setup step for manual users
+    connectedPlatform = null;
+    
+    // Set manual user defaults
+    document.getElementById('verifyName').textContent = 'Guest Driver';
+    document.getElementById('verifyEmail').textContent = 'Manual entry mode';
+    document.getElementById('verifyPlatform').textContent = 'Manual';
+    document.getElementById('verifyTrips').textContent = '-';
+    document.getElementById('verifySince').textContent = '-';
+    document.getElementById('verifyRating').textContent = '-';
+    
+    goToStep(3);
+}
+
+function completeOnboarding() {
+    // Save preferences
+    const weeklyGoal = document.getElementById('setupGoal').value || 500;
+    const mileageRate = document.getElementById('setupMileage').value || 0.67;
+    const darkMode = document.getElementById('setupDarkMode').checked;
+    
+    // Store in localStorage
+    localStorage.setItem('lml_weeklyGoal', weeklyGoal);
+    localStorage.setItem('lml_mileageRate', mileageRate);
+    localStorage.setItem('lml_darkMode', darkMode);
+    localStorage.setItem('lml_onboarded', 'true');
+    localStorage.setItem('lml_platform', connectedPlatform || 'manual');
+    
+    // Close modal and go to dashboard
+    closeOnboarding();
+    showPage('routes');
+    showToast('Welcome to LastMile Ledger! 🎉');
+}
+
+// Check if user has completed onboarding
+function checkOnboardingStatus() {
+    return localStorage.getItem('lml_onboarded') === 'true';
 }
 
 // Open day map

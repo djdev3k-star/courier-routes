@@ -45,6 +45,49 @@ body {
     overflow-x: hidden;
 }
 
+/* Container System */
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-header-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.page-header-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.page-header-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
 /* Navigation */
 .nav {
     position: fixed;
@@ -370,20 +413,20 @@ body {
 
 /* Routes Page */
 .page-routes {
-    padding: 56px 36px 36px;
-    max-width: 1200px;
+    padding: 56px 24px 24px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
 .routes-header {
-    padding-top: 32px;
-    margin-bottom: 20px;
+    padding-top: 24px;
+    margin-bottom: 16px;
 }
 
 .routes-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .search-container {
@@ -685,9 +728,7 @@ body {
 
 /* Reports Page */
 .page-reports {
-    padding: 56px 36px 36px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding-top: 56px;
 }
 
 .reports-header {
@@ -2338,358 +2379,257 @@ body {
 }
 
 /* ===============================================
-   BRUTALIST REPORTS DESIGN
+   REPORTS PAGE - CLEAN DESIGN
    =============================================== */
 
-.reports-brutal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
-    border-bottom: 3px solid var(--text-primary);
-}
-
-.reports-brutal-title {
-    display: flex;
-    flex-direction: column;
-}
-
-.brutal-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 2px;
-    color: var(--accent-green);
-    margin-bottom: 4px;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-.reports-brutal-title h1 {
-    font-size: 3rem;
-    font-weight: 900;
-    letter-spacing: -2px;
-    line-height: 1;
-    color: var(--text-primary);
-    text-transform: uppercase;
-}
-
-.reports-brutal-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-brutal {
-    background: transparent;
-    border: 2px solid var(--text-primary);
-    color: var(--text-primary);
-    padding: 10px 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-.btn-brutal:hover {
-    background: var(--text-primary);
-    color: var(--bg-primary);
-}
-
-/* Brutalist Stats Grid */
-.brutal-stats-grid {
+/* Reports Stats Grid */
+.reports-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0;
-    margin-bottom: 48px;
-    border: 2px solid var(--text-primary);
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
 }
 
-.brutal-stat-card {
-    padding: 24px;
-    position: relative;
-    border-right: 2px solid var(--text-primary);
-    border-bottom: 2px solid var(--text-primary);
-}
-
-.brutal-stat-card:nth-child(3n) {
-    border-right: none;
-}
-
-.brutal-stat-card:nth-last-child(-n+3) {
-    border-bottom: none;
-}
-
-.brutal-stat-card.brutal-primary {
-    background: var(--accent-green);
-}
-
-.brutal-stat-card.brutal-primary .brutal-stat-label,
-.brutal-stat-card.brutal-primary .brutal-stat-value {
-    color: var(--bg-primary);
-}
-
-.brutal-stat-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-.brutal-stat-value {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    line-height: 1;
-}
-
-.brutal-stat-border {
-    position: absolute;
-    bottom: 8px;
-    left: 24px;
-    right: 24px;
-    height: 3px;
-    background: var(--accent-blue);
-    opacity: 0;
-    transition: opacity 0.15s ease;
-}
-
-.brutal-stat-card:hover .brutal-stat-border {
-    opacity: 1;
-}
-
-/* Brutalist Sections */
-.brutal-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 32px;
-    margin-bottom: 32px;
-}
-
-.brutal-section {
+.report-stat-card {
     background: var(--bg-card);
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
 }
 
-.brutal-section.brutal-full {
+.report-stat-card.primary {
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(74, 158, 255, 0.05));
+    border-color: rgba(74, 222, 128, 0.2);
+}
+
+.report-stat-card.primary .report-stat-value {
+    color: var(--accent-green);
+}
+
+.report-stat-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.report-stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Reports Grid */
+.reports-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.report-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.report-card-full {
     grid-column: 1 / -1;
 }
 
-.brutal-section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 20px;
-    border-bottom: 2px solid var(--border);
-    background: var(--bg-secondary);
-}
-
-.brutal-section-tag {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--accent-blue);
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-.brutal-section-header h2 {
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-}
-
-.brutal-table,
-.brutal-list {
-    padding: 0;
-}
-
-/* Brutalist Monthly Table */
-.brutal-table .monthly-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    padding: 16px 20px;
+.report-card-header {
+    padding: 14px 18px;
     border-bottom: 1px solid var(--border);
-    transition: background 0.1s ease;
-}
-
-.brutal-table .monthly-row:last-child {
-    border-bottom: none;
-}
-
-.brutal-table .monthly-row:hover {
     background: var(--bg-secondary);
 }
 
-.brutal-table .monthly-month {
+.report-card-header h2 {
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-primary);
 }
 
-.brutal-table .monthly-trips,
-.brutal-table .monthly-avg {
-    color: var(--text-muted);
-    font-size: 0.9rem;
+.report-card-content {
+    padding: 0;
 }
 
-.brutal-table .monthly-earnings {
-    font-weight: 700;
-    color: var(--accent-green);
-    text-align: right;
-}
-
-/* Brutalist Top Days List */
-.brutal-list .top-day-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 20px;
+/* Monthly Table Rows */
+.report-card-content .monthly-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    padding: 12px 18px;
     border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: all 0.1s ease;
+    transition: background 0.15s;
 }
 
-.brutal-list .top-day-row:last-child {
+.report-card-content .monthly-row:last-child {
     border-bottom: none;
 }
 
-.brutal-list .top-day-row:hover {
+.report-card-content .monthly-row:hover {
     background: var(--bg-secondary);
-    padding-left: 28px;
 }
 
-.brutal-list .top-day-info {
+.report-card-content .monthly-month {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.report-card-content .monthly-trips,
+.report-card-content .monthly-avg {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.report-card-content .monthly-earnings {
+    font-weight: 600;
+    color: var(--accent-green);
+    text-align: right;
+    font-size: 0.9rem;
+}
+
+/* Top Days List */
+.report-card-content .top-day-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.report-card-content .top-day-row:last-child {
+    border-bottom: none;
+}
+
+.report-card-content .top-day-row:hover {
+    background: var(--bg-secondary);
+}
+
+.report-card-content .top-day-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.brutal-list .top-day-rank {
-    width: 24px;
-    height: 24px;
+.report-card-content .top-day-rank {
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--accent-blue);
     color: var(--bg-primary);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
+    border-radius: var(--radius-sm);
 }
 
-.brutal-list .top-day-date {
+.report-card-content .top-day-date {
     font-weight: 500;
     color: var(--text-primary);
+    font-size: 0.9rem;
 }
 
-.brutal-list .top-day-trips {
+.report-card-content .top-day-trips {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
-.brutal-list .top-day-earnings {
-    font-weight: 700;
+.report-card-content .top-day-earnings {
+    font-weight: 600;
     color: var(--accent-green);
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
-/* Brutalist Chart */
-.brutal-chart {
+/* Weekday Chart */
+.report-card-content .weekday-chart,
+#weekdayChart {
     display: flex;
     justify-content: space-around;
     align-items: flex-end;
-    padding: 24px 20px;
-    min-height: 200px;
+    padding: 20px 18px;
+    min-height: 180px;
 }
 
-.brutal-chart .weekday-bar {
+.weekday-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex: 1;
 }
 
-.brutal-chart .weekday-value {
-    font-size: 0.8rem;
-    font-weight: 700;
+.weekday-value {
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--text-primary);
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
 }
 
-.brutal-chart .weekday-bar-container {
+.weekday-bar-container {
     width: 100%;
-    max-width: 40px;
-    height: 120px;
+    max-width: 36px;
+    height: 100px;
     display: flex;
     align-items: flex-end;
     background: var(--bg-secondary);
-    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
 }
 
-.brutal-chart .weekday-bar-fill {
+.weekday-bar-fill {
     width: 100%;
     background: linear-gradient(to top, var(--accent-green), var(--accent-blue));
+    border-radius: var(--radius-sm);
     transition: height 0.3s ease;
 }
 
-.brutal-chart .weekday-label {
-    font-size: 0.75rem;
-    font-weight: 600;
+.weekday-label {
+    font-size: 0.7rem;
+    font-weight: 500;
     color: var(--text-muted);
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
-/* Brutalist Responsive */
+/* Reports Page Responsive */
+@media (max-width: 1024px) {
+    .reports-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
-    .reports-brutal-header {
+    .page-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 20px;
     }
     
-    .reports-brutal-title h1 {
-        font-size: 2rem;
-    }
-    
-    .reports-brutal-actions {
+    .page-header-actions {
+        width: 100%;
         flex-wrap: wrap;
     }
     
-    .brutal-stats-grid {
+    .reports-stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .brutal-stat-card:nth-child(3n) {
-        border-right: 2px solid var(--text-primary);
-    }
-    
-    .brutal-stat-card:nth-child(2n) {
-        border-right: none;
-    }
-    
-    .brutal-stat-card:nth-last-child(-n+3) {
-        border-bottom: 2px solid var(--text-primary);
-    }
-    
-    .brutal-stat-card:nth-last-child(-n+2) {
-        border-bottom: none;
-    }
-    
-    .brutal-sections {
+    .reports-grid {
         grid-template-columns: 1fr;
     }
     
-    .brutal-table .monthly-row {
+    .report-card-content .monthly-row {
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 6px;
     }
     
-    .brutal-table .monthly-avg {
+    .report-card-content .monthly-avg {
         display: none;
     }
 }
@@ -2858,33 +2798,42 @@ body {
 
 /* Hero Section */
 .saas-hero {
+    padding: 48px 0 60px;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+}
+
+.saas-hero .container {
+    width: 100%;
+}
+
+.hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 48px;
     align-items: center;
-    min-height: calc(100vh - 160px);
-    padding: 32px 0;
 }
 
 .saas-hero-content {
-    max-width: 520px;
+    max-width: 480px;
 }
 
 .saas-badge {
     display: inline-block;
-    padding: 6px 14px;
+    padding: 5px 12px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .saas-title {
-    font-size: 3rem;
+    font-size: 2.75rem;
     font-weight: 700;
     line-height: 1.1;
     color: var(--text-primary);
@@ -3055,52 +3004,52 @@ body {
 
 /* Features Section */
 .saas-features {
-    padding: 80px 0;
+    padding: 60px 0;
     border-top: 1px solid var(--border);
 }
 
 .features-header {
     text-align: center;
-    max-width: 600px;
-    margin: 0 auto 60px;
+    max-width: 560px;
+    margin: 0 auto 40px;
 }
 
 .section-tag {
     display: inline-block;
-    padding: 6px 12px;
+    padding: 5px 10px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 4px;
-    font-size: 0.7rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--accent-blue);
     letter-spacing: 1px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .features-header h2 {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .features-header p {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
 }
 
 .saas-feature-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 24px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -3111,40 +3060,40 @@ body {
 }
 
 .saas-feature-card h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .saas-feature-card p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     line-height: 1.5;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .feature-link {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     color: var(--accent-blue);
 }
 
 /* Quick Access Section */
 .saas-quick-access {
-    padding: 60px 0;
+    padding: 48px 0;
     border-top: 1px solid var(--border);
 }
 
 .quick-access-header {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .quick-access-header h2 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .quick-access-grid {
@@ -3238,12 +3187,15 @@ body {
 
 /* SaaS Home Responsive */
 @media (max-width: 1024px) {
-    .saas-hero {
+    .hero-grid {
         grid-template-columns: 1fr;
         gap: 40px;
         text-align: center;
+    }
+    
+    .saas-hero {
         min-height: auto;
-        padding: 60px 0;
+        padding: 40px 0;
     }
     
     .saas-hero-content {
@@ -3251,7 +3203,7 @@ body {
     }
     
     .saas-title {
-        font-size: 2.5rem;
+        font-size: 2.25rem;
     }
     
     .saas-cta {
@@ -3263,7 +3215,11 @@ body {
     }
     
     .hero-dashboard-preview {
-        max-width: 400px;
+        max-width: 360px;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
     }
     
     .quick-access-grid {

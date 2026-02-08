@@ -967,9 +967,18 @@ function updateWeekSummary() {
 // ========== WEEKS PAGE ==========
 let weekPageStart = null;
 
+function getLatestDataWeek() {
+    // Get the most recent week from the data (for demo purposes, data is from 2025)
+    if (appData && appData.days && appData.days.length > 0) {
+        const latestDate = new Date(appData.days[appData.days.length - 1].date + 'T12:00:00');
+        return getWeekStart(latestDate);
+    }
+    return getWeekStart(new Date());
+}
+
 function renderWeeksPage() {
     if (!weekPageStart) {
-        weekPageStart = getWeekStart(new Date());
+        weekPageStart = getLatestDataWeek();
     }
     updateWeekPageDisplay();
     renderWeekDaysGrid();
@@ -977,7 +986,7 @@ function renderWeeksPage() {
 
 function navigateWeekPage(direction) {
     if (!weekPageStart) {
-        weekPageStart = getWeekStart(new Date());
+        weekPageStart = getLatestDataWeek();
     }
     weekPageStart = new Date(weekPageStart);
     weekPageStart.setDate(weekPageStart.getDate() + (direction * 7));
@@ -986,7 +995,7 @@ function navigateWeekPage(direction) {
 }
 
 function goToCurrentWeekPage() {
-    weekPageStart = getWeekStart(new Date());
+    weekPageStart = getLatestDataWeek();
     updateWeekPageDisplay();
     renderWeekDaysGrid();
 }

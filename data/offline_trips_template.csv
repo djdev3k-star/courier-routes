@@ -1,0 +1,5 @@
+date,time,restaurant,pickup_address,dropoff_address,distance_miles,duration_mins,base_fare,tip,incentive,platform,notes
+2025-12-15,14:30,McDonald's,123 Main St Dallas TX,456 Oak Ave Dallas TX,3.2,12,4.50,3.00,0.00,uber,Lunch rush
+2025-12-15,15:45,Chipotle,789 Elm St Dallas TX,321 Pine Rd Dallas TX,2.8,10,5.25,4.50,1.00,doordash,Good tipper
+2025-12-15,18:00,Walmart,500 Commerce St Dallas TX,100 Cedar Ln Dallas TX,5.5,18,8.00,2.00,0.00,spark,Grocery delivery
+2025-12-15,19:30,Panda Express,200 Market St Dallas TX,400 Lake Dr Dallas TX,4.1,15,6.00,5.00,0.50,grubhub,Dinner order

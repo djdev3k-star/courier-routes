@@ -1,47 +1,95 @@
-﻿// Courier Routes App
+﻿/**
+ * LastMile Ledger - Gig Driver Analytics Dashboard
+ * 
+ * A client-side SPA for tracking delivery routes, earnings, and efficiency.
+ * Data is loaded from routes.json and enhanced with localStorage for offline features.
+ * 
+ * @version 1.0.0
+ * @author LastMile Ledger
+ */
+
+// ============================================================================
+// CONFIGURATION & CONSTANTS
+// ============================================================================
+
+/** Mapbox GL JS access token for map rendering */
 const MAPBOX_TOKEN = 'pk.eyJ1IjoibXBieDE1IiwiYSI6ImNta2Y1a3dxZzAzZ3AzZ29qNXQ1bmpiaGsifQ.tCkudl7SJNzzHCARPEzC9w';
 
+// ============================================================================
+// APPLICATION STATE
+// ============================================================================
+
+/** @type {Object|null} Main application data (stats + days array) */
 let appData = null;
+
+/** @type {number} Currently selected day index in routes view */
 let currentDayIndex = -1;
+
+/** @type {Object|null} Mapbox GL map instance */
 let map = null;
+
+/** @type {Array} Active map markers for cleanup */
 let mapMarkers = [];
+
+/** @type {Object|null} Currently highlighted trip on map */
 let activeTrip = null;
+
+/** @type {string} Current active page/view */
 let currentPage = 'home';
-let currentWeekStart = null; // For week navigation
+
+/** @type {Date|null} Start date for week navigation */
+let currentWeekStart = null;
+
+/** @type {boolean} Whether week view is active */
 let weekViewActive = false;
 
-// Feature flags (shelved for v2)
+// ============================================================================
+// FEATURE FLAGS
+// ============================================================================
+
+/** Show trip UUID in detail modal (shelved for v2) */
 const FEATURE_SHOW_TRIP_UUID = false;
+
+/** Show full dropoff address without masking (shelved for privacy) */
 const FEATURE_SHOW_FULL_DROPOFF = false;
 
-// Mask dropoff address (hide street number/apt for privacy)
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Mask dropoff address for privacy (hide street number/apt)
+ * @param {string} address - Full dropoff address
+ * @returns {string} Masked address with street number removed
+ */
 function maskDropoffAddress(address) {
     if (!address || FEATURE_SHOW_FULL_DROPOFF) return address;
-    // Remove street number at start and apt/unit info, keep city/state
     return address.replace(/^\d+\s+/, '').replace(/,?\s*(apt|unit|#|suite)\s*\S*/gi, '');
 }
 
-// Sanitize pickup address - remove redundant restaurant name prefix
+/**
+ * Sanitize pickup address by removing redundant restaurant name prefix
+ * @param {string} address - Full pickup address
+ * @param {string} restaurant - Restaurant name to check for
+ * @returns {string} Cleaned address
+ */
 function sanitizePickupAddress(address, restaurant) {
     if (!address) return address;
     let clean = address;
     
     // Pattern: "Restaurant Name (location), actual address"
-    // Remove the "Restaurant Name (location), " prefix
     const prefixMatch = clean.match(/^[^,]+\([^)]+\),\s*/);
     if (prefixMatch) {
         clean = clean.substring(prefixMatch[0].length);
     }
     
-    // Also try removing just restaurant name at start if no parentheses
+    // Also try removing just restaurant name at start
     if (restaurant && clean.toLowerCase().startsWith(restaurant.toLowerCase())) {
         clean = clean.substring(restaurant.length).replace(/^[\s,]+/, '');
     }
     
-    // Clean up extra spaces and normalize
+    // Clean up and normalize
     clean = clean.replace(/\s+/g, ' ').trim();
-    
-    // Capitalize first letter of each word in street name
     clean = clean.replace(/^(\d+\s+)?([a-z])/i, (m, num, letter) => 
         (num || '') + letter.toUpperCase()
     );
@@ -49,13 +97,22 @@ function sanitizePickupAddress(address, restaurant) {
     return clean;
 }
 
-// Format pickup display for detail modal (restaurant name, toggleable to address)
+/**
+ * Format pickup display for detail modal
+ * @param {string} address - Pickup address
+ * @param {string} restaurant - Restaurant name
+ * @returns {Object} Object with restaurant and cleaned address
+ */
 function formatPickupDisplay(address, restaurant) {
     const cleanAddress = sanitizePickupAddress(address, restaurant);
     return { restaurant, address: cleanAddress };
 }
 
-// HTML escape helper for XSS protection
+/**
+ * HTML escape helper for XSS protection
+ * @param {string} text - Text to escape
+ * @returns {string} HTML-safe string
+ */
 function escapeHtml(text) {
     if (text == null) return '';
     const div = document.createElement('div');
@@ -63,7 +120,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Safe localStorage helper
+/**
+ * Safe localStorage JSON getter with error handling
+ * @param {string} key - localStorage key
+ * @param {*} defaultValue - Default if key not found or parse fails
+ * @returns {*} Parsed JSON or default value
+ */
 function safeGetJSON(key, defaultValue = null) {
     try {
         const saved = localStorage.getItem(key);
@@ -83,7 +145,13 @@ function goBack(fallbackPage = 'home') {
     }
 }
 
-// Initialize app
+// ============================================================================
+// DATA LOADING & INITIALIZATION
+// ============================================================================
+
+/**
+ * Initialize the application - load data and render
+ */
 async function init() {
     try {
         const response = await fetch('data/routes.json');
@@ -99,7 +167,9 @@ async function init() {
     }
 }
 
-// Render all app components
+/**
+ * Render all app components after data load
+ */
 function renderApp() {
     const stats = appData.stats;
     document.getElementById('navEarnings').textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
@@ -113,7 +183,13 @@ function renderApp() {
     updateNavForPage(currentPage);
 }
 
-// Render home page
+// ============================================================================
+// PAGE RENDERING
+// ============================================================================
+
+/**
+ * Render home page with hero stats and preview
+ */
 function renderHomePage() {
     const stats = appData.stats;
     const days = appData.days;

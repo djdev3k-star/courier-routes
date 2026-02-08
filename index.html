@@ -265,58 +265,60 @@
 
     <!-- Weeks Page (Dedicated Week View) -->
     <div class="page page-weeks" id="pageWeeks">
-        <div class="weeks-page-nav">
-            <div class="weeks-page-title">
-                <h1>Weekly View</h1>
+        <div class="page-container">
+            <div class="weeks-page-nav">
+                <div class="weeks-page-title">
+                    <h1>Weekly View</h1>
+                </div>
+                <div class="weeks-page-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="openTripEntry()">+ Add Trip</button>
+                    <button class="btn btn-sm btn-outline" onclick="showPage('routes')">View All Months</button>
+                </div>
             </div>
-            <div class="weeks-page-actions">
-                <button class="btn btn-sm btn-secondary" onclick="openTripEntry()">+ Add Trip</button>
-                <button class="btn btn-sm btn-outline" onclick="showPage('routes')">View All Months</button>
-            </div>
-        </div>
 
-        <!-- Week Navigation -->
-        <div class="week-nav-bar">
-            <button class="week-nav-btn" onclick="navigateWeekPage(-1)" title="Previous Week">
-                <span class="week-nav-arrow">←</span>
-                <span class="week-nav-label">Prev</span>
-            </button>
-            <div class="week-nav-center">
-                <span class="week-nav-dates" id="weekPageDates">Feb 2 - Feb 8, 2026</span>
-                <button class="week-nav-today" onclick="goToCurrentWeekPage()">Jump to Current Week</button>
+            <!-- Week Navigation -->
+            <div class="week-nav-bar">
+                <button class="week-nav-btn" onclick="navigateWeekPage(-1)" title="Previous Week">
+                    <span class="week-nav-arrow">&larr;</span>
+                    <span class="week-nav-label">Prev</span>
+                </button>
+                <div class="week-nav-center">
+                    <span class="week-nav-dates" id="weekPageDates">Feb 2 - Feb 8, 2026</span>
+                    <button class="week-nav-today" onclick="goToCurrentWeekPage()">Jump to Current Week</button>
+                </div>
+                <button class="week-nav-btn" onclick="navigateWeekPage(1)" title="Next Week">
+                    <span class="week-nav-label">Next</span>
+                    <span class="week-nav-arrow">&rarr;</span>
+                </button>
             </div>
-            <button class="week-nav-btn" onclick="navigateWeekPage(1)" title="Next Week">
-                <span class="week-nav-label">Next</span>
-                <span class="week-nav-arrow">→</span>
-            </button>
-        </div>
 
-        <!-- Week Summary Stats -->
-        <div class="week-page-summary" id="weekPageSummary">
-            <div class="week-page-stat">
-                <span class="week-page-stat-value" id="weekPageEarnings">$0</span>
-                <span class="week-page-stat-label">Total Earned</span>
+            <!-- Week Summary Stats -->
+            <div class="week-page-summary" id="weekPageSummary">
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageEarnings">$0</span>
+                    <span class="week-page-stat-label">Total Earned</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageTrips">0</span>
+                    <span class="week-page-stat-label">Trips</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageMiles">0</span>
+                    <span class="week-page-stat-label">Miles</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageDays">0</span>
+                    <span class="week-page-stat-label">Days Worked</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageAvg">$0</span>
+                    <span class="week-page-stat-label">Avg/Trip</span>
+                </div>
             </div>
-            <div class="week-page-stat">
-                <span class="week-page-stat-value" id="weekPageTrips">0</span>
-                <span class="week-page-stat-label">Trips</span>
-            </div>
-            <div class="week-page-stat">
-                <span class="week-page-stat-value" id="weekPageMiles">0</span>
-                <span class="week-page-stat-label">Miles</span>
-            </div>
-            <div class="week-page-stat">
-                <span class="week-page-stat-value" id="weekPageDays">0</span>
-                <span class="week-page-stat-label">Days Worked</span>
-            </div>
-            <div class="week-page-stat">
-                <span class="week-page-stat-value" id="weekPageAvg">$0</span>
-                <span class="week-page-stat-label">Avg/Trip</span>
-            </div>
+            
+            <!-- Week Days Grid -->
+            <div class="week-days-grid" id="weekDaysGrid"></div>
         </div>
-        
-        <!-- Week Days Grid -->
-        <div class="week-days-grid" id="weekDaysGrid"></div>
     </div>
 
     <!-- Routes Page (Monthly View) -->

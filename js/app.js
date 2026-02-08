@@ -381,7 +381,7 @@ function renderStatsPage() {
     const restaurantCounts = {};
     days.forEach(day => {
         day.trips.forEach(trip => {
-            const name = trip.pickup_name || 'Unknown';
+            const name = trip.restaurant || 'Unknown';
             restaurantCounts[name] = (restaurantCounts[name] || 0) + 1;
         });
     });

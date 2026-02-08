@@ -135,7 +135,7 @@ function renderDaysGrid() {
         ].join(' ');
 
         html += `
-            <div class="day-card" onclick="openDay(${realIdx})" data-search="${searchData}" data-month="${monthLower}" data-earnings="${day.stats.total_earnings}">
+            <div class="day-card" onclick="openDay(${realIdx})" data-search="${searchData}" data-month="${monthLower}" data-earnings="${day.stats.total_earnings}" data-date="${day.date}">
                 <div class="day-date">
                     ${month.split(' ')[0]} ${dayNum}
                     <div class="weekday">${weekday}</div>
@@ -596,20 +596,15 @@ function filterByWeek() {
     });
     
     document.querySelectorAll('.day-card').forEach(card => {
-        const dateAttr = card.getAttribute('data-search');
-        if (!dateAttr) {
+        const dateStr = card.getAttribute('data-date');
+        if (!dateStr) {
             card.style.display = 'none';
             return;
         }
         
-        // Extract date from the day-card's data
-        const dayIndex = Array.from(document.querySelectorAll('.day-card')).indexOf(card);
-        if (dayIndex >= 0 && dayIndex < appData.days.length) {
-            const day = appData.days[dayIndex];
-            const cardDate = new Date(day.date + 'T12:00:00');
-            const isInWeek = cardDate >= currentWeekStart && cardDate <= weekEnd;
-            card.style.display = isInWeek ? '' : 'none';
-        }
+        const cardDate = new Date(dateStr + 'T12:00:00');
+        const isInWeek = cardDate >= currentWeekStart && cardDate <= weekEnd;
+        card.style.display = isInWeek ? '' : 'none';
     });
     
     updateWeekSummary();

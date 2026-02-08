@@ -68,29 +68,81 @@ function renderApp() {
 // Render home page
 function renderHomePage() {
     const stats = appData.stats;
-    const homeEarnings = document.getElementById('homeEarnings');
-    const homeTrips = document.getElementById('homeTrips');
-    const homeDays = document.getElementById('homeDays');
-    if (homeEarnings) homeEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
-    if (homeTrips) homeTrips.textContent = stats.total_trips.toLocaleString();
-    if (homeDays) homeDays.textContent = stats.total_days;
+    const days = appData.days;
+    
+    // Hero social proof stats
+    const heroTrips = document.getElementById('heroTrips');
+    const heroMiles = document.getElementById('heroMiles');
+    const heroEarnings = document.getElementById('heroEarnings');
+    if (heroTrips) heroTrips.textContent = stats.total_trips.toLocaleString();
+    if (heroMiles) heroMiles.textContent = Math.round(stats.total_distance).toLocaleString();
+    if (heroEarnings) heroEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
+    
+    // Dashboard preview stats
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const todayData = days.find(d => d.date === todayStr);
+    const previewToday = document.getElementById('previewToday');
+    if (previewToday) {
+        previewToday.textContent = todayData ? '$' + todayData.stats.total_earnings.toFixed(2) : '$0.00';
+    }
+    
+    // This week earnings for preview
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const weekEarnings = days.filter(day => {
+        const d = new Date(day.date + 'T12:00:00');
+        return d >= startOfWeek;
+    }).reduce((sum, d) => sum + d.stats.total_earnings, 0);
+    const previewWeek = document.getElementById('previewWeek');
+    if (previewWeek) previewWeek.textContent = '$' + weekEarnings.toFixed(2);
+    
+    // Mini chart in preview (last 7 days)
+    const previewChart = document.getElementById('previewChart');
+    if (previewChart) {
+        const last7 = days.slice(-7);
+        const maxDay = Math.max(...last7.map(d => d.stats.total_earnings), 1);
+        previewChart.innerHTML = last7.map(day => {
+            const height = (day.stats.total_earnings / maxDay) * 100;
+            return `<div class="preview-bar" style="height: ${Math.max(height, 5)}%"></div>`;
+        }).join('');
+    }
+    
+    // Quick stats
+    const bestDay = [...days].sort((a, b) => b.stats.total_earnings - a.stats.total_earnings)[0];
+    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
+    const tipRate = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings) * 100 : 0;
+    
+    const quickBestDay = document.getElementById('quickBestDay');
+    const quickAvgTrip = document.getElementById('quickAvgTrip');
+    const quickTotalDays = document.getElementById('quickTotalDays');
+    const quickTipRate = document.getElementById('quickTipRate');
+    
+    if (quickBestDay && bestDay) quickBestDay.textContent = '$' + bestDay.stats.total_earnings.toFixed(2);
+    if (quickAvgTrip) quickAvgTrip.textContent = '$' + avgPerTrip.toFixed(2);
+    if (quickTotalDays) quickTotalDays.textContent = stats.total_days;
+    if (quickTipRate) quickTipRate.textContent = tipRate.toFixed(0) + '%';
 
-    const recentDays = appData.days.slice(-5).reverse();
+    // Recent days
+    const recentDays = days.slice(-5).reverse();
     const container = document.getElementById('recentDays');
-    container.innerHTML = recentDays.map((day, idx) => {
-        const date = new Date(day.date + 'T12:00:00');
-        const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        const realIdx = appData.days.length - 1 - idx;
-        return `
-            <div class="recent-day-card" onclick="openDay(${realIdx})">
-                <div class="recent-day-info">
-                    <h4>${dateStr}</h4>
-                    <span>${day.stats.trip_count} trips - ${day.stats.total_distance.toFixed(1)} mi</span>
+    if (container) {
+        container.innerHTML = recentDays.map((day, idx) => {
+            const date = new Date(day.date + 'T12:00:00');
+            const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            const realIdx = days.length - 1 - idx;
+            return `
+                <div class="recent-day-card" onclick="openDay(${realIdx})">
+                    <div class="recent-day-info">
+                        <h4>${dateStr}</h4>
+                        <span>${day.stats.trip_count} trips - ${day.stats.total_distance.toFixed(1)} mi</span>
+                    </div>
+                    <div class="recent-day-earnings">$${day.stats.total_earnings.toFixed(2)}</div>
                 </div>
-                <div class="recent-day-earnings">$${day.stats.total_earnings.toFixed(2)}</div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    }
 }
 
 // Render routes page
@@ -490,7 +542,8 @@ function smartSearch(query) {
 
 // Filter by month (tag click)
 function filterByMonth(month) {
-    document.querySelectorAll('.search-tag').forEach(tag => {
+    // Update both old search-tag and new filter-tag classes
+    document.querySelectorAll('.search-tag, .filter-tag').forEach(tag => {
         tag.classList.toggle('active', tag.dataset.filter === month);
     });
     
@@ -631,16 +684,19 @@ function updateWeekNavDisplay() {
         weekSummary.style.display = weekViewActive ? 'flex' : 'none';
     }
     
-    // Update active state of nav buttons
-    const todayBtn = document.querySelector('.week-nav-today');
-    const allBtn = document.querySelector('.week-nav-all');
-    
-    if (todayBtn) {
-        todayBtn.classList.toggle('active', weekViewActive && isCurrentWeek());
-    }
-    if (allBtn) {
-        allBtn.classList.toggle('active', !weekViewActive);
-    }
+    // Update active state of week buttons
+    const weekBtnTexts = document.querySelectorAll('.week-btn-text');
+    weekBtnTexts.forEach(btn => {
+        const isTodayBtn = btn.textContent.trim() === 'Today';
+        const isAllBtn = btn.textContent.trim() === 'All';
+        
+        if (isTodayBtn) {
+            btn.classList.toggle('active', weekViewActive && isCurrentWeek());
+        }
+        if (isAllBtn) {
+            btn.classList.toggle('active', !weekViewActive);
+        }
+    });
     
     if (weekViewActive) {
         updateWeekSummary();

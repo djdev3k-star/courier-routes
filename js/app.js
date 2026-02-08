@@ -173,17 +173,6 @@ async function init() {
  * Render all app components after data load
  */
 function renderApp() {
-    const stats = appData?.stats || { total_earnings: 0, total_trips: 0 };
-    const navEarnings = document.getElementById('navEarnings');
-    const navTripCount = document.getElementById('navTripCount');
-
-    if (navEarnings) {
-        navEarnings.textContent = '$' + Math.round(stats.total_earnings || 0).toLocaleString();
-    }
-    if (navTripCount) {
-        navTripCount.textContent = (stats.total_trips || 0).toLocaleString();
-    }
-
     renderHomePage();
     renderRoutesPage();
     renderReportsPage();
@@ -1666,18 +1655,16 @@ function showPage(page) {
 
 // Update nav visibility based on current page
 function updateNavForPage(page) {
-    const navInfo = document.getElementById('navInfo');
     const navAuth = document.getElementById('navAuth');
-    
+    const navSearch = document.getElementById('navSearch');
+
     if (page === 'home') {
-        // On home page: show auth buttons, hide stats
-        if (navInfo) navInfo.style.display = 'none';
         if (navAuth) navAuth.style.display = 'flex';
+        if (navSearch) navSearch.style.display = 'none';
         document.body.classList.add('on-home');
     } else {
-        // On other pages: show stats, hide auth
-        if (navInfo) navInfo.style.display = 'flex';
         if (navAuth) navAuth.style.display = 'none';
+        if (navSearch) navSearch.style.display = 'flex';
         document.body.classList.remove('on-home');
     }
 }
@@ -2883,10 +2870,6 @@ function showToast(message) {
 
 // Update all stats displays
 function updateAllStats() {
-    // Nav stats
-    document.getElementById('navEarnings').textContent = formatCurrency(appData.stats.total_earnings);
-    document.getElementById('navTripCount').textContent = appData.stats.total_trips;
-    
     // Home stats (elements may not exist)
     const homeEarnings = document.getElementById('homeEarnings');
     const homeTrips = document.getElementById('homeTrips');

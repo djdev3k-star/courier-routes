@@ -25,17 +25,9 @@
             <button class="nav-link" id="navStats" onclick="showPage('stats')">Stats</button>
             <button class="nav-link" id="navReports" onclick="showPage('reports')">Reports</button>
         </div>
-        <div class="nav-search">
-            <input type="text" class="nav-search-input" id="globalSearch" placeholder="Search trips, dates, earnings..." oninput="globalSearchHandler(this.value)">
-        </div>
-        <div class="nav-info" id="navInfo">
-            <div class="nav-stat">
-                <span>Total:</span>
-                <span class="nav-stat-value" id="navEarnings">$0</span>
-            </div>
-            <div class="nav-stat">
-                <span id="navTripCount">0</span> trips
-            </div>
+        <div class="nav-search" id="navSearch">
+            <input type="text" class="nav-search-input" id="globalSearch" placeholder="Search trips, restaurants, dates..." oninput="globalSearchHandler(this.value)">
+            <svg class="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <div class="nav-auth" id="navAuth">
             <button class="btn btn-sm btn-outline" onclick="showLogin()">Log in</button>

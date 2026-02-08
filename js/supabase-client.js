@@ -36,6 +36,10 @@ export async function fetchRestaurantStats() {
 }
 
 export function transformTripsToAppFormat(trips) {
+  if (!trips || !Array.isArray(trips)) {
+    trips = [];
+  }
+
   const stats = {
     total_earnings: 0,
     total_tips: 0,
@@ -47,11 +51,12 @@ export function transformTripsToAppFormat(trips) {
   const dayMap = new Map();
 
   trips.forEach(trip => {
-    stats.total_earnings += parseFloat(trip.net_earnings);
-    stats.total_tips += parseFloat(trip.tips);
-    stats.total_distance += parseFloat(trip.distance);
+    try {
+      stats.total_earnings += parseFloat(trip.net_earnings || 0);
+      stats.total_tips += parseFloat(trip.tips || 0);
+      stats.total_distance += parseFloat(trip.distance || 0);
 
-    const date = trip.timestamp_start.split('T')[0];
+      const date = trip.timestamp_start.split('T')[0];
 
     if (!dayMap.has(date)) {
       dayMap.set(date, { date, trips: [] });
@@ -72,25 +77,28 @@ export function transformTripsToAppFormat(trips) {
     };
 
     dayMap.get(date).trips.push({
-      restaurant: trip.restaurant,
-      pickup_address: trip.pickup_address,
-      dropoff_address: trip.dropoff_address,
+      restaurant: trip.restaurant || 'Unknown',
+      pickup_address: trip.pickup_address || '',
+      dropoff_address: trip.dropoff_address || '',
       request_time: formatTime(startDate),
       dropoff_time: formatTime(endDate),
       duration: `${durationMin} min`,
-      distance: parseFloat(trip.distance),
-      service_type: trip.service_type,
-      product_type: trip.product_type,
-      trip_uuid: trip.external_trip_id || trip.trip_id,
+      distance: parseFloat(trip.distance || 0),
+      service_type: trip.service_type || '',
+      product_type: trip.product_type || '',
+      trip_uuid: trip.external_trip_id || trip.trip_id || '',
       pickup_coords: trip.pickup_lng && trip.pickup_lat ? [parseFloat(trip.pickup_lng), parseFloat(trip.pickup_lat)] : null,
       dropoff_coords: trip.dropoff_lng && trip.dropoff_lat ? [parseFloat(trip.dropoff_lng), parseFloat(trip.dropoff_lat)] : null,
-      total_pay: parseFloat(trip.net_earnings),
-      base_fare: parseFloat(trip.base_fare),
-      tip: parseFloat(trip.tips),
-      incentive: parseFloat(trip.bonuses),
+      total_pay: parseFloat(trip.net_earnings || 0),
+      base_fare: parseFloat(trip.base_fare || 0),
+      tip: parseFloat(trip.tips || 0),
+      incentive: parseFloat(trip.bonuses || 0),
       quest: 0,
-      order_refund: parseFloat(trip.fees)
+      order_refund: parseFloat(trip.fees || 0)
     });
+    } catch (err) {
+      console.error('Error processing trip:', trip, err);
+    }
   });
 
   stats.total_days = dayMap.size;

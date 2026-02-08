@@ -173,15 +173,15 @@ async function init() {
  * Render all app components after data load
  */
 function renderApp() {
-    const stats = appData.stats;
+    const stats = appData?.stats || { total_earnings: 0, total_trips: 0 };
     const navEarnings = document.getElementById('navEarnings');
     const navTripCount = document.getElementById('navTripCount');
 
     if (navEarnings) {
-        navEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
+        navEarnings.textContent = '$' + Math.round(stats.total_earnings || 0).toLocaleString();
     }
     if (navTripCount) {
-        navTripCount.textContent = stats.total_trips.toLocaleString();
+        navTripCount.textContent = (stats.total_trips || 0).toLocaleString();
     }
 
     renderHomePage();
@@ -201,6 +201,7 @@ function renderApp() {
  * Render home page with hero stats and preview
  */
 function renderHomePage() {
+    if (!appData || !appData.stats || !appData.days) return;
     const stats = appData.stats;
     const days = appData.days;
     
@@ -292,8 +293,9 @@ function renderRoutesPage() {
 // Render days grid
 function renderDaysGrid() {
     const container = document.getElementById('daysGrid');
+    if (!appData || !appData.days || !container) return;
     const days = appData.days;
-    const maxEarnings = Math.max(...days.map(d => d.stats.total_earnings));
+    const maxEarnings = Math.max(...days.map(d => d.stats?.total_earnings || 0));
 
     let currentMonth = '';
     let html = '';
@@ -365,11 +367,12 @@ function renderDaysGrid() {
 
 // Render reports page
 function renderReportsPage() {
+    if (!appData || !appData.stats || !appData.days) return;
     const stats = appData.stats;
     const days = appData.days;
 
-    document.getElementById('reportEarnings').textContent = '$' + stats.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('reportTrips').textContent = stats.total_trips.toLocaleString();
+    document.getElementById('reportEarnings').textContent = '$' + (stats.total_earnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('reportTrips').textContent = (stats.total_trips || 0).toLocaleString();
     document.getElementById('reportMiles').textContent = Math.round(stats.total_distance).toLocaleString();
     document.getElementById('reportTips').textContent = '$' + stats.total_tips.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('reportDays').textContent = stats.total_days;

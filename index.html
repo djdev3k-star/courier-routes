@@ -13,13 +13,15 @@
 <body>
     <!-- Navigation -->
     <nav class="nav">
-        <div class="nav-brand">Courier<span>Routes</span></div>
+        <a class="nav-brand" href="#" onclick="showPage('home'); return false;">Courier<span>Routes</span></a>
         <div class="nav-links">
-            <button class="nav-link active" id="navHome" onclick="showPage('home')">Home</button>
             <button class="nav-link" id="navRoutes" onclick="showPage('routes')">Routes</button>
             <button class="nav-link" id="navReports" onclick="showPage('reports')">Reports</button>
         </div>
-        <div class="nav-info">
+        <div class="nav-search">
+            <input type="text" class="nav-search-input" id="globalSearch" placeholder="Search trips, dates, earnings..." oninput="globalSearchHandler(this.value)">
+        </div>
+        <div class="nav-info" id="navInfo">
             <div class="nav-stat">
                 <span>Total:</span>
                 <span class="nav-stat-value" id="navEarnings">$0</span>
@@ -82,7 +84,7 @@
                     <button class="search-tag" data-filter="august" onclick="filterByMonth('august')">Aug</button>
                 </div></div>
             <button class="btn btn-add-trip" onclick="openTripEntry()">+ Add Trip</button>
-            <button class="btn btn-batch-upload" onclick="openBatchUpload()">?? Batch Upload</button>
+            <button class="btn btn-batch-upload" onclick="openBatchUpload()">Batch Upload</button>
         </div>
         <div class="days-grid" id="daysGrid"></div>
     </div>
@@ -348,6 +350,11 @@
                             <div class="detail-addr-icon dropoff">D</div>
                             <div class="detail-addr-text" id="detailDropoff">-</div>
                         </div>
+                    </div>
+
+                    <div class="detail-section detail-uuid-section" id="detailUuidSection" style="display:none;">
+                        <div class="detail-label">Trip ID</div>
+                        <a href="#" id="detailUuidLink" class="detail-uuid-link" target="_blank" rel="noopener"></a>
                     </div>
 
                     <button class="btn btn-secondary btn-print-trip" onclick="printTripTicket()">Print Trip Ticket</button>

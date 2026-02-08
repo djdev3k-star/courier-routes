@@ -8,6 +8,34 @@ let mapMarkers = [];
 let activeTrip = null;
 let currentPage = 'home';
 
+// HTML escape helper for XSS protection
+function escapeHtml(text) {
+    if (text == null) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Safe localStorage helper
+function safeGetJSON(key, defaultValue = null) {
+    try {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : defaultValue;
+    } catch (e) {
+        console.warn(`Failed to parse localStorage key ${key}:`, e);
+        return defaultValue;
+    }
+}
+
+// Go back in history, or to a fallback page
+function goBack(fallbackPage = 'home') {
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        showPage(fallbackPage);
+    }
+}
+
 // Initialize app
 async function init() {
     try {
@@ -229,6 +257,19 @@ function renderWeekdayChart() {
     }).join('');
 }
 
+// Global search handler - routes to appropriate page and searches
+function globalSearchHandler(query) {
+    const q = query.trim();
+    
+    // If we're not on routes page and there's a query, go to routes
+    if (q && currentPage !== 'routes') {
+        showPage('routes');
+    }
+    
+    // Apply the smart search
+    smartSearch(q);
+}
+
 // Soft search - fuzzy matching with smart earnings filters
 function smartSearch(query) {
     const q = query.toLowerCase().trim();
@@ -324,7 +365,12 @@ function filterByMonth(month) {
     document.querySelectorAll('.search-tag').forEach(tag => {
         tag.classList.toggle('active', tag.dataset.filter === month);
     });
-    document.getElementById('routeSearch').value = '';
+    
+    // Clear both search inputs
+    const routeSearch = document.getElementById('routeSearch');
+    const globalSearch = document.getElementById('globalSearch');
+    if (routeSearch) routeSearch.value = '';
+    if (globalSearch) globalSearch.value = '';
 
     if (month === 'all') {
         document.querySelectorAll('.day-card, .month-header').forEach(el => {
@@ -528,6 +574,18 @@ function selectTrip(tripId) {
     document.getElementById('detailTime').textContent = trip.request_time + ' - ' + trip.dropoff_time;
     document.getElementById('detailPickup').textContent = trip.pickup_address;
     document.getElementById('detailDropoff').textContent = trip.dropoff_address;
+    
+    // Show UUID link if available
+    const uuidSection = document.getElementById('detailUuidSection');
+    const uuidLink = document.getElementById('detailUuidLink');
+    if (trip.trip_uuid && trip.trip_uuid !== 'N/A') {
+        uuidLink.href = `https://drivers.uber.com/earnings/trips/${trip.trip_uuid}`;
+        uuidLink.textContent = trip.trip_uuid;
+        uuidSection.style.display = '';
+    } else {
+        uuidSection.style.display = 'none';
+    }
+    
     document.getElementById('tripDetail').classList.add('show');
 
     if (trip.pickup_coords && trip.dropoff_coords) {

@@ -56,6 +56,12 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.nav-brand:hover {
+    opacity: 0.9;
 }
 
 .nav-brand span {
@@ -107,6 +113,35 @@ body {
 .nav-stat-value {
     color: var(--accent-green);
     font-weight: 600;
+}
+
+/* Global Search */
+.nav-search {
+    flex: 1;
+    max-width: 300px;
+    margin: 0 20px;
+}
+
+.nav-search-input {
+    width: 100%;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.nav-search-input:focus {
+    border-color: var(--accent-blue);
+    background: var(--bg-card);
+}
+
+.nav-search-input::placeholder {
+    color: var(--text-muted);
 }
 
 /* Pages */
@@ -1135,6 +1170,19 @@ body {
 .detail-addr-text {
     font-size: 0.85rem;
     line-height: 1.4;
+}
+
+/* Trip UUID Link */
+.detail-uuid-link {
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    word-break: break-all;
+    text-decoration: none;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
+.detail-uuid-link:hover {
+    text-decoration: underline;
 }
 
 /* Custom Markers */

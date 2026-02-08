@@ -257,6 +257,131 @@ function renderWeekdayChart() {
     }).join('');
 }
 
+// Render stats page
+function renderStatsPage() {
+    const stats = appData.stats;
+    const days = appData.days;
+    
+    // Calculate total hours (estimate: ~15 min per trip average)
+    const totalHours = stats.total_trips * 0.25;
+    
+    // Hero stats - using correct IDs from HTML
+    document.getElementById('statsEarnings').textContent = '$' + stats.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statsTrips').textContent = stats.total_trips.toLocaleString();
+    document.getElementById('statsMiles').textContent = Math.round(stats.total_distance).toLocaleString();
+    document.getElementById('statsDays').textContent = stats.total_days;
+    
+    // Averages
+    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
+    const avgPerHour = totalHours > 0 ? stats.total_earnings / totalHours : 0;
+    const avgPerMile = stats.total_distance > 0 ? stats.total_earnings / stats.total_distance : 0;
+    const avgPerDay = stats.total_days > 0 ? stats.total_earnings / stats.total_days : 0;
+    const tipRate = stats.total_earnings > 0 ? (stats.total_tips / stats.total_earnings) * 100 : 0;
+    
+    document.getElementById('statsAvgTrip').textContent = '$' + avgPerTrip.toFixed(2);
+    document.getElementById('statsAvgHour').textContent = '$' + avgPerHour.toFixed(2);
+    document.getElementById('statsAvgMile').textContent = '$' + avgPerMile.toFixed(2);
+    document.getElementById('statsAvgDay').textContent = '$' + avgPerDay.toFixed(2);
+    document.getElementById('statsTips').textContent = '$' + stats.total_tips.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statsTipRate').textContent = tipRate.toFixed(0) + '%';
+    
+    // This week stats
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    const thisWeekDays = days.filter(day => {
+        const d = new Date(day.date + 'T12:00:00');
+        return d >= startOfWeek && d <= endOfWeek;
+    });
+    
+    const weekEarnings = thisWeekDays.reduce((sum, d) => sum + d.stats.total_earnings, 0);
+    const weekTrips = thisWeekDays.reduce((sum, d) => sum + d.stats.trip_count, 0);
+    const weekMiles = thisWeekDays.reduce((sum, d) => sum + d.stats.total_distance, 0);
+    const weekHours = weekTrips * 0.25;
+    const weekGoal = 500; // Weekly goal
+    const weekProgress = Math.min((weekEarnings / weekGoal) * 100, 100);
+    const weekPerHour = weekHours > 0 ? weekEarnings / weekHours : 0;
+    
+    // Week date range
+    const weekRangeStr = startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + 
+        ' - ' + endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    document.getElementById('statsWeekRange').textContent = weekRangeStr;
+    
+    document.getElementById('statsWeekEarnings').textContent = '$' + weekEarnings.toFixed(2);
+    document.getElementById('statsWeekTrips').textContent = weekTrips;
+    document.getElementById('statsWeekMiles').textContent = weekMiles.toFixed(1);
+    document.getElementById('statsWeekHours').textContent = weekHours.toFixed(0) + 'h';
+    document.getElementById('statsWeekPerHour').textContent = '$' + weekPerHour.toFixed(2);
+    document.getElementById('statsWeekGoalFill').style.width = weekProgress + '%';
+    document.getElementById('statsWeekGoalPercent').textContent = Math.round(weekProgress) + '%';
+    
+    // Best day insight
+    const bestDay = [...days].sort((a, b) => b.stats.total_earnings - a.stats.total_earnings)[0];
+    if (bestDay) {
+        const bestDate = new Date(bestDay.date + 'T12:00:00');
+        document.getElementById('statsBestDay').textContent = bestDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        document.getElementById('statsBestDayDetail').textContent = '$' + bestDay.stats.total_earnings.toFixed(2) + ' earned';
+    }
+    
+    // Top restaurant insight (from trip data)
+    const restaurantCounts = {};
+    days.forEach(day => {
+        day.trips.forEach(trip => {
+            const name = trip.pickup_name || 'Unknown';
+            restaurantCounts[name] = (restaurantCounts[name] || 0) + 1;
+        });
+    });
+    const topRestaurant = Object.entries(restaurantCounts).sort((a, b) => b[1] - a[1])[0];
+    if (topRestaurant) {
+        document.getElementById('statsTopRestaurant').textContent = topRestaurant[0];
+        document.getElementById('statsTopRestaurantDetail').textContent = topRestaurant[1] + ' pickups';
+    }
+    
+    // Best hour insight
+    const hourEarnings = {};
+    days.forEach(day => {
+        day.trips.forEach(trip => {
+            if (trip.pickup_time) {
+                const hour = parseInt(trip.pickup_time.split(':')[0]);
+                hourEarnings[hour] = (hourEarnings[hour] || 0) + (trip.earnings || 0);
+            }
+        });
+    });
+    const bestHour = Object.entries(hourEarnings).sort((a, b) => b[1] - a[1])[0];
+    if (bestHour) {
+        const hour = parseInt(bestHour[0]);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        document.getElementById('statsBestHour').textContent = displayHour + ' ' + ampm;
+        document.getElementById('statsBestHourDetail').textContent = '$' + bestHour[1].toFixed(0) + ' total';
+    }
+    
+    // Best weekday insight
+    const weekdayEarnings = {};
+    days.forEach(day => {
+        const date = new Date(day.date + 'T12:00:00');
+        const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+        weekdayEarnings[weekday] = (weekdayEarnings[weekday] || 0) + day.stats.total_earnings;
+    });
+    const bestWeekday = Object.entries(weekdayEarnings).sort((a, b) => b[1] - a[1])[0];
+    if (bestWeekday) {
+        document.getElementById('statsBestWeekday').textContent = bestWeekday[0];
+        document.getElementById('statsBestWeekdayDetail').textContent = '$' + bestWeekday[1].toFixed(0) + ' total';
+    }
+    
+    // Tax preview (simplified estimates)
+    const mileageDeduction = stats.total_distance * 0.67; // 2024 IRS rate
+    const taxableIncome = Math.max(stats.total_earnings - mileageDeduction, 0);
+    
+    document.getElementById('statsTaxDeduction').textContent = '$' + mileageDeduction.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statsTaxable').textContent = '$' + taxableIncome.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
 // Global search handler - routes to appropriate page and searches
 function globalSearchHandler(query) {
     const q = query.trim();
@@ -396,6 +521,10 @@ function showPage(page) {
     if (page === 'home') document.getElementById('pageHome').classList.add('active');
     else if (page === 'routes') document.getElementById('pageRoutes').classList.add('active');
     else if (page === 'reports') document.getElementById('pageReports').classList.add('active');
+    else if (page === 'stats') {
+        document.getElementById('pageStats').classList.add('active');
+        renderStatsPage();
+    }
     else if (page === 'feature-maps') document.getElementById('pageFeatureMaps').classList.add('active');
     else if (page === 'feature-earnings') document.getElementById('pageFeatureEarnings').classList.add('active');
     else if (page === 'feature-reports') document.getElementById('pageFeatureReports').classList.add('active');

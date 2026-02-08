@@ -174,13 +174,21 @@ async function init() {
  */
 function renderApp() {
     const stats = appData.stats;
-    document.getElementById('navEarnings').textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
-    document.getElementById('navTripCount').textContent = stats.total_trips.toLocaleString();
+    const navEarnings = document.getElementById('navEarnings');
+    const navTripCount = document.getElementById('navTripCount');
+
+    if (navEarnings) {
+        navEarnings.textContent = '$' + Math.round(stats.total_earnings).toLocaleString();
+    }
+    if (navTripCount) {
+        navTripCount.textContent = stats.total_trips.toLocaleString();
+    }
+
     renderHomePage();
     renderRoutesPage();
     renderReportsPage();
     initWeekNavigation();
-    
+
     // Set initial nav state (home page shows auth, not stats)
     updateNavForPage(currentPage);
 }
@@ -3412,4 +3420,8 @@ window.viewRefund = viewRefund;
 window.removeReceipt = removeReceipt;
 
 // Initialize app on page load
-init();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}

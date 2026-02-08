@@ -621,7 +621,10 @@
         <div class="map-layout">
             <div class="sidebar">
                 <div class="sidebar-header">
-                    <h3 class="sidebar-title">Trips</h3>
+                    <div class="sidebar-header-top">
+                        <h3 class="sidebar-title">Trips</h3>
+                        <button class="btn btn-sm btn-primary" onclick="openTripEntryForDay()">+ Add Trip</button>
+                    </div>
                     <div class="sidebar-search">
                         <input type="text" placeholder="Search trips..." oninput="filterTrips(this.value)">
                     </div>

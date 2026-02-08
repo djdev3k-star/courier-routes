@@ -1513,6 +1513,17 @@ function openTripEntry() {
     document.getElementById('entryDate').valueAsDate = new Date();
 }
 
+// Open trip entry modal for the current day view
+function openTripEntryForDay() {
+    document.getElementById('tripEntryModal').classList.add('active');
+    // Set date to the currently viewed day
+    if (currentDayIndex >= 0 && appData.days[currentDayIndex]) {
+        document.getElementById('entryDate').value = appData.days[currentDayIndex].date;
+    } else {
+        document.getElementById('entryDate').valueAsDate = new Date();
+    }
+}
+
 // Close trip entry modal
 function closeTripEntry() {
     document.getElementById('tripEntryModal').classList.remove('active');
@@ -1607,6 +1618,21 @@ function saveTripEntry(event) {
     // Refresh the UI
     updateAllStats();
     renderDaysGrid();
+    
+    // If we're viewing the day we just added to, refresh that view
+    if (currentDayIndex !== -1) {
+        const viewedDate = appData.days[currentDayIndex]?.date;
+        if (viewedDate === date) {
+            // Refresh the current day view
+            renderMapView(appData.days[currentDayIndex]);
+        } else {
+            // Find the day we just added to and switch to it
+            const newDayIndex = appData.days.findIndex(d => d.date === date);
+            if (newDayIndex !== -1 && document.getElementById('mapView').classList.contains('active')) {
+                openDay(newDayIndex);
+            }
+        }
+    }
     
     // Close modal
     closeTripEntry();

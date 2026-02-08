@@ -320,12 +320,6 @@ function renderStatsPage() {
     // Calculate total hours (estimate: ~15 min per trip average)
     const totalHours = stats.total_trips * 0.25;
     
-    // Hero stats - using correct IDs from HTML
-    document.getElementById('statsEarnings').textContent = '$' + stats.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statsTrips').textContent = stats.total_trips.toLocaleString();
-    document.getElementById('statsMiles').textContent = Math.round(stats.total_distance).toLocaleString();
-    document.getElementById('statsDays').textContent = stats.total_days;
-    
     // Averages
     const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
     const avgPerHour = totalHours > 0 ? stats.total_earnings / totalHours : 0;

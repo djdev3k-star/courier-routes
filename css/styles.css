@@ -2024,82 +2024,24 @@ body {
     padding-top: 56px;
 }
 
-/* Stats Hero Grid - Big Numbers */
-.stats-hero-grid {
+/* Two-Column Layout */
+.stats-layout {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 320px;
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+.stats-main {
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
 }
 
-.stats-hero-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    text-align: center;
+.stats-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-}
-
-.stats-hero-card.primary {
-    background: linear-gradient(135deg, var(--accent-blue) 0%, #2563eb 100%);
-    border: none;
-}
-
-.stats-hero-card.primary .stats-hero-value,
-.stats-hero-card.primary .stats-hero-label {
-    color: #fff;
-}
-
-.stats-hero-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.2;
-}
-
-.stats-hero-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Stats Averages Grid */
-.stats-avg-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-}
-
-.stats-avg-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.stats-avg-value {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--accent-green);
-}
-
-.stats-avg-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.stats-avg-card.accent .stats-avg-value {
-    color: var(--accent-purple);
+    gap: var(--spacing-md);
 }
 
 /* Stats Cards */
@@ -2107,7 +2049,6 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    margin-bottom: var(--spacing-md);
 }
 
 .stats-card-header {
@@ -2119,7 +2060,7 @@ body {
 }
 
 .stats-card-header h2 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -2207,107 +2148,187 @@ body {
     text-transform: uppercase;
 }
 
-/* Insights Grid */
-.stats-insights-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-md);
-}
-
-.stats-insight-card {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
+/* Insights List */
+.stats-insights-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+}
+
+.stats-insight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.stats-insight-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stats-insight-row:first-child {
+    padding-top: 0;
 }
 
 .stats-insight-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stats-insight-data {
+    text-align: right;
 }
 
 .stats-insight-value {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
+    display: block;
 }
 
 .stats-insight-detail {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-/* Tax Grid */
-.stats-tax-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
-}
-
-.stats-tax-item {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-md);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.stats-tax-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent-yellow);
-}
-
-.stats-tax-label {
-    font-size: 0.85rem;
-    color: var(--text-primary);
-}
-
-.stats-tax-detail {
     font-size: 0.75rem;
     color: var(--text-muted);
 }
 
+/* Averages List */
+.stats-averages-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-avg-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.stats-avg-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stats-avg-row:first-child {
+    padding-top: 0;
+}
+
+.stats-avg-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stats-avg-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-green);
+}
+
+/* Tips Summary */
+.stats-tips-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-tips-total,
+.stats-tips-rate {
+    text-align: center;
+    flex: 1;
+}
+
+.stats-tips-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-purple);
+    display: block;
+}
+
+.stats-tips-percent {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    display: block;
+}
+
+.stats-tips-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* Tax List */
+.stats-tax-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-tax-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.stats-tax-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.stats-tax-row:first-child {
+    padding-top: 0;
+}
+
+.stats-tax-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stats-tax-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stats-tax-detail {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.stats-tax-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-yellow);
+}
+
 /* Stats Page Responsive */
 @media (max-width: 900px) {
-    .stats-hero-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .stats-layout {
+        grid-template-columns: 1fr;
     }
     
-    .stats-avg-grid {
+    .stats-sidebar {
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .stats-insights-grid {
-        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
     }
 }
 
 @media (max-width: 600px) {
-    .stats-hero-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-avg-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
     .stats-week-metrics {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .stats-insights-grid {
+    .stats-sidebar {
         grid-template-columns: 1fr;
     }
     
-    .stats-tax-grid {
-        grid-template-columns: 1fr;
+    .stats-tips-summary {
+        flex-direction: column;
+        gap: var(--spacing-md);
     }
 }
 

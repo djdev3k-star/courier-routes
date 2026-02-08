@@ -264,141 +264,159 @@
                 </div>
             </div>
 
-            <!-- Big Numbers -->
-            <div class="stats-hero-grid">
-                <div class="stats-hero-card primary">
-                    <span class="stats-hero-value" id="statsEarnings">$0</span>
-                    <span class="stats-hero-label">Total Earned</span>
-                </div>
-                <div class="stats-hero-card">
-                    <span class="stats-hero-value" id="statsTrips">0</span>
-                    <span class="stats-hero-label">Deliveries</span>
-                </div>
-                <div class="stats-hero-card">
-                    <span class="stats-hero-value" id="statsMiles">0</span>
-                    <span class="stats-hero-label">Miles Driven</span>
-                </div>
-                <div class="stats-hero-card">
-                    <span class="stats-hero-value" id="statsDays">0</span>
-                    <span class="stats-hero-label">Active Days</span>
-                </div>
-            </div>
-
-            <!-- Averages Row -->
-            <div class="stats-avg-grid">
-                <div class="stats-avg-card">
-                    <span class="stats-avg-value" id="statsAvgTrip">$0</span>
-                    <span class="stats-avg-label">Per Trip</span>
-                </div>
-                <div class="stats-avg-card">
-                    <span class="stats-avg-value" id="statsAvgHour">$0</span>
-                    <span class="stats-avg-label">Per Hour</span>
-                </div>
-                <div class="stats-avg-card">
-                    <span class="stats-avg-value" id="statsAvgMile">$0</span>
-                    <span class="stats-avg-label">Per Mile</span>
-                </div>
-                <div class="stats-avg-card">
-                    <span class="stats-avg-value" id="statsAvgDay">$0</span>
-                    <span class="stats-avg-label">Per Day</span>
-                </div>
-                <div class="stats-avg-card accent">
-                    <span class="stats-avg-value" id="statsTips">$0</span>
-                    <span class="stats-avg-label">Total Tips</span>
-                </div>
-                <div class="stats-avg-card accent">
-                    <span class="stats-avg-value" id="statsTipRate">0%</span>
-                    <span class="stats-avg-label">Tip Rate</span>
-                </div>
-            </div>
-
-            <!-- This Week Section -->
-            <div class="stats-card">
-                <div class="stats-card-header">
-                    <h2>This Week</h2>
-                    <span class="stats-badge" id="statsWeekRange">-</span>
-                </div>
-                <div class="stats-card-content">
-                    <div class="stats-week-progress">
-                        <div class="goal-header">
-                            <span class="goal-label">Weekly Earnings</span>
-                            <span class="goal-value" id="statsWeekEarnings">$0</span>
+            <div class="stats-layout">
+                <!-- Left Column -->
+                <div class="stats-main">
+                    <!-- This Week Card -->
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <h2>This Week</h2>
+                            <span class="stats-badge" id="statsWeekRange">-</span>
                         </div>
-                        <div class="goal-bar">
-                            <div class="goal-bar-fill" id="statsWeekGoalFill" style="width: 0%"></div>
-                        </div>
-                        <div class="goal-footer">
-                            <span id="statsWeekGoalPercent">0%</span> of $500 goal
+                        <div class="stats-card-content">
+                            <div class="stats-week-progress">
+                                <div class="goal-header">
+                                    <span class="goal-label">Weekly Earnings</span>
+                                    <span class="goal-value" id="statsWeekEarnings">$0</span>
+                                </div>
+                                <div class="goal-bar">
+                                    <div class="goal-bar-fill" id="statsWeekGoalFill" style="width: 0%"></div>
+                                </div>
+                                <div class="goal-footer">
+                                    <span id="statsWeekGoalPercent">0%</span> of $500 goal
+                                </div>
+                            </div>
+                            <div class="stats-week-metrics">
+                                <div class="week-metric">
+                                    <span class="week-metric-value" id="statsWeekTrips">0</span>
+                                    <span class="week-metric-label">Trips</span>
+                                </div>
+                                <div class="week-metric">
+                                    <span class="week-metric-value" id="statsWeekMiles">0</span>
+                                    <span class="week-metric-label">Miles</span>
+                                </div>
+                                <div class="week-metric">
+                                    <span class="week-metric-value" id="statsWeekHours">0h</span>
+                                    <span class="week-metric-label">Online</span>
+                                </div>
+                                <div class="week-metric">
+                                    <span class="week-metric-value" id="statsWeekPerHour">$0</span>
+                                    <span class="week-metric-label">Per Hour</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="stats-week-metrics">
-                        <div class="week-metric">
-                            <span class="week-metric-value" id="statsWeekTrips">0</span>
-                            <span class="week-metric-label">Trips</span>
+
+                    <!-- Insights Card -->
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <h2>Insights</h2>
                         </div>
-                        <div class="week-metric">
-                            <span class="week-metric-value" id="statsWeekMiles">0</span>
-                            <span class="week-metric-label">Miles</span>
-                        </div>
-                        <div class="week-metric">
-                            <span class="week-metric-value" id="statsWeekHours">0h</span>
-                            <span class="week-metric-label">Online</span>
-                        </div>
-                        <div class="week-metric">
-                            <span class="week-metric-value" id="statsWeekPerHour">$0</span>
-                            <span class="week-metric-label">Per Hour</span>
+                        <div class="stats-card-content">
+                            <div class="stats-insights-list">
+                                <div class="stats-insight-row">
+                                    <span class="stats-insight-label">Best Day</span>
+                                    <div class="stats-insight-data">
+                                        <span class="stats-insight-value" id="statsBestDay">-</span>
+                                        <span class="stats-insight-detail" id="statsBestDayDetail">-</span>
+                                    </div>
+                                </div>
+                                <div class="stats-insight-row">
+                                    <span class="stats-insight-label">Top Restaurant</span>
+                                    <div class="stats-insight-data">
+                                        <span class="stats-insight-value" id="statsTopRestaurant">-</span>
+                                        <span class="stats-insight-detail" id="statsTopRestaurantDetail">-</span>
+                                    </div>
+                                </div>
+                                <div class="stats-insight-row">
+                                    <span class="stats-insight-label">Best Hour</span>
+                                    <div class="stats-insight-data">
+                                        <span class="stats-insight-value" id="statsBestHour">-</span>
+                                        <span class="stats-insight-detail" id="statsBestHourDetail">-</span>
+                                    </div>
+                                </div>
+                                <div class="stats-insight-row">
+                                    <span class="stats-insight-label">Best Day of Week</span>
+                                    <div class="stats-insight-data">
+                                        <span class="stats-insight-value" id="statsBestWeekday">-</span>
+                                        <span class="stats-insight-detail" id="statsBestWeekdayDetail">-</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Insights Grid -->
-            <div class="stats-card">
-                <div class="stats-card-header">
-                    <h2>Insights</h2>
-                </div>
-                <div class="stats-card-content">
-                    <div class="stats-insights-grid">
-                        <div class="stats-insight-card">
-                            <span class="stats-insight-label">Best Day</span>
-                            <span class="stats-insight-value" id="statsBestDay">-</span>
-                            <span class="stats-insight-detail" id="statsBestDayDetail">-</span>
+                <!-- Right Column -->
+                <div class="stats-sidebar">
+                    <!-- Averages Card -->
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <h2>Averages</h2>
                         </div>
-                        <div class="stats-insight-card">
-                            <span class="stats-insight-label">Top Restaurant</span>
-                            <span class="stats-insight-value" id="statsTopRestaurant">-</span>
-                            <span class="stats-insight-detail" id="statsTopRestaurantDetail">-</span>
-                        </div>
-                        <div class="stats-insight-card">
-                            <span class="stats-insight-label">Best Hour</span>
-                            <span class="stats-insight-value" id="statsBestHour">-</span>
-                            <span class="stats-insight-detail" id="statsBestHourDetail">-</span>
-                        </div>
-                        <div class="stats-insight-card">
-                            <span class="stats-insight-label">Best Day of Week</span>
-                            <span class="stats-insight-value" id="statsBestWeekday">-</span>
-                            <span class="stats-insight-detail" id="statsBestWeekdayDetail">-</span>
+                        <div class="stats-card-content">
+                            <div class="stats-averages-list">
+                                <div class="stats-avg-row">
+                                    <span class="stats-avg-label">Per Trip</span>
+                                    <span class="stats-avg-value" id="statsAvgTrip">$0</span>
+                                </div>
+                                <div class="stats-avg-row">
+                                    <span class="stats-avg-label">Per Hour</span>
+                                    <span class="stats-avg-value" id="statsAvgHour">$0</span>
+                                </div>
+                                <div class="stats-avg-row">
+                                    <span class="stats-avg-label">Per Mile</span>
+                                    <span class="stats-avg-value" id="statsAvgMile">$0</span>
+                                </div>
+                                <div class="stats-avg-row">
+                                    <span class="stats-avg-label">Per Day</span>
+                                    <span class="stats-avg-value" id="statsAvgDay">$0</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Tax Preview -->
-            <div class="stats-card">
-                <div class="stats-card-header">
-                    <h2>Tax Snapshot</h2>
-                </div>
-                <div class="stats-card-content">
-                    <div class="stats-tax-grid">
-                        <div class="stats-tax-item">
-                            <span class="stats-tax-value" id="statsTaxDeduction">$0</span>
-                            <span class="stats-tax-label">Mileage Deduction</span>
-                            <span class="stats-tax-detail">$0.67/mile IRS rate</span>
+                    <!-- Tips Card -->
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <h2>Tips</h2>
                         </div>
-                        <div class="stats-tax-item">
-                            <span class="stats-tax-value" id="statsTaxable">$0</span>
-                            <span class="stats-tax-label">Est. Taxable Income</span>
-                            <span class="stats-tax-detail">After mileage deduction</span>
+                        <div class="stats-card-content">
+                            <div class="stats-tips-summary">
+                                <div class="stats-tips-total">
+                                    <span class="stats-tips-value" id="statsTips">$0</span>
+                                    <span class="stats-tips-label">Total Tips</span>
+                                </div>
+                                <div class="stats-tips-rate">
+                                    <span class="stats-tips-percent" id="statsTipRate">0%</span>
+                                    <span class="stats-tips-label">of earnings</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tax Card -->
+                    <div class="stats-card">
+                        <div class="stats-card-header">
+                            <h2>Tax Snapshot</h2>
+                        </div>
+                        <div class="stats-card-content">
+                            <div class="stats-tax-list">
+                                <div class="stats-tax-row">
+                                    <div class="stats-tax-info">
+                                        <span class="stats-tax-label">Mileage Deduction</span>
+                                        <span class="stats-tax-detail">$0.67/mile IRS rate</span>
+                                    </div>
+                                    <span class="stats-tax-value" id="statsTaxDeduction">$0</span>
+                                </div>
+                                <div class="stats-tax-row">
+                                    <div class="stats-tax-info">
+                                        <span class="stats-tax-label">Est. Taxable</span>
+                                        <span class="stats-tax-detail">After deduction</span>
+                                    </div>
+                                    <span class="stats-tax-value" id="statsTaxable">$0</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

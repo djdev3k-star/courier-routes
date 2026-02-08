@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -103,9 +103,24 @@ export function transformTripsToAppFormat(trips) {
 
   stats.total_days = dayMap.size;
 
+  const days = Array.from(dayMap.values()).map(day => {
+    const dayStats = {
+      total_earnings: 0,
+      total_tips: 0,
+      total_distance: 0,
+      trip_count: day.trips.length
+    };
+    day.trips.forEach(t => {
+      dayStats.total_earnings += t.total_pay || 0;
+      dayStats.total_tips += t.tip || 0;
+      dayStats.total_distance += t.distance || 0;
+    });
+    return { ...day, stats: dayStats };
+  });
+
   return {
     generated: new Date().toISOString(),
     stats,
-    days: Array.from(dayMap.values())
+    days
   };
 }

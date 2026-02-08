@@ -795,6 +795,7 @@ function filterEfficiencyTrips(filter) {
 
 // Render stats page
 function renderStatsPage() {
+    if (!appData || !appData.stats || !appData.days) return;
     const stats = appData.stats;
     const days = appData.days;
     
@@ -1869,7 +1870,7 @@ function renderMapView(day) {
 function renderTripCards(trips) {
     const container = document.getElementById('tripList');
     container.innerHTML = trips.map((t, i) => `
-        <div class="trip-card" data-trip-id="${i}" data-search="${t.restaurant.toLowerCase()} ${t.pickup_address.toLowerCase()} ${t.dropoff_address.toLowerCase()}" onclick="selectTrip(${i})">
+        <div class="trip-card" data-trip-id="${i}" data-search="${(t.restaurant || '').toLowerCase()} ${(t.pickup_address || '').toLowerCase()} ${(t.dropoff_address || '').toLowerCase()}" onclick="selectTrip(${i})">
             <div class="trip-header">
                 <div class="trip-number">${i + 1}</div>
                 <div class="trip-restaurant">${t.restaurant}</div>
@@ -2032,9 +2033,6 @@ function filterTrips(query) {
         card.classList.toggle('hidden', q && !searchText.includes(q));
     });
 }
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', init);
 
 // ========== PRINT FUNCTIONS ==========
 
@@ -3421,6 +3419,9 @@ window.selectTrip = selectTrip;
 window.toggleDetailPickup = toggleDetailPickup;
 window.viewRefund = viewRefund;
 window.removeReceipt = removeReceipt;
+window.globalSearchHandler = globalSearchHandler;
+window.submitRefund = submitRefund;
+window.saveTripEntry = saveTripEntry;
 
 // Initialize app on page load
 if (document.readyState === 'loading') {

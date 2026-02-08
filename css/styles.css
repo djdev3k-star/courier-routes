@@ -29,6 +29,32 @@
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 32px;
+    
+    /* Animation timing */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+}
+
+/* Subtle animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
 * {
@@ -75,6 +101,17 @@ body {
     overflow-x: hidden;
 }
 
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better text selection */
+::selection {
+    background: rgba(74, 158, 255, 0.3);
+    color: var(--text-primary);
+}
+
 /* Container System */
 .container {
     width: 100%;
@@ -88,6 +125,35 @@ body {
     max-width: 1100px;
     margin: 0 auto;
     padding: 32px 24px;
+}
+
+/* Tooltip */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 6px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-fast);
+    z-index: 1000;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 /* Page Header */
@@ -180,7 +246,8 @@ body {
     cursor: pointer;
     font-size: 0.85rem;
     font-family: inherit;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
+    position: relative;
 }
 
 .nav-link:hover {
@@ -188,9 +255,26 @@ body {
     color: var(--text-primary);
 }
 
+.nav-link:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
 .nav-link.active {
     background: rgba(74, 158, 255, 0.12);
     color: var(--accent-blue);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: var(--accent-blue);
+    border-radius: 1px;
 }
 
 .nav-info {
@@ -239,6 +323,7 @@ body.on-home .nav-auth {
     flex: 1;
     max-width: 300px;
     margin: 0 20px;
+    position: relative;
 }
 
 .nav-search-input {
@@ -251,16 +336,34 @@ body.on-home .nav-auth {
     font-size: 0.85rem;
     font-family: inherit;
     outline: none;
-    transition: all 0.2s;
+    transition: all var(--transition-normal);
 }
 
 .nav-search-input:focus {
     border-color: var(--accent-blue);
     background: var(--bg-card);
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15);
 }
 
 .nav-search-input::placeholder {
     color: var(--text-muted);
+}
+
+/* Loading Skeleton */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5em;
+}
+
+.skeleton-text:last-child {
+    width: 70%;
 }
 
 /* Pages */
@@ -272,6 +375,7 @@ body.on-home .nav-auth {
 
 .page.active {
     display: block;
+    animation: fadeIn 0.25s ease-out;
 }
 
 /* Home Page */
@@ -323,9 +427,16 @@ body.on-home .nav-auth {
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal);
     font-family: inherit;
     border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
 }
 
 .btn-primary {
@@ -335,6 +446,13 @@ body.on-home .nav-auth {
 
 .btn-primary:hover {
     background: #3d8be8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .btn-secondary {
@@ -390,12 +508,14 @@ body.on-home .nav-auth {
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 28px;
-    transition: all 0.2s;
+    transition: all var(--transition-normal);
 }
 
 .feature-card:hover {
     background: var(--bg-card-hover);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-hover);
 }
 
 .feature-icon {
@@ -410,6 +530,11 @@ body.on-home .nav-auth {
     font-weight: 700;
     color: var(--accent-blue);
     margin-bottom: 16px;
+    transition: transform var(--transition-normal);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
 }
 
 .feature-card h3 {
@@ -950,13 +1075,19 @@ body.on-home .nav-auth {
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal);
 }
 
 .week-day-card:hover {
     border-color: var(--border-hover);
     background: var(--bg-card-hover);
-    transform: translateX(4px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.week-day-card:active {
+    transform: translateY(0);
+    transition: transform 0.1s;
 }
 
 .week-day-card.today {
@@ -1417,7 +1548,14 @@ body.on-home .nav-auth {
     font-weight: 600;
 }
 
-.weekday-chart {
+/* Weekday Analysis - Per-Trip Efficiency */
+.weekday-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.weekday-chart-bars {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 12px;
@@ -1427,12 +1565,24 @@ body.on-home .nav-auth {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+}
+
+.weekday-bar.top-day .weekday-bar-fill {
+    background: linear-gradient(180deg, var(--accent-green), var(--accent-blue));
+}
+
+.weekday-bar.top-day .weekday-value {
+    color: var(--accent-green);
+}
+
+.weekday-bar.no-data {
+    opacity: 0.4;
 }
 
 .weekday-bar-container {
     width: 100%;
-    height: 120px;
+    height: 100px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 6px;
     display: flex;
@@ -1444,18 +1594,481 @@ body.on-home .nav-auth {
     background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
     border-radius: 6px 6px 0 0;
     min-height: 4px;
+    transition: height var(--transition-slow);
 }
 
 .weekday-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .weekday-value {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+.weekday-trips {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Weekday Metrics Table */
+.weekday-metrics-table {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.weekday-metrics-header {
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.7rem;
     font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.weekday-metrics-row {
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    transition: background var(--transition-fast);
+}
+
+.weekday-metrics-row:last-child {
+    border-bottom: none;
+}
+
+.weekday-metrics-row:hover {
+    background: var(--bg-card);
+}
+
+.weekday-metrics-row.no-data {
+    opacity: 0.4;
+}
+
+.weekday-metrics-day {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.metric-value {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.metric-value.earnings {
+    color: var(--accent-green);
+    font-weight: 600;
+}
+
+.metric-value.tip {
+    color: var(--accent-yellow);
+}
+
+/* Weekday Insight */
+.weekday-insight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(74, 158, 255, 0.1);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent-blue);
+}
+
+.insight-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.insight-value {
+    font-weight: 700;
+    color: var(--accent-green);
+}
+
+/* Responsive Weekday Analysis */
+@media (max-width: 768px) {
+    .weekday-chart-bars {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
+    
+    .weekday-bar-container {
+        height: 80px;
+    }
+    
+    .weekday-label {
+        font-size: 0.7rem;
+    }
+    
+    .weekday-value {
+        font-size: 0.75rem;
+    }
+    
+    .weekday-metrics-header,
+    .weekday-metrics-row {
+        grid-template-columns: 50px repeat(5, 1fr);
+        font-size: 0.75rem;
+        padding: 8px 12px;
+    }
+}
+
+/* Trip Efficiency Analysis */
+.trip-efficiency-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.efficiency-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.efficiency-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.efficiency-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.efficiency-stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.efficiency-stat-detail {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.efficiency-stat.optimal {
+    border-color: rgba(34, 197, 94, 0.3);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.efficiency-stat.optimal .efficiency-stat-value {
+    color: #22c55e;
+}
+
+.efficiency-stat.acceptable {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.efficiency-stat.acceptable .efficiency-stat-value {
+    color: #3b82f6;
+}
+
+.efficiency-stat.short {
+    border-color: rgba(251, 191, 36, 0.3);
+    background: rgba(251, 191, 36, 0.08);
+}
+
+.efficiency-stat.short .efficiency-stat-value {
+    color: #fbbf24;
+}
+
+.efficiency-stat.long {
+    border-color: rgba(249, 115, 22, 0.3);
+    background: rgba(249, 115, 22, 0.08);
+}
+
+.efficiency-stat.long .efficiency-stat-value {
+    color: #f97316;
+}
+
+.efficiency-stat.low-pay {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.efficiency-stat.low-pay .efficiency-stat-value {
+    color: #ef4444;
+}
+
+.trip-efficiency-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+}
+
+.efficiency-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+}
+
+.efficiency-metric-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.efficiency-metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.efficiency-metric-value.good {
+    color: #22c55e;
+}
+
+.efficiency-metric-value.warning {
+    color: #fbbf24;
+}
+
+.efficiency-metric-value.bad {
+    color: #ef4444;
+}
+
+.efficiency-metric-target {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.trip-efficiency-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.efficiency-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.efficiency-list-header h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.efficiency-list-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.efficiency-tab {
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.efficiency-tab:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.efficiency-tab.active {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.efficiency-trip-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 80px 80px 80px 80px;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.efficiency-trip-row:hover {
+    background: var(--bg-secondary);
+}
+
+.efficiency-trip-row:last-child {
+    border-bottom: none;
+}
+
+.efficiency-trip-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.efficiency-trip-restaurant {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.efficiency-trip-duration {
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.efficiency-trip-duration.short {
+    color: #fbbf24;
+}
+
+.efficiency-trip-duration.optimal {
+    color: #22c55e;
+}
+
+.efficiency-trip-duration.long {
+    color: #f97316;
+}
+
+.efficiency-trip-pay {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: right;
+}
+
+.efficiency-trip-pay.good {
+    color: #22c55e;
+}
+
+.efficiency-trip-pay.acceptable {
+    color: #3b82f6;
+}
+
+.efficiency-trip-pay.low {
+    color: #ef4444;
+}
+
+.efficiency-trip-per-hour {
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.efficiency-trip-per-hour.good {
+    color: #22c55e;
+}
+
+.efficiency-trip-per-hour.bad {
+    color: #ef4444;
+}
+
+.efficiency-trip-per-mile {
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.efficiency-trip-per-mile.good {
+    color: #22c55e;
+}
+
+.efficiency-trip-per-mile.bad {
+    color: #ef4444;
+}
+
+.efficiency-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.efficiency-badge.optimal {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.efficiency-badge.acceptable {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.efficiency-badge.short {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+
+.efficiency-badge.long {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+}
+
+.efficiency-badge.low {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* Trip Efficiency Responsive */
+@media (max-width: 1024px) {
+    .trip-efficiency-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .trip-efficiency-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .trip-efficiency-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .efficiency-stat-value {
+        font-size: 1.25rem;
+    }
+    
+    .efficiency-trip-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .efficiency-trip-date,
+    .efficiency-trip-restaurant {
+        grid-column: span 1;
+    }
+    
+    .efficiency-trip-duration,
+    .efficiency-trip-pay,
+    .efficiency-trip-per-hour,
+    .efficiency-trip-per-mile {
+        font-size: 0.75rem;
+    }
 }
 
 /* Days Grid */
@@ -1487,13 +2100,20 @@ body.on-home .nav-auth {
     border-radius: 10px;
     padding: 16px 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
+    position: relative;
 }
 
 .day-card:hover {
     background: var(--bg-card-hover);
     border-color: rgba(74, 158, 255, 0.3);
-    transform: translateX(4px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.day-card:active {
+    transform: translateY(0);
+    transition: transform 0.1s;
 }
 
 .day-date {
@@ -1726,12 +2346,18 @@ body.on-home .nav-auth {
     padding: 12px;
     margin-bottom: 8px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal);
 }
 
 .trip-card:hover {
     background: var(--bg-card-hover);
     border-color: var(--border-hover);
+    transform: translateX(3px);
+}
+
+.trip-card:active {
+    transform: translateX(1px);
+    transition: transform 0.1s;
 }
 
 .trip-card.active {
@@ -1860,6 +2486,50 @@ body.on-home .nav-auth {
 
 .trip-addr-icon.dropoff {
     background: var(--accent-green);
+}
+
+/* Pickup toggle and map link */
+.pickup-toggle {
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    padding: 2px 4px;
+    margin: -2px -4px;
+    border-radius: 4px;
+}
+
+.pickup-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pickup-toggle.showing-address .pickup-text {
+    color: var(--text-secondary);
+}
+
+.map-link {
+    text-decoration: none;
+    font-size: 0.85rem;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    margin-left: 4px;
+}
+
+.map-link:hover {
+    opacity: 1;
+}
+
+.pickup-toggle-detail {
+    cursor: pointer;
+    border-bottom: 1px dashed var(--text-muted);
+    transition: color var(--transition-fast);
+}
+
+.pickup-toggle-detail:hover {
+    color: var(--accent-blue);
+}
+
+.pickup-toggle-detail.showing-address {
+    color: var(--text-secondary);
+    font-size: 0.85em;
 }
 
 /* Map Container */
@@ -2151,6 +2821,96 @@ body.on-home .nav-auth {
 }
 
 /* Trip Entry Modal */
+/* Generic Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+}
+
+.modal-content.modal-md {
+    max-width: 500px;
+}
+
+.modal-content.modal-sm {
+    max-width: 380px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
 .trip-entry-modal {
     display: none;
     position: fixed;
@@ -2696,16 +3456,45 @@ body.on-home .nav-auth {
 .stats-insights-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
 }
 
 .stats-insight-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-md);
     background: var(--bg-tertiary);
     border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.stats-insight-item.clickable {
+    cursor: pointer;
+}
+
+.stats-insight-item.clickable:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+
+.stats-insight-item.clickable:hover .stats-insight-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.stats-insight-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    color: var(--accent-green);
+    flex-shrink: 0;
 }
 
 .stats-insight-text {
@@ -2713,10 +3502,18 @@ body.on-home .nav-auth {
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    flex: 1;
+}
+
+.stats-insight-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .stats-insight-value {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
@@ -2724,17 +3521,18 @@ body.on-home .nav-auth {
     text-overflow: ellipsis;
 }
 
-.stats-insight-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
 .stats-insight-sub {
+    font-size: 0.8rem;
     color: var(--accent-green);
     font-weight: 500;
+}
+
+.stats-insight-arrow {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
 }
 
 /* Restaurant Intelligence Section */
@@ -2744,23 +3542,65 @@ body.on-home .nav-auth {
     gap: var(--spacing-lg);
 }
 
+.restaurant-intel-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.restaurant-intel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+}
+
+.restaurant-intel-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.restaurant-intel-icon.tip {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--accent-green);
+}
+
+.restaurant-intel-icon.freq {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent-blue);
+}
+
+.restaurant-intel-icon.value {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+}
+
 .restaurant-intel-col h3 {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 0 0 var(--spacing-xs) 0;
+    margin: 0;
+    line-height: 1.3;
 }
 
 .restaurant-intel-desc {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
-    margin: 0 0 var(--spacing-md) 0;
+    margin: 2px 0 0 0;
 }
 
 .restaurant-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 2px;
 }
 
 .restaurant-list-empty {
@@ -2774,18 +3614,25 @@ body.on-home .nav-auth {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-xs);
+    padding: 10px var(--spacing-sm);
     border-radius: var(--radius-sm);
-    transition: background 0.15s ease;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
 }
 
-.restaurant-row:hover {
+.restaurant-row.clickable {
+    cursor: pointer;
+}
+
+.restaurant-row.clickable:hover {
     background: var(--bg-tertiary);
+    border-color: var(--border);
+    transform: translateX(4px);
 }
 
 .restaurant-rank {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     background: var(--bg-tertiary);
     border-radius: 50%;
     display: flex;
@@ -2819,17 +3666,18 @@ body.on-home .nav-auth {
 
 .restaurant-meta {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
+    margin-top: 1px;
 }
 
 .restaurant-stat {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--accent-green);
     flex-shrink: 0;
     background: rgba(34, 197, 94, 0.1);
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: var(--radius-sm);
 }
 
@@ -2886,6 +3734,17 @@ body.on-home .nav-auth {
     
     .restaurant-intel-grid {
         grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+    
+    .restaurant-intel-col {
+        padding-bottom: var(--spacing-lg);
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .restaurant-intel-col:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
     }
     
     .stats-quick-row {
@@ -2908,6 +3767,19 @@ body.on-home .nav-auth {
         grid-template-columns: 1fr;
     }
     
+    .stats-insight-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .stats-insight-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .stats-insight-value {
+        font-size: 0.95rem;
+    }
+    
     .stats-week-grid {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -2924,6 +3796,20 @@ body.on-home .nav-auth {
     
     .stats-tax-bar-note {
         margin-left: 0;
+    }
+    
+    .restaurant-intel-header {
+        margin-bottom: var(--spacing-sm);
+        padding-bottom: var(--spacing-sm);
+    }
+    
+    .restaurant-row {
+        padding: 8px var(--spacing-xs);
+    }
+    
+    .restaurant-stat {
+        font-size: 0.85rem;
+        padding: 3px 8px;
     }
 }
 
@@ -3099,17 +3985,22 @@ body.on-home .nav-auth {
     font-size: 1rem;
 }
 
-/* Weekday Chart */
+/* Weekday Chart Container */
 .report-card-content .weekday-chart,
 #weekdayChart {
+    padding: 20px 18px;
+}
+
+/* Weekday Totals Chart (simple version for Reports) */
+.weekday-totals-chart {
     display: flex;
     justify-content: space-around;
     align-items: flex-end;
-    padding: 20px 18px;
-    min-height: 180px;
+    gap: 12px;
+    min-height: 160px;
 }
 
-.weekday-bar {
+.weekday-totals-chart .weekday-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3117,15 +4008,15 @@ body.on-home .nav-auth {
     flex: 1;
 }
 
-.weekday-value {
-    font-size: 0.75rem;
+.weekday-totals-chart .weekday-value {
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--accent-green);
 }
 
-.weekday-bar-container {
+.weekday-totals-chart .weekday-bar-container {
     width: 100%;
-    max-width: 36px;
+    max-width: 40px;
     height: 100px;
     display: flex;
     align-items: flex-end;
@@ -3133,18 +4024,398 @@ body.on-home .nav-auth {
     border-radius: var(--radius-sm);
 }
 
-.weekday-bar-fill {
+.weekday-totals-chart .weekday-bar-fill {
     width: 100%;
-    background: linear-gradient(to top, var(--accent-green), var(--accent-blue));
+    background: linear-gradient(to top, var(--accent-blue), var(--accent-purple));
     border-radius: var(--radius-sm);
+    min-height: 4px;
     transition: height 0.3s ease;
 }
 
-.weekday-label {
-    font-size: 0.7rem;
-    font-weight: 500;
+.weekday-totals-chart .weekday-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.weekday-totals-chart .weekday-trips {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.weekday-totals-chart .weekday-bar.no-data {
+    opacity: 0.4;
+}
+
+/* Report stat smaller text variant */
+.report-stat-value-sm {
+    font-size: 0.95rem !important;
+}
+
+/* Refunds Section */
+.refunds-section .report-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.refunds-section .report-card-header h2 {
+    flex: 0 0 auto;
+}
+
+.refunds-section .report-card-meta {
+    flex: 1;
+}
+
+.refunds-section .report-card-header .btn {
+    flex: 0 0 auto;
+}
+
+.refunds-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 16px 18px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.refund-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.refund-stat-label {
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.refund-stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.refund-value-negative {
+    color: var(--accent-red, #ef4444);
+}
+
+.refunds-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.refunds-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.refund-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px 100px 80px;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.refund-row:last-child {
+    border-bottom: none;
+}
+
+.refund-row:hover {
+    background: var(--bg-secondary);
+}
+
+.refund-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.refund-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.refund-platform {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.refund-reason {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.refund-amount {
+    font-weight: 600;
+    color: var(--accent-red, #ef4444);
+    font-size: 1rem;
+    text-align: right;
+}
+
+.refund-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.refund-status.pending {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+
+.refund-status.resolved {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.refund-status.disputed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.refund-receipt-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+.refund-receipt-indicator.has-receipt {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+/* Trip source badge for refunds from trip data */
+.refund-source-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+    font-size: 0.65rem;
+    font-weight: 500;
+    border-radius: 4px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.refund-row.from-trip {
+    background: rgba(139, 92, 246, 0.03);
+}
+
+.refund-row.from-trip:hover {
+    background: rgba(139, 92, 246, 0.08);
+}
+
+/* File Upload Area */
+.file-upload-area {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.file-upload-area:hover {
+    border-color: var(--accent-blue);
+    background: var(--bg-secondary);
+}
+
+.file-upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.file-upload-icon {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+}
+
+.file-upload-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-upload-preview img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+}
+
+.file-upload-preview .file-name {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+.file-upload-preview .file-remove {
+    margin-left: auto;
+    padding: 4px 8px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.file-upload-preview .file-remove:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* View Refund Modal */
+.refund-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.refund-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.refund-detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.refund-detail-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.refund-detail-value {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.refund-detail-value.amount {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--accent-red, #ef4444);
+}
+
+.refund-receipt-view {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.refund-receipt-view img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+}
+
+.refund-receipt-view a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.refund-receipt-view a:hover {
+    text-decoration: underline;
+}
+
+/* Modal footer for refund view */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Refunds responsive */
+@media (max-width: 768px) {
+    .refunds-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .refund-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .refund-date {
+        order: 1;
+    }
+    
+    .refund-amount {
+        order: 2;
+        text-align: right;
+    }
+    
+    .refund-info {
+        order: 3;
+    }
+    
+    .refund-status {
+        order: 4;
+        justify-self: end;
+    }
+    
+    .refund-receipt-indicator {
+        display: none;
+    }
+    
+    .refund-detail-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Reports Page Responsive */

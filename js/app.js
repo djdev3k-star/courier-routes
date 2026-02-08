@@ -10,6 +10,51 @@ let currentPage = 'home';
 let currentWeekStart = null; // For week navigation
 let weekViewActive = false;
 
+// Feature flags (shelved for v2)
+const FEATURE_SHOW_TRIP_UUID = false;
+const FEATURE_SHOW_FULL_DROPOFF = false;
+
+// Mask dropoff address (hide street number/apt for privacy)
+function maskDropoffAddress(address) {
+    if (!address || FEATURE_SHOW_FULL_DROPOFF) return address;
+    // Remove street number at start and apt/unit info, keep city/state
+    return address.replace(/^\d+\s+/, '').replace(/,?\s*(apt|unit|#|suite)\s*\S*/gi, '');
+}
+
+// Sanitize pickup address - remove redundant restaurant name prefix
+function sanitizePickupAddress(address, restaurant) {
+    if (!address) return address;
+    let clean = address;
+    
+    // Pattern: "Restaurant Name (location), actual address"
+    // Remove the "Restaurant Name (location), " prefix
+    const prefixMatch = clean.match(/^[^,]+\([^)]+\),\s*/);
+    if (prefixMatch) {
+        clean = clean.substring(prefixMatch[0].length);
+    }
+    
+    // Also try removing just restaurant name at start if no parentheses
+    if (restaurant && clean.toLowerCase().startsWith(restaurant.toLowerCase())) {
+        clean = clean.substring(restaurant.length).replace(/^[\s,]+/, '');
+    }
+    
+    // Clean up extra spaces and normalize
+    clean = clean.replace(/\s+/g, ' ').trim();
+    
+    // Capitalize first letter of each word in street name
+    clean = clean.replace(/^(\d+\s+)?([a-z])/i, (m, num, letter) => 
+        (num || '') + letter.toUpperCase()
+    );
+    
+    return clean;
+}
+
+// Format pickup display for detail modal (restaurant name, toggleable to address)
+function formatPickupDisplay(address, restaurant) {
+    const cleanAddress = sanitizePickupAddress(address, restaurant);
+    return { restaurant, address: cleanAddress };
+}
+
 // HTML escape helper for XSS protection
 function escapeHtml(text) {
     if (text == null) return '';
@@ -235,18 +280,27 @@ function renderDaysGrid() {
 // Render reports page
 function renderReportsPage() {
     const stats = appData.stats;
-    const avgPerTrip = stats.total_trips > 0 ? stats.total_earnings / stats.total_trips : 0;
+    const days = appData.days;
 
     document.getElementById('reportEarnings').textContent = '$' + stats.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('reportTrips').textContent = stats.total_trips.toLocaleString();
     document.getElementById('reportMiles').textContent = Math.round(stats.total_distance).toLocaleString();
-    document.getElementById('reportAvg').textContent = '$' + avgPerTrip.toFixed(2);
     document.getElementById('reportTips').textContent = '$' + stats.total_tips.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('reportDays').textContent = stats.total_days;
+    
+    // Date range
+    if (days.length > 0) {
+        const firstDate = new Date(days[0].date + 'T12:00:00');
+        const lastDate = new Date(days[days.length - 1].date + 'T12:00:00');
+        const dateRangeStr = firstDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) + 
+            ' - ' + lastDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        document.getElementById('reportDateRange').textContent = dateRangeStr;
+    }
 
     renderMonthlyTable();
     renderTopDays();
-    renderWeekdayChart();
+    renderWeekdayTotalsChart(); // Simple totals for Reports
+    renderRefundsSection(); // Refunds tracker
 }
 
 // Render monthly breakdown table
@@ -302,40 +356,352 @@ function renderTopDays() {
     }).join('');
 }
 
-// Render weekday chart
-function renderWeekdayChart() {
+// Render weekday TOTALS chart for Reports page (simple bar chart)
+function renderWeekdayTotalsChart() {
     const weekdayData = {
-        'Sun': { earnings: 0, count: 0 },
-        'Mon': { earnings: 0, count: 0 },
-        'Tue': { earnings: 0, count: 0 },
-        'Wed': { earnings: 0, count: 0 },
-        'Thu': { earnings: 0, count: 0 },
-        'Fri': { earnings: 0, count: 0 },
-        'Sat': { earnings: 0, count: 0 }
+        'Sun': { earnings: 0, trips: 0 },
+        'Mon': { earnings: 0, trips: 0 },
+        'Tue': { earnings: 0, trips: 0 },
+        'Wed': { earnings: 0, trips: 0 },
+        'Thu': { earnings: 0, trips: 0 },
+        'Fri': { earnings: 0, trips: 0 },
+        'Sat': { earnings: 0, trips: 0 }
     };
 
     appData.days.forEach(day => {
         const date = new Date(day.date + 'T12:00:00');
         const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
         weekdayData[weekday].earnings += day.stats.total_earnings;
-        weekdayData[weekday].count += 1;
+        weekdayData[weekday].trips += day.stats.trip_count;
     });
 
     const maxEarnings = Math.max(...Object.values(weekdayData).map(d => d.earnings));
     const container = document.getElementById('weekdayChart');
 
-    container.innerHTML = Object.entries(weekdayData).map(([day, data]) => {
-        const height = maxEarnings > 0 ? (data.earnings / maxEarnings) * 100 : 0;
-        return `
-            <div class="weekday-bar">
-                <div class="weekday-value">$${Math.round(data.earnings)}</div>
-                <div class="weekday-bar-container">
-                    <div class="weekday-bar-fill" style="height: ${height}%"></div>
-                </div>
-                <div class="weekday-label">${day}</div>
+    container.innerHTML = `
+        <div class="weekday-totals-chart">
+            ${Object.entries(weekdayData).map(([day, data]) => {
+                const height = maxEarnings > 0 ? (data.earnings / maxEarnings) * 100 : 0;
+                return `
+                    <div class="weekday-bar ${data.trips === 0 ? 'no-data' : ''}">
+                        <div class="weekday-value">$${Math.round(data.earnings)}</div>
+                        <div class="weekday-bar-container">
+                            <div class="weekday-bar-fill" style="height: ${height}%"></div>
+                        </div>
+                        <div class="weekday-label">${day}</div>
+                        <div class="weekday-trips">${data.trips}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+// Render weekday EFFICIENCY chart for Stats page (per-trip metrics)
+function renderWeekdayEfficiencyChart() {
+    const weekdayData = {
+        'Sun': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Mon': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Tue': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Wed': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Thu': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Fri': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 },
+        'Sat': { earnings: 0, tips: 0, trips: 0, distance: 0, daysWorked: 0 }
+    };
+
+    appData.days.forEach(day => {
+        const date = new Date(day.date + 'T12:00:00');
+        const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
+        weekdayData[weekday].earnings += day.stats.total_earnings;
+        weekdayData[weekday].tips += day.stats.total_tips;
+        weekdayData[weekday].trips += day.stats.trip_count;
+        weekdayData[weekday].distance += day.stats.total_distance;
+        weekdayData[weekday].daysWorked += 1;
+    });
+
+    // Calculate per-trip metrics
+    const weekdayMetrics = Object.entries(weekdayData).map(([day, data]) => ({
+        day,
+        trips: data.trips,
+        daysWorked: data.daysWorked,
+        avgPerTrip: data.trips > 0 ? data.earnings / data.trips : 0,
+        avgTipPerTrip: data.trips > 0 ? data.tips / data.trips : 0,
+        tipRate: data.earnings > 0 ? (data.tips / data.earnings) * 100 : 0,
+        avgPerMile: data.distance > 0 ? data.earnings / data.distance : 0,
+        avgTripsPerDay: data.daysWorked > 0 ? data.trips / data.daysWorked : 0,
+        totalEarnings: data.earnings
+    }));
+
+    const maxAvgPerTrip = Math.max(...weekdayMetrics.map(d => d.avgPerTrip));
+    const container = document.getElementById('statsWeekdayChart');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="weekday-analysis">
+            <div class="weekday-chart-bars">
+                ${weekdayMetrics.map(m => {
+                    const height = maxAvgPerTrip > 0 ? (m.avgPerTrip / maxAvgPerTrip) * 100 : 0;
+                    const isTopDay = m.avgPerTrip === maxAvgPerTrip && m.trips > 0;
+                    return `
+                        <div class="weekday-bar ${isTopDay ? 'top-day' : ''} ${m.trips === 0 ? 'no-data' : ''}">
+                            <div class="weekday-value">$${m.avgPerTrip.toFixed(2)}</div>
+                            <div class="weekday-bar-container">
+                                <div class="weekday-bar-fill" style="height: ${height}%"></div>
+                            </div>
+                            <div class="weekday-label">${m.day}</div>
+                            <div class="weekday-trips">${m.trips} trips</div>
+                        </div>
+                    `;
+                }).join('')}
             </div>
-        `;
-    }).join('');
+            <div class="weekday-metrics-table">
+                <div class="weekday-metrics-header">
+                    <span>Day</span>
+                    <span>$/Trip</span>
+                    <span>Tip/Trip</span>
+                    <span>Tip %</span>
+                    <span>$/Mile</span>
+                    <span>Trips/Day</span>
+                </div>
+                ${weekdayMetrics.map(m => `
+                    <div class="weekday-metrics-row ${m.trips === 0 ? 'no-data' : ''}">
+                        <span class="weekday-metrics-day">${m.day}</span>
+                        <span class="metric-value earnings">$${m.avgPerTrip.toFixed(2)}</span>
+                        <span class="metric-value tip">$${m.avgTipPerTrip.toFixed(2)}</span>
+                        <span class="metric-value">${m.tipRate.toFixed(0)}%</span>
+                        <span class="metric-value">$${m.avgPerMile.toFixed(2)}</span>
+                        <span class="metric-value">${m.avgTripsPerDay.toFixed(1)}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="weekday-insight">
+                <span class="insight-label">Best earning day per trip:</span>
+                <span class="insight-value">${weekdayMetrics.reduce((best, m) => m.avgPerTrip > best.avgPerTrip ? m : best, weekdayMetrics[0]).day}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Parse duration string like "39 min" or "1h 12m" to minutes
+function parseDuration(durationStr) {
+    if (!durationStr) return 0;
+    
+    // Handle "Xh Ym" format
+    const hourMatch = durationStr.match(/(\d+)h\s*(\d+)?m?/);
+    if (hourMatch) {
+        const hours = parseInt(hourMatch[1]) || 0;
+        const mins = parseInt(hourMatch[2]) || 0;
+        return hours * 60 + mins;
+    }
+    
+    // Handle "X min" format
+    const minMatch = durationStr.match(/(\d+)\s*min/);
+    if (minMatch) {
+        return parseInt(minMatch[1]) || 0;
+    }
+    
+    return 0;
+}
+
+// Trip Efficiency Analysis
+let currentEfficiencyFilter = 'all';
+
+function renderTripEfficiencyAnalysis() {
+    const allTrips = [];
+    
+    // Collect all trips with calculated efficiency metrics
+    appData.days.forEach(day => {
+        day.trips.forEach((trip, tripIndex) => {
+            const duration = parseDuration(trip.duration);
+            const pay = trip.total_pay || trip.earnings || 0;
+            const distance = trip.distance || 0;
+            
+            // Calculate per-hour and per-mile rates
+            const perHour = duration > 0 ? (pay / duration) * 60 : 0;
+            const perMile = distance > 0 ? pay / distance : 0;
+            
+            // Categorize trip
+            let category = 'other';
+            let isOptimal = false;
+            let isAcceptable = false;
+            let isShort = duration > 0 && duration < 15;
+            let isLong = duration > 25;
+            let isLowPay = pay < 8;
+            
+            // Optimal: 15-25 min AND $15+
+            if (duration >= 15 && duration <= 25 && pay >= 15) {
+                category = 'optimal';
+                isOptimal = true;
+            }
+            // Acceptable: $8+ any duration (but not already optimal)
+            else if (pay >= 8) {
+                category = 'acceptable';
+                isAcceptable = true;
+            }
+            // Short trip (under 15 min, not optimal/acceptable)
+            else if (isShort) {
+                category = 'short';
+            }
+            // Long trip (over 25 min, not optimal/acceptable)
+            else if (isLong) {
+                category = 'long';
+            }
+            // Low pay (under $8)
+            else {
+                category = 'low-pay';
+            }
+            
+            allTrips.push({
+                date: day.date,
+                dayIndex: appData.days.indexOf(day),
+                tripIndex,
+                restaurant: trip.restaurant || 'Unknown',
+                duration,
+                durationStr: trip.duration,
+                pay,
+                distance,
+                perHour,
+                perMile,
+                category,
+                isOptimal,
+                isAcceptable,
+                isShort,
+                isLong,
+                isLowPay
+            });
+        });
+    });
+    
+    // Calculate summary counts
+    const optimalCount = allTrips.filter(t => t.category === 'optimal').length;
+    const acceptableCount = allTrips.filter(t => t.category === 'acceptable').length;
+    const shortCount = allTrips.filter(t => t.isShort && t.category !== 'optimal' && t.category !== 'acceptable').length;
+    const longCount = allTrips.filter(t => t.isLong && t.category !== 'optimal' && t.category !== 'acceptable').length;
+    const lowPayCount = allTrips.filter(t => t.isLowPay).length;
+    
+    // Calculate average metrics
+    const tripsWithDuration = allTrips.filter(t => t.duration > 0);
+    const avgDuration = tripsWithDuration.length > 0 
+        ? tripsWithDuration.reduce((sum, t) => sum + t.duration, 0) / tripsWithDuration.length 
+        : 0;
+    const avgPerHour = tripsWithDuration.length > 0 
+        ? tripsWithDuration.reduce((sum, t) => sum + t.perHour, 0) / tripsWithDuration.length 
+        : 0;
+    
+    const tripsWithDistance = allTrips.filter(t => t.distance > 0);
+    const avgPerMile = tripsWithDistance.length > 0 
+        ? tripsWithDistance.reduce((sum, t) => sum + t.perMile, 0) / tripsWithDistance.length 
+        : 0;
+    
+    // Efficiency score = % of optimal + acceptable trips
+    const efficiencyScore = allTrips.length > 0 
+        ? ((optimalCount + acceptableCount) / allTrips.length) * 100 
+        : 0;
+    
+    // Update summary stats
+    document.getElementById('effOptimalCount').textContent = optimalCount;
+    document.getElementById('effAcceptableCount').textContent = acceptableCount;
+    document.getElementById('effShortCount').textContent = shortCount;
+    document.getElementById('effLongCount').textContent = longCount;
+    document.getElementById('effLowPayCount').textContent = lowPayCount;
+    
+    // Update metrics with color coding
+    const avgPerHourEl = document.getElementById('effAvgPerHour');
+    avgPerHourEl.textContent = '$' + avgPerHour.toFixed(2);
+    avgPerHourEl.className = 'efficiency-metric-value ' + (avgPerHour >= 30 ? 'good' : avgPerHour >= 20 ? 'warning' : 'bad');
+    
+    const avgPerMileEl = document.getElementById('effAvgPerMile');
+    avgPerMileEl.textContent = '$' + avgPerMile.toFixed(2);
+    avgPerMileEl.className = 'efficiency-metric-value ' + (avgPerMile >= 2 ? 'good' : avgPerMile >= 1.5 ? 'warning' : 'bad');
+    
+    document.getElementById('effAvgDuration').textContent = avgDuration.toFixed(0) + ' min';
+    
+    const effScoreEl = document.getElementById('effScore');
+    effScoreEl.textContent = efficiencyScore.toFixed(0) + '%';
+    effScoreEl.className = 'efficiency-metric-value ' + (efficiencyScore >= 50 ? 'good' : efficiencyScore >= 30 ? 'warning' : 'bad');
+    
+    // Render trip list with tabs
+    renderTripEfficiencyList(allTrips, currentEfficiencyFilter);
+}
+
+function renderTripEfficiencyList(allTrips, filter) {
+    const container = document.getElementById('tripEfficiencyList');
+    
+    // Filter trips based on selected tab
+    let filteredTrips = allTrips;
+    if (filter === 'optimal') {
+        filteredTrips = allTrips.filter(t => t.category === 'optimal');
+    } else if (filter === 'acceptable') {
+        filteredTrips = allTrips.filter(t => t.category === 'acceptable');
+    } else if (filter === 'short') {
+        filteredTrips = allTrips.filter(t => t.isShort && t.category !== 'optimal' && t.category !== 'acceptable');
+    } else if (filter === 'long') {
+        filteredTrips = allTrips.filter(t => t.isLong && t.category !== 'optimal' && t.category !== 'acceptable');
+    } else if (filter === 'low-pay') {
+        filteredTrips = allTrips.filter(t => t.isLowPay);
+    }
+    
+    // Sort by date descending, then by per-hour rate
+    filteredTrips.sort((a, b) => {
+        const dateCompare = new Date(b.date) - new Date(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        return b.perHour - a.perHour;
+    });
+    
+    // Limit to most recent 50
+    const displayTrips = filteredTrips.slice(0, 50);
+    
+    container.innerHTML = `
+        <div class="efficiency-list-header">
+            <h3>${filter === 'all' ? 'Recent Trips' : filter.charAt(0).toUpperCase() + filter.slice(1).replace('-', ' ') + ' Trips'} (${filteredTrips.length})</h3>
+            <div class="efficiency-list-tabs">
+                <button class="efficiency-tab ${filter === 'all' ? 'active' : ''}" onclick="filterEfficiencyTrips('all')">All</button>
+                <button class="efficiency-tab ${filter === 'optimal' ? 'active' : ''}" onclick="filterEfficiencyTrips('optimal')">Optimal</button>
+                <button class="efficiency-tab ${filter === 'acceptable' ? 'active' : ''}" onclick="filterEfficiencyTrips('acceptable')">OK</button>
+                <button class="efficiency-tab ${filter === 'short' ? 'active' : ''}" onclick="filterEfficiencyTrips('short')">Short</button>
+                <button class="efficiency-tab ${filter === 'long' ? 'active' : ''}" onclick="filterEfficiencyTrips('long')">Long</button>
+                <button class="efficiency-tab ${filter === 'low-pay' ? 'active' : ''}" onclick="filterEfficiencyTrips('low-pay')">Low $</button>
+            </div>
+        </div>
+        ${displayTrips.length > 0 ? displayTrips.map(trip => {
+            const date = new Date(trip.date + 'T12:00:00');
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            // Duration class
+            let durationClass = '';
+            if (trip.duration >= 15 && trip.duration <= 25) durationClass = 'optimal';
+            else if (trip.duration < 15 && trip.duration > 0) durationClass = 'short';
+            else if (trip.duration > 25) durationClass = 'long';
+            
+            // Pay class
+            let payClass = '';
+            if (trip.pay >= 15) payClass = 'good';
+            else if (trip.pay >= 8) payClass = 'acceptable';
+            else payClass = 'low';
+            
+            // Per-hour class
+            const perHourClass = trip.perHour >= 30 ? 'good' : 'bad';
+            
+            // Per-mile class
+            const perMileClass = trip.perMile >= 2 ? 'good' : 'bad';
+            
+            return `
+                <div class="efficiency-trip-row" onclick="openDay(${trip.dayIndex})">
+                    <div class="efficiency-trip-date">${dateStr}</div>
+                    <div class="efficiency-trip-restaurant">${trip.restaurant}</div>
+                    <div class="efficiency-trip-duration ${durationClass}">${trip.durationStr || '-'}</div>
+                    <div class="efficiency-trip-pay ${payClass}">$${trip.pay.toFixed(2)}</div>
+                    <div class="efficiency-trip-per-hour ${perHourClass}">$${trip.perHour.toFixed(0)}/hr</div>
+                    <div class="efficiency-trip-per-mile ${perMileClass}">$${trip.perMile.toFixed(2)}/mi</div>
+                </div>
+            `;
+        }).join('') : '<div class="refunds-empty">No trips match this filter</div>'}
+    `;
+}
+
+function filterEfficiencyTrips(filter) {
+    currentEfficiencyFilter = filter;
+    renderTripEfficiencyAnalysis();
 }
 
 // Render stats page
@@ -361,14 +727,10 @@ function renderStatsPage() {
     document.getElementById('statsTips').textContent = '$' + stats.total_tips.toFixed(2);
     document.getElementById('statsTipRate').textContent = tipRate.toFixed(0) + '%';
     
-    // This week stats
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    // This week stats - use latest week from data (2025)
+    const latestDate = days.length > 0 ? new Date(days[days.length - 1].date + 'T12:00:00') : new Date();
+    const startOfWeek = getWeekStart(latestDate);
+    const endOfWeek = getWeekEnd(startOfWeek);
     
     const thisWeekDays = days.filter(day => {
         const d = new Date(day.date + 'T12:00:00');
@@ -421,11 +783,26 @@ function renderStatsPage() {
     const hourStats = {};
     days.forEach(day => {
         day.trips.forEach(trip => {
-            if (trip.pickup_time) {
-                const hour = parseInt(trip.pickup_time.split(':')[0]);
-                if (!hourStats[hour]) hourStats[hour] = { trips: 0, earnings: 0 };
-                hourStats[hour].trips += 1;
-                hourStats[hour].earnings += (trip.earnings || trip.total_pay || 0);
+            if (trip.request_time) {
+                // Parse time like "07:09 PM" or "19:09"
+                let hour;
+                const timeStr = trip.request_time;
+                if (timeStr.includes('AM') || timeStr.includes('PM')) {
+                    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (match) {
+                        hour = parseInt(match[1]);
+                        const isPM = match[3].toUpperCase() === 'PM';
+                        if (isPM && hour !== 12) hour += 12;
+                        if (!isPM && hour === 12) hour = 0;
+                    }
+                } else {
+                    hour = parseInt(timeStr.split(':')[0]);
+                }
+                if (hour !== undefined && !isNaN(hour)) {
+                    if (!hourStats[hour]) hourStats[hour] = { trips: 0, earnings: 0 };
+                    hourStats[hour].trips += 1;
+                    hourStats[hour].earnings += (trip.total_pay || trip.earnings || 0);
+                }
             }
         });
     });
@@ -534,70 +911,116 @@ function renderStatsPage() {
         tipRate: data.trips > 0 ? (data.tippedTrips / data.trips) * 100 : 0
     }));
     
-    // Best Tippers (min 2 trips, sorted by avg tip)
+    // Best Tippers (min 10 trips, sorted by avg tip)
     const bestTippers = restaurants
-        .filter(r => r.trips >= 2 && r.totalTips > 0)
+        .filter(r => r.trips >= 10 && r.totalTips > 0)
         .sort((a, b) => b.avgTip - a.avgTip)
         .slice(0, 5);
     
     const tippersContainer = document.getElementById('statsRestaurantTippers');
     if (bestTippers.length > 0) {
         tippersContainer.innerHTML = bestTippers.map((r, i) => `
-            <div class="restaurant-row">
+            <div class="restaurant-row clickable" onclick="searchRestaurant('${r.name.replace(/'/g, "\\'")}')">
                 <span class="restaurant-rank">${i + 1}</span>
                 <div class="restaurant-info">
-                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
-                    <span class="restaurant-meta">${r.trips} trips</span>
+                    <span class="restaurant-name">${r.name.substring(0, 22)}${r.name.length > 22 ? '...' : ''}</span>
+                    <span class="restaurant-meta">${r.trips} trips | ${r.tipRate.toFixed(0)}% tip rate</span>
                 </div>
-                <span class="restaurant-stat">$${r.avgTip.toFixed(2)}/trip</span>
+                <span class="restaurant-stat">$${r.avgTip.toFixed(2)}</span>
             </div>
         `).join('');
     } else {
-        tippersContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+        tippersContainer.innerHTML = '<div class="restaurant-list-empty">Need 10+ trips to analyze</div>';
     }
     
     // Most Frequent (sorted by trip count)
     const mostFrequent = restaurants
-        .filter(r => r.trips >= 2)
+        .filter(r => r.trips >= 10)
         .sort((a, b) => b.trips - a.trips)
         .slice(0, 5);
     
     const frequentContainer = document.getElementById('statsRestaurantFrequent');
     if (mostFrequent.length > 0) {
         frequentContainer.innerHTML = mostFrequent.map((r, i) => `
-            <div class="restaurant-row">
+            <div class="restaurant-row clickable" onclick="searchRestaurant('${r.name.replace(/'/g, "\\'")}')">
                 <span class="restaurant-rank">${i + 1}</span>
                 <div class="restaurant-info">
-                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
-                    <span class="restaurant-meta">$${r.totalPay.toFixed(0)} earned</span>
+                    <span class="restaurant-name">${r.name.substring(0, 22)}${r.name.length > 22 ? '...' : ''}</span>
+                    <span class="restaurant-meta">$${r.totalPay.toFixed(0)} total earned</span>
                 </div>
-                <span class="restaurant-stat">${r.trips} trips</span>
+                <span class="restaurant-stat">${r.trips}x</span>
             </div>
         `).join('');
     } else {
-        frequentContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+        frequentContainer.innerHTML = '<div class="restaurant-list-empty">Need 10+ trips to analyze</div>';
     }
     
-    // Best Value (min 2 trips, sorted by avg total pay)
+    // Best Value (min 10 trips, sorted by avg total pay)
     const bestValue = restaurants
-        .filter(r => r.trips >= 2)
+        .filter(r => r.trips >= 10)
         .sort((a, b) => b.avgPay - a.avgPay)
         .slice(0, 5);
     
     const valueContainer = document.getElementById('statsRestaurantValue');
     if (bestValue.length > 0) {
         valueContainer.innerHTML = bestValue.map((r, i) => `
-            <div class="restaurant-row">
+            <div class="restaurant-row clickable" onclick="searchRestaurant('${r.name.replace(/'/g, "\\'")}')">
                 <span class="restaurant-rank">${i + 1}</span>
                 <div class="restaurant-info">
-                    <span class="restaurant-name">${r.name.substring(0, 20)}${r.name.length > 20 ? '...' : ''}</span>
-                    <span class="restaurant-meta">${r.trips} trips</span>
+                    <span class="restaurant-name">${r.name.substring(0, 22)}${r.name.length > 22 ? '...' : ''}</span>
+                    <span class="restaurant-meta">${r.trips} trips | $${r.totalTips.toFixed(0)} tips</span>
                 </div>
-                <span class="restaurant-stat">$${r.avgPay.toFixed(2)}/trip</span>
+                <span class="restaurant-stat">$${r.avgPay.toFixed(2)}</span>
             </div>
         `).join('');
     } else {
-        valueContainer.innerHTML = '<div class="restaurant-list-empty">Need 2+ trips to analyze</div>';
+        valueContainer.innerHTML = '<div class="restaurant-list-empty">Need 10+ trips to analyze</div>';
+    }
+    
+    // Render weekday efficiency chart (per-trip analysis)
+    renderWeekdayEfficiencyChart();
+    
+    // Render trip efficiency analysis
+    renderTripEfficiencyAnalysis();
+}
+
+// Search for a specific restaurant - navigate to routes and filter
+function searchRestaurant(restaurantName) {
+    showPage('routes');
+    document.getElementById('globalSearch').value = restaurantName;
+    smartSearch(restaurantName);
+}
+
+// Show insight detail - opens relevant view based on insight type
+function showInsightDetail(insightType) {
+    switch (insightType) {
+        case 'bestDay':
+            // Find best day and open it
+            const days = appData.days;
+            const bestDayIdx = days.reduce((maxIdx, day, idx, arr) => 
+                day.stats.total_earnings > arr[maxIdx].stats.total_earnings ? idx : maxIdx, 0);
+            openDay(bestDayIdx);
+            break;
+        case 'topRestaurant':
+            // Search for top restaurant
+            const topRestEl = document.getElementById('statsTopRestaurant');
+            if (topRestEl && topRestEl.textContent !== '-') {
+                searchRestaurant(topRestEl.textContent.replace('...', ''));
+            }
+            break;
+        case 'bestHours':
+            // Navigate to weeks page to see hourly patterns
+            showPage('weeks');
+            break;
+        case 'bestWeekday':
+            // Navigate to routes filtered by best weekday
+            const bestWeekdayEl = document.getElementById('statsBestWeekday');
+            if (bestWeekdayEl && bestWeekdayEl.textContent !== '-') {
+                showPage('routes');
+                document.getElementById('globalSearch').value = bestWeekdayEl.textContent.toLowerCase();
+                smartSearch(bestWeekdayEl.textContent.toLowerCase());
+            }
+            break;
     }
 }
 
@@ -1377,15 +1800,23 @@ function renderTripCards(trips) {
             <div class="trip-addresses">
                 <div class="trip-addr">
                     <div class="trip-addr-icon pickup">P</div>
-                    <span>${t.pickup_address.substring(0, 45)}${t.pickup_address.length > 45 ? '...' : ''}</span>
+                    <span>${sanitizePickupAddress(t.pickup_address, t.restaurant).substring(0, 45)}${sanitizePickupAddress(t.pickup_address, t.restaurant).length > 45 ? '...' : ''}</span>
                 </div>
                 <div class="trip-addr">
                     <div class="trip-addr-icon dropoff">D</div>
-                    <span>${t.dropoff_address.substring(0, 45)}${t.dropoff_address.length > 45 ? '...' : ''}</span>
+                    <span>${maskDropoffAddress(t.dropoff_address).substring(0, 45)}${maskDropoffAddress(t.dropoff_address).length > 45 ? '...' : ''}</span>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+// Toggle detail panel pickup address
+function toggleDetailPickup(element) {
+    const fullAddress = element.dataset.fullAddress;
+    const restaurant = element.dataset.restaurant;
+    const isShowingAddress = element.classList.toggle('showing-address');
+    element.textContent = isShowingAddress ? sanitizePickupAddress(fullAddress, restaurant) : restaurant;
 }
 
 // Initialize map
@@ -1467,13 +1898,18 @@ function selectTrip(tripId) {
     document.getElementById('detailIncentive').textContent = (trip.incentive + trip.quest) > 0 ? '$' + (trip.incentive + trip.quest).toFixed(2) : '-';
     document.getElementById('detailRefund').textContent = trip.order_refund > 0 ? '$' + trip.order_refund.toFixed(2) : '-';
     document.getElementById('detailTime').textContent = trip.request_time + ' - ' + trip.dropoff_time;
-    document.getElementById('detailPickup').textContent = trip.pickup_address;
-    document.getElementById('detailDropoff').textContent = trip.dropoff_address;
     
-    // Show UUID link if available
+    // Pickup: show restaurant name, click to toggle full address, with map link
+    const pickupEl = document.getElementById('detailPickup');
+    const cleanPickupAddr = sanitizePickupAddress(trip.pickup_address, trip.restaurant);
+    pickupEl.innerHTML = `<span class="pickup-toggle-detail" onclick="toggleDetailPickup(this)" data-full-address="${escapeHtml(trip.pickup_address)}" data-restaurant="${escapeHtml(trip.restaurant)}">${escapeHtml(trip.restaurant)}</span> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanPickupAddr)}" target="_blank" rel="noopener" class="map-link" title="Open in Maps">&#x1F5FA;</a>`;
+    
+    document.getElementById('detailDropoff').textContent = maskDropoffAddress(trip.dropoff_address);
+    
+    // Show UUID link if available (feature shelved for v2)
     const uuidSection = document.getElementById('detailUuidSection');
     const uuidLink = document.getElementById('detailUuidLink');
-    if (trip.trip_uuid && trip.trip_uuid !== 'N/A') {
+    if (FEATURE_SHOW_TRIP_UUID && trip.trip_uuid && trip.trip_uuid !== 'N/A') {
         uuidLink.href = `https://drivers.uber.com/earnings/trips/${trip.trip_uuid}`;
         uuidLink.textContent = trip.trip_uuid;
         uuidSection.style.display = '';
@@ -2067,7 +2503,7 @@ function printTripTicket() {
                         </tr>
                         <tr>
                             <td><strong>Dropoff</strong></td>
-                            <td>${trip.dropoff_address}</td>
+                            <td>${maskDropoffAddress(trip.dropoff_address)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2537,4 +2973,326 @@ function importBatchTrips() {
     if (typeof loadAllData === 'function') {
         loadAllData();
     }
+}
+
+// ========== REFUNDS MANAGEMENT ==========
+
+// Store for current refund being viewed
+let currentRefundId = null;
+let pendingReceiptData = null;
+
+// Load manual refunds from localStorage
+function loadManualRefunds() {
+    return safeGetJSON('courierRoutes_refunds') || [];
+}
+
+// Save manual refunds to localStorage
+function saveRefunds(refunds) {
+    localStorage.setItem('courierRoutes_refunds', JSON.stringify(refunds));
+}
+
+// Get refunds from trip data (order_refund field)
+function getTripRefunds() {
+    const tripRefunds = [];
+    appData.days.forEach(day => {
+        day.trips.forEach((trip, tripIndex) => {
+            if (trip.order_refund && trip.order_refund > 0) {
+                tripRefunds.push({
+                    id: `trip_${day.date}_${tripIndex}`,
+                    date: day.date,
+                    platform: 'Uber Eats', // From trip data source
+                    amount: trip.order_refund,
+                    reason: 'Order refund',
+                    notes: trip.restaurant,
+                    status: 'resolved', // Trip refunds are already processed
+                    receipt: null,
+                    fromTrip: true, // Flag to identify trip-based refunds
+                    tripData: {
+                        restaurant: trip.restaurant,
+                        time: trip.request_time,
+                        total_pay: trip.total_pay,
+                        service_type: trip.service_type
+                    }
+                });
+            }
+        });
+    });
+    return tripRefunds;
+}
+
+// Load all refunds (trip-based + manual)
+function loadAllRefunds() {
+    const tripRefunds = getTripRefunds();
+    const manualRefunds = loadManualRefunds();
+    return [...tripRefunds, ...manualRefunds];
+}
+
+// Render the refunds section in Reports
+function renderRefundsSection() {
+    const allRefunds = loadAllRefunds();
+    const manualRefunds = loadManualRefunds();
+    
+    // Calculate summary stats
+    const totalCount = allRefunds.length;
+    const totalValue = allRefunds.reduce((sum, r) => sum + (r.amount || 0), 0);
+    const pendingCount = allRefunds.filter(r => r.status === 'pending').length;
+    const resolvedCount = allRefunds.filter(r => r.status === 'resolved').length;
+    
+    // Update summary stats
+    document.getElementById('totalRefundsCount').textContent = totalCount;
+    document.getElementById('totalRefundsValue').textContent = '$' + totalValue.toFixed(2);
+    document.getElementById('pendingRefundsCount').textContent = pendingCount;
+    document.getElementById('resolvedRefundsCount').textContent = resolvedCount;
+    
+    // Render refunds list
+    const container = document.getElementById('refundsList');
+    
+    if (allRefunds.length === 0) {
+        container.innerHTML = '<div class="refunds-empty">No refunds recorded yet. Click "+ Add Refund" to track one.</div>';
+        return;
+    }
+    
+    // Sort by date descending
+    const sortedRefunds = [...allRefunds].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    container.innerHTML = sortedRefunds.map(refund => {
+        const date = new Date(refund.date + 'T12:00:00');
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const hasReceipt = refund.receipt ? true : false;
+        const isFromTrip = refund.fromTrip ? true : false;
+        
+        return `
+            <div class="refund-row ${isFromTrip ? 'from-trip' : ''}" onclick="viewRefund('${refund.id}')">
+                <div class="refund-date">${dateStr}</div>
+                <div class="refund-info">
+                    <span class="refund-platform">${refund.platform}${isFromTrip ? ' <span class="refund-source-badge">Trip</span>' : ''}</span>
+                    <span class="refund-reason">${isFromTrip ? refund.notes : refund.reason}</span>
+                </div>
+                <div class="refund-amount">-$${refund.amount.toFixed(2)}</div>
+                <span class="refund-status ${refund.status}">${refund.status}</span>
+                <span class="refund-receipt-indicator ${hasReceipt ? 'has-receipt' : ''}" title="${hasReceipt ? 'Has receipt' : 'No receipt'}">
+                    ${hasReceipt ? 'IMG' : '-'}
+                </span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Show add refund modal
+function showAddRefundModal() {
+    const modal = document.getElementById('addRefundModal');
+    modal.classList.add('active');
+    
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('refundDate').value = today;
+    
+    // Reset form
+    document.getElementById('addRefundForm').reset();
+    document.getElementById('refundDate').value = today;
+    pendingReceiptData = null;
+    
+    // Reset receipt preview
+    document.getElementById('receiptPlaceholder').style.display = 'flex';
+    document.getElementById('receiptPreview').style.display = 'none';
+    document.getElementById('receiptPreview').innerHTML = '';
+}
+
+// Close add refund modal
+function closeAddRefundModal() {
+    const modal = document.getElementById('addRefundModal');
+    modal.classList.remove('active');
+    pendingReceiptData = null;
+}
+
+// Handle receipt file upload
+function handleReceiptUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        pendingReceiptData = {
+            name: file.name,
+            type: file.type,
+            data: e.target.result
+        };
+        
+        // Show preview
+        const placeholder = document.getElementById('receiptPlaceholder');
+        const preview = document.getElementById('receiptPreview');
+        
+        placeholder.style.display = 'none';
+        preview.style.display = 'flex';
+        
+        if (file.type.startsWith('image/')) {
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="Receipt preview">
+                <span class="file-name">${file.name}</span>
+                <button type="button" class="file-remove" onclick="removeReceipt(event)">Remove</button>
+            `;
+        } else {
+            preview.innerHTML = `
+                <span class="file-upload-icon">PDF</span>
+                <span class="file-name">${file.name}</span>
+                <button type="button" class="file-remove" onclick="removeReceipt(event)">Remove</button>
+            `;
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// Remove receipt from upload
+function removeReceipt(event) {
+    event.stopPropagation();
+    pendingReceiptData = null;
+    
+    document.getElementById('refundReceipt').value = '';
+    document.getElementById('receiptPlaceholder').style.display = 'flex';
+    document.getElementById('receiptPreview').style.display = 'none';
+    document.getElementById('receiptPreview').innerHTML = '';
+}
+
+// Submit new refund
+function submitRefund(event) {
+    event.preventDefault();
+    
+    const refund = {
+        id: `refund_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        date: document.getElementById('refundDate').value,
+        platform: document.getElementById('refundPlatform').value,
+        amount: parseFloat(document.getElementById('refundAmount').value) || 0,
+        reason: document.getElementById('refundReason').value,
+        notes: document.getElementById('refundNotes').value.trim(),
+        status: document.getElementById('refundStatus').value,
+        receipt: pendingReceiptData,
+        createdAt: new Date().toISOString()
+    };
+    
+    // Save to localStorage
+    const refunds = loadManualRefunds();
+    refunds.push(refund);
+    saveRefunds(refunds);
+    
+    // Close modal and refresh
+    closeAddRefundModal();
+    renderRefundsSection();
+    showToast('Refund recorded successfully!', 'success');
+}
+
+// View refund details
+function viewRefund(refundId) {
+    // Check both trip refunds and manual refunds
+    const allRefunds = loadAllRefunds();
+    const refund = allRefunds.find(r => r.id === refundId);
+    
+    if (!refund) return;
+    
+    currentRefundId = refundId;
+    const isFromTrip = refund.fromTrip || false;
+    
+    const modal = document.getElementById('viewRefundModal');
+    const body = document.getElementById('viewRefundBody');
+    const deleteBtn = document.getElementById('deleteRefundBtn');
+    
+    // Hide delete button for trip-based refunds
+    if (deleteBtn) {
+        deleteBtn.style.display = isFromTrip ? 'none' : 'block';
+    }
+    
+    const date = new Date(refund.date + 'T12:00:00');
+    const dateStr = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    
+    let receiptHtml = '';
+    if (refund.receipt) {
+        if (refund.receipt.type && refund.receipt.type.startsWith('image/')) {
+            receiptHtml = `
+                <div class="refund-receipt-view">
+                    <div class="refund-detail-label">Receipt</div>
+                    <img src="${refund.receipt.data}" alt="Receipt">
+                </div>
+            `;
+        } else {
+            receiptHtml = `
+                <div class="refund-receipt-view">
+                    <div class="refund-detail-label">Receipt</div>
+                    <a href="${refund.receipt.data}" download="${refund.receipt.name}">${refund.receipt.name} (Download)</a>
+                </div>
+            `;
+        }
+    }
+    
+    // Additional trip info for trip-based refunds
+    let tripInfoHtml = '';
+    if (isFromTrip && refund.tripData) {
+        tripInfoHtml = `
+            <div class="refund-detail-item full-width">
+                <span class="refund-detail-label">Trip Details</span>
+                <span class="refund-detail-value">${refund.tripData.restaurant} at ${refund.tripData.time} - Total pay: $${refund.tripData.total_pay.toFixed(2)}</span>
+            </div>
+        `;
+    }
+    
+    body.innerHTML = `
+        <div class="refund-detail-grid">
+            <div class="refund-detail-item">
+                <span class="refund-detail-label">Date</span>
+                <span class="refund-detail-value">${dateStr}</span>
+            </div>
+            <div class="refund-detail-item">
+                <span class="refund-detail-label">Amount</span>
+                <span class="refund-detail-value amount">-$${refund.amount.toFixed(2)}</span>
+            </div>
+            <div class="refund-detail-item">
+                <span class="refund-detail-label">Platform</span>
+                <span class="refund-detail-value">${refund.platform}${isFromTrip ? ' <span class="refund-source-badge">From Trip Data</span>' : ''}</span>
+            </div>
+            <div class="refund-detail-item">
+                <span class="refund-detail-label">Status</span>
+                <span class="refund-status ${refund.status}">${refund.status}</span>
+            </div>
+            <div class="refund-detail-item full-width">
+                <span class="refund-detail-label">${isFromTrip ? 'Restaurant' : 'Reason'}</span>
+                <span class="refund-detail-value">${isFromTrip ? refund.notes : refund.reason}</span>
+            </div>
+            ${tripInfoHtml}
+            ${!isFromTrip && refund.notes ? `
+            <div class="refund-detail-item full-width">
+                <span class="refund-detail-label">Notes</span>
+                <span class="refund-detail-value">${refund.notes}</span>
+            </div>
+            ` : ''}
+        </div>
+        ${receiptHtml}
+    `;
+    
+    modal.classList.add('active');
+}
+
+// Close view refund modal
+function closeViewRefundModal() {
+    const modal = document.getElementById('viewRefundModal');
+    modal.classList.remove('active');
+    currentRefundId = null;
+}
+
+// Delete current refund (only for manual refunds)
+function deleteCurrentRefund() {
+    if (!currentRefundId) return;
+    
+    // Don't allow deleting trip-based refunds
+    if (currentRefundId.startsWith('trip_')) {
+        showToast('Cannot delete trip-based refunds', 'error');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this refund record?')) return;
+    
+    const refunds = loadManualRefunds();
+    const filtered = refunds.filter(r => r.id !== currentRefundId);
+    saveRefunds(filtered);
+    
+    closeViewRefundModal();
+    renderRefundsSection();
+    showToast('Refund deleted', 'success');
 }

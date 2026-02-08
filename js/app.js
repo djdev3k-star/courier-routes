@@ -1,12 +1,14 @@
-﻿/**
+/**
  * LastMile Ledger - Gig Driver Analytics Dashboard
- * 
+ *
  * A client-side SPA for tracking delivery routes, earnings, and efficiency.
- * Data is loaded from routes.json and enhanced with localStorage for offline features.
- * 
+ * Data is loaded from Supabase and enhanced with localStorage for offline features.
+ *
  * @version 1.0.0
  * @author LastMile Ledger
  */
+
+import { fetchAllTrips, transformTripsToAppFormat } from './supabase-client.js';
 
 // ============================================================================
 // CONFIGURATION & CONSTANTS
@@ -154,16 +156,16 @@ function goBack(fallbackPage = 'home') {
  */
 async function init() {
     try {
-        const response = await fetch('data/routes.json');
-        appData = await response.json();
-        
+        const trips = await fetchAllTrips();
+        appData = transformTripsToAppFormat(trips);
+
         // Load any manually entered offline trips
         loadOfflineTrips();
-        
+
         renderApp();
     } catch (error) {
         console.error('Failed to load data:', error);
-        document.body.innerHTML = '<div style="padding:100px 40px;text-align:center;color:#fff;"><h2>Failed to load route data</h2><p style="color:#888;margin-top:12px;">Please ensure routes.json exists in the data folder.</p></div>';
+        document.body.innerHTML = '<div style="padding:100px 40px;text-align:center;color:#fff;"><h2>Failed to load route data</h2><p style="color:#888;margin-top:12px;">Error: ' + error.message + '</p></div>';
     }
 }
 

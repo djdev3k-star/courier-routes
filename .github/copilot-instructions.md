@@ -3,6 +3,16 @@
 ## Code style
 - Do not use emojis or emoticons in code, comments, or UI text.
 
+## Git safeguards - CRITICAL
+- **NEVER force push** (`git push --force` or `-f`) without explicit user confirmation
+- **ALWAYS check status first**: Run `git status` before any destructive operation
+- **Before rebasing**: Warn the user and confirm - rebasing rewrites history
+- **Before reset**: Always use `git stash` first to save uncommitted work
+- **Commit frequently**: Commit working changes before starting new features
+- **Pull before push**: Always `git pull --rebase` before pushing to avoid conflicts
+- **Branch for experiments**: Create a branch before risky changes (`git checkout -b experiment`)
+- **Check for uncommitted work**: If `git status` shows changes, ask user whether to commit or stash first
+
 ## Big picture architecture
 - Static, client-only SPA: [index.html](index.html) wires all UI and loads [js/app.js](js/app.js). No build system or bundler.
 - Data flow: [generate_data.py](generate_data.py) builds [data/routes.json](data/routes.json) from external CSVs; the app fetches that JSON on load and renders Home/Routes/Reports/Map views.

@@ -7,6 +7,8 @@ let map = null;
 let mapMarkers = [];
 let activeTrip = null;
 let currentPage = 'home';
+let currentWeekStart = null; // For week navigation
+let weekViewActive = false;
 
 // HTML escape helper for XSS protection
 function escapeHtml(text) {
@@ -60,6 +62,7 @@ function renderApp() {
     renderHomePage();
     renderRoutesPage();
     renderReportsPage();
+    initWeekNavigation();
 }
 
 // Render home page
@@ -497,6 +500,10 @@ function filterByMonth(month) {
     if (routeSearch) routeSearch.value = '';
     if (globalSearch) globalSearch.value = '';
 
+    // Disable week view when using month filter
+    weekViewActive = false;
+    updateWeekNavDisplay();
+
     if (month === 'all') {
         document.querySelectorAll('.day-card, .month-header').forEach(el => {
             el.style.display = '';
@@ -510,6 +517,171 @@ function filterByMonth(month) {
     document.querySelectorAll('.month-header').forEach(header => {
         header.style.display = header.dataset.month === month ? '' : 'none';
     });
+}
+
+// Week Navigation Functions
+function getWeekStart(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    d.setDate(d.getDate() - day);
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+function getWeekEnd(weekStart) {
+    const end = new Date(weekStart);
+    end.setDate(end.getDate() + 6);
+    return end;
+}
+
+function initWeekNavigation() {
+    // Start with current week
+    currentWeekStart = getWeekStart(new Date());
+    updateWeekNavDisplay();
+}
+
+function navigateWeek(direction) {
+    if (!currentWeekStart) {
+        currentWeekStart = getWeekStart(new Date());
+    }
+    
+    currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+    weekViewActive = true;
+    
+    // Clear month filter
+    document.querySelectorAll('.search-tag').forEach(tag => {
+        tag.classList.toggle('active', tag.dataset.filter === 'all');
+    });
+    
+    filterByWeek();
+    updateWeekNavDisplay();
+}
+
+function goToCurrentWeek() {
+    currentWeekStart = getWeekStart(new Date());
+    weekViewActive = true;
+    
+    // Clear month filter
+    document.querySelectorAll('.search-tag').forEach(tag => {
+        tag.classList.toggle('active', tag.dataset.filter === 'all');
+    });
+    
+    filterByWeek();
+    updateWeekNavDisplay();
+}
+
+function showAllDays() {
+    weekViewActive = false;
+    
+    // Reset to all filter
+    document.querySelectorAll('.search-tag').forEach(tag => {
+        tag.classList.toggle('active', tag.dataset.filter === 'all');
+    });
+    
+    document.querySelectorAll('.day-card, .month-header').forEach(el => {
+        el.style.display = '';
+    });
+    
+    updateWeekNavDisplay();
+}
+
+function filterByWeek() {
+    if (!currentWeekStart || !appData) return;
+    
+    const weekEnd = getWeekEnd(currentWeekStart);
+    
+    // Hide month headers when in week view
+    document.querySelectorAll('.month-header').forEach(header => {
+        header.style.display = 'none';
+    });
+    
+    document.querySelectorAll('.day-card').forEach(card => {
+        const dateAttr = card.getAttribute('data-search');
+        if (!dateAttr) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        // Extract date from the day-card's data
+        const dayIndex = Array.from(document.querySelectorAll('.day-card')).indexOf(card);
+        if (dayIndex >= 0 && dayIndex < appData.days.length) {
+            const day = appData.days[dayIndex];
+            const cardDate = new Date(day.date + 'T12:00:00');
+            const isInWeek = cardDate >= currentWeekStart && cardDate <= weekEnd;
+            card.style.display = isInWeek ? '' : 'none';
+        }
+    });
+    
+    updateWeekSummary();
+}
+
+function updateWeekNavDisplay() {
+    const weekNavDates = document.getElementById('weekNavDates');
+    const weekSummary = document.getElementById('weekSummary');
+    
+    if (!currentWeekStart) {
+        currentWeekStart = getWeekStart(new Date());
+    }
+    
+    const weekEnd = getWeekEnd(currentWeekStart);
+    const startStr = currentWeekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const endStr = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    
+    if (weekNavDates) {
+        weekNavDates.textContent = `${startStr} - ${endStr}`;
+    }
+    
+    // Show/hide week summary based on week view state
+    if (weekSummary) {
+        weekSummary.style.display = weekViewActive ? 'flex' : 'none';
+    }
+    
+    // Update active state of nav buttons
+    const todayBtn = document.querySelector('.week-nav-today');
+    const allBtn = document.querySelector('.week-nav-all');
+    
+    if (todayBtn) {
+        todayBtn.classList.toggle('active', weekViewActive && isCurrentWeek());
+    }
+    if (allBtn) {
+        allBtn.classList.toggle('active', !weekViewActive);
+    }
+    
+    if (weekViewActive) {
+        updateWeekSummary();
+    }
+}
+
+function isCurrentWeek() {
+    const today = getWeekStart(new Date());
+    return currentWeekStart && 
+           currentWeekStart.getTime() === today.getTime();
+}
+
+function updateWeekSummary() {
+    if (!currentWeekStart || !appData) return;
+    
+    const weekEnd = getWeekEnd(currentWeekStart);
+    
+    let earnings = 0;
+    let trips = 0;
+    let miles = 0;
+    let daysWorked = 0;
+    
+    appData.days.forEach(day => {
+        const dayDate = new Date(day.date + 'T12:00:00');
+        if (dayDate >= currentWeekStart && dayDate <= weekEnd) {
+            earnings += day.stats.total_earnings;
+            trips += day.stats.trip_count;
+            miles += day.stats.total_distance;
+            daysWorked++;
+        }
+    });
+    
+    document.getElementById('weekSummaryEarnings').textContent = '$' + earnings.toFixed(2);
+    document.getElementById('weekSummaryTrips').textContent = trips;
+    document.getElementById('weekSummaryMiles').textContent = miles.toFixed(1);
+    document.getElementById('weekSummaryDays').textContent = daysWorked;
 }
 
 // Page navigation

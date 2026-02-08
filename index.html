@@ -87,6 +87,43 @@
             <button class="btn btn-add-trip" onclick="openTripEntry()">+ Add Trip</button>
             <button class="btn btn-batch-upload" onclick="openBatchUpload()">Batch Upload</button>
         </div>
+        
+        <!-- Week Navigation -->
+        <div class="week-nav" id="weekNav">
+            <button class="week-nav-btn" onclick="navigateWeek(-1)" title="Previous Week">
+                <span class="week-nav-arrow">&larr;</span>
+            </button>
+            <div class="week-nav-display">
+                <span class="week-nav-label">Week of</span>
+                <span class="week-nav-dates" id="weekNavDates">-</span>
+            </div>
+            <button class="week-nav-btn" onclick="navigateWeek(1)" title="Next Week">
+                <span class="week-nav-arrow">&rarr;</span>
+            </button>
+            <button class="week-nav-today" onclick="goToCurrentWeek()">Today</button>
+            <button class="week-nav-all" onclick="showAllDays()">Show All</button>
+        </div>
+        
+        <!-- Week Summary -->
+        <div class="week-summary" id="weekSummary">
+            <div class="week-summary-stat">
+                <span class="week-summary-value" id="weekSummaryEarnings">$0</span>
+                <span class="week-summary-label">Earned</span>
+            </div>
+            <div class="week-summary-stat">
+                <span class="week-summary-value" id="weekSummaryTrips">0</span>
+                <span class="week-summary-label">Trips</span>
+            </div>
+            <div class="week-summary-stat">
+                <span class="week-summary-value" id="weekSummaryMiles">0</span>
+                <span class="week-summary-label">Miles</span>
+            </div>
+            <div class="week-summary-stat">
+                <span class="week-summary-value" id="weekSummaryDays">0</span>
+                <span class="week-summary-label">Days Worked</span>
+            </div>
+        </div>
+        
         <div class="days-grid" id="daysGrid"></div>
     </div>
 

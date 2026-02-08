@@ -3374,3 +3374,42 @@ function deleteCurrentRefund() {
     renderRefundsSection();
     showToast('Refund deleted', 'success');
 }
+
+// Expose functions to window for HTML onclick handlers
+window.showPage = showPage;
+window.showLogin = showLogin;
+window.showSignup = showSignup;
+window.openTripEntry = openTripEntry;
+window.closeTripEntry = closeTripEntry;
+window.openTripEntryForDay = openTripEntryForDay;
+window.navigateWeekPage = navigateWeekPage;
+window.goToCurrentWeekPage = goToCurrentWeekPage;
+window.filterByMonth = filterByMonth;
+window.showInsightDetail = showInsightDetail;
+window.navigateDay = navigateDay;
+window.closeDetail = closeDetail;
+window.printTripTicket = printTripTicket;
+window.printDayReport = printDayReport;
+window.printReport = printReport;
+window.closeOnboarding = closeOnboarding;
+window.goToStep = goToStep;
+window.completeOnboarding = completeOnboarding;
+window.skipToManual = skipToManual;
+window.connectPlatform = connectPlatform;
+window.openBatchUpload = openBatchUpload;
+window.closeBatchUpload = closeBatchUpload;
+window.importBatchTrips = importBatchTrips;
+window.showAddRefundModal = showAddRefundModal;
+window.closeAddRefundModal = closeAddRefundModal;
+window.closeViewRefundModal = closeViewRefundModal;
+window.deleteCurrentRefund = deleteCurrentRefund;
+window.openDay = openDay;
+window.filterEfficiencyTrips = filterEfficiencyTrips;
+window.searchRestaurant = searchRestaurant;
+window.selectTrip = selectTrip;
+window.toggleDetailPickup = toggleDetailPickup;
+window.viewRefund = viewRefund;
+window.removeReceipt = removeReceipt;
+
+// Initialize app on page load
+init();

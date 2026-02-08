@@ -2078,3 +2078,360 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===============================================
+   BRUTALIST REPORTS DESIGN
+   =============================================== */
+
+.reports-brutal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--text-primary);
+}
+
+.reports-brutal-title {
+    display: flex;
+    flex-direction: column;
+}
+
+.brutal-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--accent-green);
+    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.reports-brutal-title h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.reports-brutal-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-brutal {
+    background: transparent;
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.btn-brutal:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+/* Brutalist Stats Grid */
+.brutal-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0;
+    margin-bottom: 48px;
+    border: 2px solid var(--text-primary);
+}
+
+.brutal-stat-card {
+    padding: 24px;
+    position: relative;
+    border-right: 2px solid var(--text-primary);
+    border-bottom: 2px solid var(--text-primary);
+}
+
+.brutal-stat-card:nth-child(3n) {
+    border-right: none;
+}
+
+.brutal-stat-card:nth-last-child(-n+3) {
+    border-bottom: none;
+}
+
+.brutal-stat-card.brutal-primary {
+    background: var(--accent-green);
+}
+
+.brutal-stat-card.brutal-primary .brutal-stat-label,
+.brutal-stat-card.brutal-primary .brutal-stat-value {
+    color: var(--bg-primary);
+}
+
+.brutal-stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.brutal-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.brutal-stat-border {
+    position: absolute;
+    bottom: 8px;
+    left: 24px;
+    right: 24px;
+    height: 3px;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.brutal-stat-card:hover .brutal-stat-border {
+    opacity: 1;
+}
+
+/* Brutalist Sections */
+.brutal-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.brutal-section {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+}
+
+.brutal-section.brutal-full {
+    grid-column: 1 / -1;
+}
+
+.brutal-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+.brutal-section-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.brutal-section-header h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.brutal-table,
+.brutal-list {
+    padding: 0;
+}
+
+/* Brutalist Monthly Table */
+.brutal-table .monthly-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s ease;
+}
+
+.brutal-table .monthly-row:last-child {
+    border-bottom: none;
+}
+
+.brutal-table .monthly-row:hover {
+    background: var(--bg-secondary);
+}
+
+.brutal-table .monthly-month {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.brutal-table .monthly-trips,
+.brutal-table .monthly-avg {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.brutal-table .monthly-earnings {
+    font-weight: 700;
+    color: var(--accent-green);
+    text-align: right;
+}
+
+/* Brutalist Top Days List */
+.brutal-list .top-day-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.brutal-list .top-day-row:last-child {
+    border-bottom: none;
+}
+
+.brutal-list .top-day-row:hover {
+    background: var(--bg-secondary);
+    padding-left: 28px;
+}
+
+.brutal-list .top-day-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brutal-list .top-day-rank {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-blue);
+    color: var(--bg-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.brutal-list .top-day-date {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.brutal-list .top-day-trips {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.brutal-list .top-day-earnings {
+    font-weight: 700;
+    color: var(--accent-green);
+    font-size: 1.1rem;
+}
+
+/* Brutalist Chart */
+.brutal-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 24px 20px;
+    min-height: 200px;
+}
+
+.brutal-chart .weekday-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.brutal-chart .weekday-value {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+.brutal-chart .weekday-bar-container {
+    width: 100%;
+    max-width: 40px;
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.brutal-chart .weekday-bar-fill {
+    width: 100%;
+    background: linear-gradient(to top, var(--accent-green), var(--accent-blue));
+    transition: height 0.3s ease;
+}
+
+.brutal-chart .weekday-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Brutalist Responsive */
+@media (max-width: 768px) {
+    .reports-brutal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .reports-brutal-title h1 {
+        font-size: 2rem;
+    }
+    
+    .reports-brutal-actions {
+        flex-wrap: wrap;
+    }
+    
+    .brutal-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .brutal-stat-card:nth-child(3n) {
+        border-right: 2px solid var(--text-primary);
+    }
+    
+    .brutal-stat-card:nth-child(2n) {
+        border-right: none;
+    }
+    
+    .brutal-stat-card:nth-last-child(-n+3) {
+        border-bottom: 2px solid var(--text-primary);
+    }
+    
+    .brutal-stat-card:nth-last-child(-n+2) {
+        border-bottom: none;
+    }
+    
+    .brutal-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .brutal-table .monthly-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    
+    .brutal-table .monthly-avg {
+        display: none;
+    }
+}

@@ -250,57 +250,76 @@
 
     <!-- Reports Page -->
     <div class="page page-reports" id="pageReports">
-        <div class="reports-header">
-            <h1>Reports</h1>
-            <p>Performance analytics and earnings breakdown</p>
-            <div class="reports-actions">
-                <button class="btn btn-secondary" onclick="printReport('summary')">Print Summary</button>
-                <button class="btn btn-secondary" onclick="printReport('monthly')">Print Monthly</button>
-                <button class="btn btn-secondary" onclick="printReport('trips')">Print All Trips</button>
+        <div class="reports-brutal-header">
+            <div class="reports-brutal-title">
+                <span class="brutal-label">COURIER_ANALYTICS</span>
+                <h1>REPORTS</h1>
+            </div>
+            <div class="reports-brutal-actions">
+                <button class="btn-brutal" onclick="printReport('summary')">PRINT SUMMARY</button>
+                <button class="btn-brutal" onclick="printReport('monthly')">PRINT MONTHLY</button>
+                <button class="btn-brutal" onclick="printReport('trips')">PRINT ALL</button>
             </div>
         </div>
 
-        <div class="reports-stats">
-            <div class="report-stat-card primary">
-                <div class="report-stat-value" id="reportEarnings">$0</div>
-                <div class="report-stat-label">Total Earnings</div>
+        <!-- Brutalist Hero Stats -->
+        <div class="brutal-stats-grid">
+            <div class="brutal-stat-card brutal-primary">
+                <div class="brutal-stat-label">TOTAL_EARNED</div>
+                <div class="brutal-stat-value" id="reportEarnings">$0</div>
+                <div class="brutal-stat-border"></div>
             </div>
-            <div class="report-stat-card">
-                <div class="report-stat-value" id="reportTrips">0</div>
-                <div class="report-stat-label">Total Trips</div>
+            <div class="brutal-stat-card">
+                <div class="brutal-stat-label">DELIVERIES</div>
+                <div class="brutal-stat-value" id="reportTrips">0</div>
+                <div class="brutal-stat-border"></div>
             </div>
-            <div class="report-stat-card">
-                <div class="report-stat-value" id="reportMiles">0</div>
-                <div class="report-stat-label">Total Miles</div>
+            <div class="brutal-stat-card">
+                <div class="brutal-stat-label">MILES_DRIVEN</div>
+                <div class="brutal-stat-value" id="reportMiles">0</div>
+                <div class="brutal-stat-border"></div>
             </div>
-            <div class="report-stat-card">
-                <div class="report-stat-value" id="reportAvg">$0</div>
-                <div class="report-stat-label">Avg / Trip</div>
+            <div class="brutal-stat-card">
+                <div class="brutal-stat-label">AVG_PER_TRIP</div>
+                <div class="brutal-stat-value" id="reportAvg">$0</div>
+                <div class="brutal-stat-border"></div>
             </div>
-            <div class="report-stat-card">
-                <div class="report-stat-value" id="reportTips">$0</div>
-                <div class="report-stat-label">Total Tips</div>
+            <div class="brutal-stat-card">
+                <div class="brutal-stat-label">TOTAL_TIPS</div>
+                <div class="brutal-stat-value" id="reportTips">$0</div>
+                <div class="brutal-stat-border"></div>
             </div>
-            <div class="report-stat-card">
-                <div class="report-stat-value" id="reportDays">0</div>
-                <div class="report-stat-label">Active Days</div>
-            </div>
-        </div>
-
-        <div class="reports-grid">
-            <div class="report-section">
-                <h2>Monthly Breakdown</h2>
-                <div class="monthly-table" id="monthlyTable"></div>
-            </div>
-            <div class="report-section">
-                <h2>Top Earning Days</h2>
-                <div class="top-days" id="topDays"></div>
+            <div class="brutal-stat-card">
+                <div class="brutal-stat-label">ACTIVE_DAYS</div>
+                <div class="brutal-stat-value" id="reportDays">0</div>
+                <div class="brutal-stat-border"></div>
             </div>
         </div>
 
-        <div class="report-section full-width">
-            <h2>Earnings by Day of Week</h2>
-            <div class="weekday-chart" id="weekdayChart"></div>
+        <!-- Brutalist Data Sections -->
+        <div class="brutal-sections">
+            <div class="brutal-section">
+                <div class="brutal-section-header">
+                    <span class="brutal-section-tag">[01]</span>
+                    <h2>MONTHLY_BREAKDOWN</h2>
+                </div>
+                <div class="brutal-table" id="monthlyTable"></div>
+            </div>
+            <div class="brutal-section">
+                <div class="brutal-section-header">
+                    <span class="brutal-section-tag">[02]</span>
+                    <h2>TOP_EARNING_DAYS</h2>
+                </div>
+                <div class="brutal-list" id="topDays"></div>
+            </div>
+        </div>
+
+        <div class="brutal-section brutal-full">
+            <div class="brutal-section-header">
+                <span class="brutal-section-tag">[03]</span>
+                <h2>WEEKDAY_ANALYSIS</h2>
+            </div>
+            <div class="brutal-chart" id="weekdayChart"></div>
         </div>
     </div>
 

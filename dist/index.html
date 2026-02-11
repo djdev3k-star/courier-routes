@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LastMile Ledger - Track Every Mile, Maximize Every Dollar</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-D8NN1SAv.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-qP5ZYTEb.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a class="nav-brand" href="#" onclick="showPage('home'); return false;">
+            <svg class="nav-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12h4l3-9 4 18 3-9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="nav-brand-text">Last<span class="brand-accent">Mile</span></span>
+        </a>
+        <div class="nav-links">
+            <button class="nav-link" id="navWeeks" onclick="showPage('weeks')">Weeks</button>
+            <button class="nav-link" id="navRoutes" onclick="showPage('routes')">Monthly</button>
+            <button class="nav-link" id="navStats" onclick="showPage('stats')">Stats</button>
+            <button class="nav-link" id="navReports" onclick="showPage('reports')">Reports</button>
+        </div>
+        <div class="nav-search" id="navSearch">
+            <input type="text" class="nav-search-input" id="globalSearch" placeholder="Search trips, restaurants, dates..." oninput="globalSearchHandler(this.value)">
+            <svg class="nav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="nav-auth" id="navAuth">
+            <button class="btn btn-sm btn-outline" onclick="showLogin()">Log in</button>
+            <button class="btn btn-sm btn-primary" onclick="showSignup()">Get Started</button>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div class="page page-home active" id="pageHome">
+        <!-- Hero Section -->
+        <section class="saas-hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="saas-hero-content">
+                        <div class="saas-badge">Built for gig drivers</div>
+                        <h1 class="saas-title">Track every mile.<br><span class="gradient-text">Maximize every dollar.</span></h1>
+                        <p class="saas-subtitle">The all-in-one dashboard for delivery drivers. Map your routes, analyze your earnings, and take control of your gig economy hustle.</p>
+                        <div class="saas-cta">
+                            <button class="btn btn-primary btn-lg" onclick="showPage('routes')">
+                                <span>Open Dashboard</span>
+                                <span class="btn-arrow">→</span>
+                            </button>
+                            <button class="btn btn-ghost" onclick="document.getElementById('featuresSection').scrollIntoView({behavior:'smooth'})">
+                                See Features
+                            </button>
+                        </div>
+                        <div class="saas-social-proof">
+                            <div class="social-stat">
+                                <span class="social-stat-value" id="heroTrips">0</span>
+                                <span class="social-stat-label">Trips Tracked</span>
+                            </div>
+                            <div class="social-divider"></div>
+                            <div class="social-stat">
+                                <span class="social-stat-value" id="heroMiles">0</span>
+                                <span class="social-stat-label">Miles Logged</span>
+                            </div>
+                            <div class="social-divider"></div>
+                            <div class="social-stat">
+                                <span class="social-stat-value" id="heroEarnings">$0</span>
+                                <span class="social-stat-label">Earnings Analyzed</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="saas-hero-visual">
+                        <div class="hero-dashboard-preview">
+                            <div class="preview-header">
+                                <span class="preview-dot red"></span>
+                                <span class="preview-dot yellow"></span>
+                                <span class="preview-dot green"></span>
+                            </div>
+                            <div class="preview-content" id="heroPreview">
+                                <div class="preview-stat-row">
+                                    <div class="preview-stat">
+                                        <div class="preview-stat-label">Today</div>
+                                        <div class="preview-stat-value" id="previewToday">$0</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="preview-stat-label">This Week</div>
+                                        <div class="preview-stat-value" id="previewWeek">$0</div>
+                                    </div>
+                                </div>
+                                <div class="preview-chart" id="previewChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="saas-features" id="featuresSection">
+            <div class="container">
+            <div class="features-header">
+                <span class="section-tag">FEATURES</span>
+                <h2>Everything you need to optimize your deliveries</h2>
+                <p>Stop guessing. Start knowing exactly where your money comes from.</p>
+            </div>
+            <div class="features-grid">
+                <div class="saas-feature-card" onclick="showPage('routes')">
+                    <div class="feature-preview feature-preview-map">
+                        <div class="preview-map-container">
+                            <div class="preview-map-grid"></div>
+                            <div class="preview-map-route">
+                                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                                    <path d="M20,100 Q50,80 80,60 T140,40 T180,30" stroke="var(--accent-blue)" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+                                </svg>
+                            </div>
+                            <div class="preview-map-pin" style="left: 15%; top: 75%"></div>
+                            <div class="preview-map-pin" style="left: 40%; top: 50%"></div>
+                            <div class="preview-map-pin accent" style="left: 70%; top: 35%"></div>
+                            <div class="preview-map-pin" style="left: 88%; top: 25%"></div>
+                        </div>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Interactive Route Maps</h3>
+                        <p>Visualize every pickup and dropoff on beautiful dark-mode maps.</p>
+                        <span class="feature-link">View Routes</span>
+                    </div>
+                </div>
+                <div class="saas-feature-card" onclick="showPage('stats')">
+                    <div class="feature-preview feature-preview-chart">
+                        <div class="preview-chart-container">
+                            <div class="preview-chart-bar" style="height: 45%"></div>
+                            <div class="preview-chart-bar" style="height: 70%"></div>
+                            <div class="preview-chart-bar accent" style="height: 95%"></div>
+                            <div class="preview-chart-bar" style="height: 60%"></div>
+                            <div class="preview-chart-bar" style="height: 80%"></div>
+                            <div class="preview-chart-bar" style="height: 55%"></div>
+                            <div class="preview-chart-bar" style="height: 75%"></div>
+                        </div>
+                        <div class="preview-chart-labels">
+                            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                        </div>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Earnings Analytics</h3>
+                        <p>Track per-trip, per-hour, and per-mile earnings at a glance.</p>
+                        <span class="feature-link">See Stats</span>
+                    </div>
+                </div>
+                <div class="saas-feature-card" onclick="showPage('reports')">
+                    <div class="feature-preview feature-preview-report">
+                        <div class="preview-report-container">
+                            <div class="preview-report-header"></div>
+                            <div class="preview-report-row">
+                                <span class="preview-report-label"></span>
+                                <span class="preview-report-value"></span>
+                            </div>
+                            <div class="preview-report-row">
+                                <span class="preview-report-label"></span>
+                                <span class="preview-report-value"></span>
+                            </div>
+                            <div class="preview-report-row">
+                                <span class="preview-report-label"></span>
+                                <span class="preview-report-value accent"></span>
+                            </div>
+                            <div class="preview-report-divider"></div>
+                            <div class="preview-report-row total">
+                                <span class="preview-report-label"></span>
+                                <span class="preview-report-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Detailed Reports</h3>
+                        <p>Monthly breakdowns and weekday analysis. Export for tax time.</p>
+                        <span class="feature-link">View Reports</span>
+                    </div>
+                </div>
+                <div class="saas-feature-card" onclick="showPage('weeks')">
+                    <div class="feature-preview feature-preview-calendar">
+                        <div class="preview-calendar-container">
+                            <div class="preview-calendar-header">
+                                <span class="preview-calendar-nav">&lt;</span>
+                                <span class="preview-calendar-month">Feb 2026</span>
+                                <span class="preview-calendar-nav">&gt;</span>
+                            </div>
+                            <div class="preview-calendar-grid">
+                                <span class="preview-cal-day">S</span>
+                                <span class="preview-cal-day">M</span>
+                                <span class="preview-cal-day">T</span>
+                                <span class="preview-cal-day">W</span>
+                                <span class="preview-cal-day">T</span>
+                                <span class="preview-cal-day">F</span>
+                                <span class="preview-cal-day">S</span>
+                                <span class="preview-cal-date dim">1</span>
+                                <span class="preview-cal-date has-data">2</span>
+                                <span class="preview-cal-date has-data">3</span>
+                                <span class="preview-cal-date">4</span>
+                                <span class="preview-cal-date has-data">5</span>
+                                <span class="preview-cal-date has-data highlight">6</span>
+                                <span class="preview-cal-date has-data">7</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Week Navigation</h3>
+                        <p>Browse your history week by week. Set goals and track progress.</p>
+                        <span class="feature-link">Browse Weeks</span>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Why Section -->
+        <section class="saas-why-section">
+            <div class="container">
+            <div class="why-header">
+                <span class="section-tag">WHY DRIVERS CHOOSE US</span>
+                <h2>Built by drivers, for drivers</h2>
+            </div>
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">$</div>
+                    <h3>Know Your True Hourly</h3>
+                    <p>Factor in gas, mileage, and wait times. See what you actually earn per hour after expenses.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">T</div>
+                    <h3>Tax-Ready Records</h3>
+                    <p>Automatic mileage tracking at IRS rates. Export clean reports when tax season hits.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">?</div>
+                    <h3>Find Your Sweet Spots</h3>
+                    <p>Discover which restaurants, hours, and days actually pay off. Stop guessing, start earning.</p>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="saas-cta-section">
+            <div class="container">
+            <div class="cta-content">
+                <h2>Ready to take control?</h2>
+                <p>Your data is already loaded. Start exploring your delivery performance now.</p>
+                <button class="btn btn-primary btn-lg" onclick="showPage('routes')">
+                    <span>Go to Dashboard</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Weeks Page (Dedicated Week View) -->
+    <div class="page page-weeks" id="pageWeeks">
+        <div class="page-container">
+            <div class="weeks-page-nav">
+                <div class="weeks-page-title">
+                    <h1>Weekly View</h1>
+                </div>
+                <div class="weeks-page-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="openTripEntry()">+ Add Trip</button>
+                    <button class="btn btn-sm btn-outline" onclick="showPage('routes')">View All Months</button>
+                </div>
+            </div>
+
+            <!-- Week Navigation -->
+            <div class="week-nav-bar">
+                <button class="week-nav-btn" onclick="navigateWeekPage(-1)" title="Previous Week">
+                    <span class="week-nav-arrow">&larr;</span>
+                    <span class="week-nav-label">Prev</span>
+                </button>
+                <div class="week-nav-center">
+                    <span class="week-nav-dates" id="weekPageDates">Dec 15 - Dec 21, 2025</span>
+                    <button class="week-nav-today" onclick="goToCurrentWeekPage()">Jump to Latest Week</button>
+                </div>
+                <button class="week-nav-btn" onclick="navigateWeekPage(1)" title="Next Week">
+                    <span class="week-nav-label">Next</span>
+                    <span class="week-nav-arrow">&rarr;</span>
+                </button>
+            </div>
+
+            <!-- Week Summary Stats -->
+            <div class="week-page-summary" id="weekPageSummary">
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageEarnings">$0</span>
+                    <span class="week-page-stat-label">Total Earned</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageTrips">0</span>
+                    <span class="week-page-stat-label">Trips</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageMiles">0</span>
+                    <span class="week-page-stat-label">Miles</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageDays">0</span>
+                    <span class="week-page-stat-label">Days Worked</span>
+                </div>
+                <div class="week-page-stat">
+                    <span class="week-page-stat-value" id="weekPageAvg">$0</span>
+                    <span class="week-page-stat-label">Avg/Trip</span>
+                </div>
+            </div>
+            
+            <!-- Week Days Grid -->
+            <div class="week-days-grid" id="weekDaysGrid"></div>
+        </div>
+    </div>
+
+    <!-- Routes Page (Monthly View) -->
+    <div class="page page-routes" id="pageRoutes">
+        <!-- Routes Page Nav -->
+        <div class="routes-page-nav">
+            <div class="routes-page-title">
+                <h1>Monthly Routes</h1>
+            </div>
+            <div class="routes-page-actions">
+                <button class="btn btn-sm btn-secondary" onclick="openTripEntry()">+ Add Trip</button>
+                <button class="btn btn-sm btn-outline" onclick="openBatchUpload()">Batch Upload</button>
+            </div>
+        </div>
+
+        <!-- Filters Row - Month Filter -->
+        <div class="routes-filters">
+            <!-- Month Filter -->
+            <div class="filter-group">
+                <span class="filter-label">Month</span>
+                <div class="filter-tags" id="searchTags">
+                    <button class="filter-tag active" data-filter="all" onclick="filterByMonth('all')">All</button>
+                    <button class="filter-tag" data-filter="december" onclick="filterByMonth('december')">Dec</button>
+                    <button class="filter-tag" data-filter="november" onclick="filterByMonth('november')">Nov</button>
+                    <button class="filter-tag" data-filter="october" onclick="filterByMonth('october')">Oct</button>
+                    <button class="filter-tag" data-filter="september" onclick="filterByMonth('september')">Sep</button>
+                    <button class="filter-tag" data-filter="august" onclick="filterByMonth('august')">Aug</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">Quick Nav</span>
+                <button class="btn btn-sm btn-outline" onclick="showPage('weeks')">Go to Week View →</button>
+            </div>
+        </div>
+        
+        <div class="days-grid" id="daysGrid"></div>
+    </div>
+
+    <!-- Stats Page -->
+    <div class="page page-stats" id="pageStats">
+        <div class="page-container">
+            <div class="page-header">
+                <div class="page-header-content">
+                    <h1>Stats</h1>
+                    <p>Performance metrics and earnings analytics</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row -->
+            <div class="stats-quick-row">
+                <div class="stats-quick-item">
+                    <span class="stats-quick-value" id="statsAvgTrip">$0</span>
+                    <span class="stats-quick-label">Per Trip</span>
+                </div>
+                <div class="stats-quick-item">
+                    <span class="stats-quick-value" id="statsAvgHour">$0</span>
+                    <span class="stats-quick-label">Per Hour</span>
+                </div>
+                <div class="stats-quick-item">
+                    <span class="stats-quick-value" id="statsAvgMile">$0</span>
+                    <span class="stats-quick-label">Per Mile</span>
+                </div>
+                <div class="stats-quick-item">
+                    <span class="stats-quick-value" id="statsAvgDay">$0</span>
+                    <span class="stats-quick-label">Per Day</span>
+                </div>
+                <div class="stats-quick-item accent">
+                    <span class="stats-quick-value" id="statsTips">$0</span>
+                    <span class="stats-quick-label">Total Tips</span>
+                </div>
+                <div class="stats-quick-item">
+                    <span class="stats-quick-value" id="statsTipRate">0%</span>
+                    <span class="stats-quick-label">Tip Rate</span>
+                </div>
+            </div>
+
+            <div class="stats-grid-2col">
+                <!-- This Week Card -->
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <h2>This Week</h2>
+                        <span class="stats-card-meta" id="statsWeekRange">-</span>
+                    </div>
+                    <div class="stats-card-content">
+                        <div class="stats-week-hero">
+                            <span class="stats-week-hero-value" id="statsWeekEarnings">$0</span>
+                            <div class="stats-week-hero-bar">
+                                <div class="stats-week-hero-fill" id="statsWeekGoalFill" style="width: 0%"></div>
+                            </div>
+                            <span class="stats-week-hero-goal"><span id="statsWeekGoalPercent">0%</span> of $500 goal</span>
+                        </div>
+                        <div class="stats-week-grid">
+                            <div class="stats-week-item">
+                                <span class="stats-week-item-value" id="statsWeekTrips">0</span>
+                                <span class="stats-week-item-label">Trips</span>
+                            </div>
+                            <div class="stats-week-item">
+                                <span class="stats-week-item-value" id="statsWeekMiles">0</span>
+                                <span class="stats-week-item-label">Miles</span>
+                            </div>
+                            <div class="stats-week-item">
+                                <span class="stats-week-item-value" id="statsWeekPerHour">$0</span>
+                                <span class="stats-week-item-label">Per Hour</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Insights Card -->
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <h2>Key Insights</h2>
+                        <span class="stats-card-meta">Click for details</span>
+                    </div>
+                    <div class="stats-card-content">
+                        <div class="stats-insights-grid">
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestDay')" data-insight="bestDay">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Day</span>
+                                    <span class="stats-insight-value" id="statsBestDay">-</span>
+                                    <span class="stats-insight-sub" id="statsBestDayDetail">-</span>
+                                </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
+                            </div>
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('topRestaurant')" data-insight="topRestaurant">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                                        <path d="M7 2v20"></path>
+                                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                                    </svg>
+                                </div>
+                                <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Top Restaurant</span>
+                                    <span class="stats-insight-value" id="statsTopRestaurant">-</span>
+                                    <span class="stats-insight-sub" id="statsTopRestaurantDetail">-</span>
+                                </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
+                            </div>
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestHours')" data-insight="bestHours">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Hours</span>
+                                    <span class="stats-insight-value" id="statsBestHour">-</span>
+                                    <span class="stats-insight-sub" id="statsBestHourDetail">-</span>
+                                </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
+                            </div>
+                            <div class="stats-insight-item clickable" onclick="showInsightDetail('bestWeekday')" data-insight="bestWeekday">
+                                <div class="stats-insight-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="stats-insight-text">
+                                    <span class="stats-insight-label">Best Weekday</span>
+                                    <span class="stats-insight-value" id="statsBestWeekday">-</span>
+                                    <span class="stats-insight-sub" id="statsBestWeekdayDetail">-</span>
+                                </div>
+                                <span class="stats-insight-arrow">&rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Intelligence Section -->
+            <div class="stats-card stats-card-full">
+                <div class="stats-card-header">
+                    <h2>Restaurant Intelligence</h2>
+                    <span class="stats-card-meta">Click any restaurant for trip history</span>
+                </div>
+                <div class="stats-card-content">
+                    <div class="restaurant-intel-grid">
+                        <!-- Best Tippers Column -->
+                        <div class="restaurant-intel-col">
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon tip">$</span>
+                                <div>
+                                    <h3>Best Tippers</h3>
+                                    <p class="restaurant-intel-desc">Highest average tips</p>
+                                </div>
+                            </div>
+                            <div class="restaurant-list" id="statsRestaurantTippers">
+                                <div class="restaurant-list-empty">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Most Frequent Column -->
+                        <div class="restaurant-intel-col">
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon freq">#</span>
+                                <div>
+                                    <h3>Repeat Pickups</h3>
+                                    <p class="restaurant-intel-desc">Most frequent locations</p>
+                                </div>
+                            </div>
+                            <div class="restaurant-list" id="statsRestaurantFrequent">
+                                <div class="restaurant-list-empty">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Best Value Column -->
+                        <div class="restaurant-intel-col">
+                            <div class="restaurant-intel-header">
+                                <span class="restaurant-intel-icon value">*</span>
+                                <div>
+                                    <h3>Best Value</h3>
+                                    <p class="restaurant-intel-desc">Highest pay per trip</p>
+                                </div>
+                            </div>
+                            <div class="restaurant-list" id="statsRestaurantValue">
+                                <div class="restaurant-list-empty">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Summary -->
+            <div class="stats-tax-bar">
+                <div class="stats-tax-bar-item">
+                    <span class="stats-tax-bar-label">Mileage Deduction</span>
+                    <span class="stats-tax-bar-value" id="statsTaxDeduction">$0</span>
+                </div>
+                <div class="stats-tax-bar-divider"></div>
+                <div class="stats-tax-bar-item">
+                    <span class="stats-tax-bar-label">Est. Taxable Income</span>
+                    <span class="stats-tax-bar-value highlight" id="statsTaxable">$0</span>
+                </div>
+                <span class="stats-tax-bar-note">Based on $0.67/mile IRS rate</span>
+            </div>
+
+            <!-- Weekday Efficiency Analysis (moved from Reports) -->
+            <div class="stats-card stats-card-full">
+                <div class="stats-card-header">
+                    <h2>Weekday Efficiency</h2>
+                    <span class="stats-card-meta">Earnings normalized per trip</span>
+                </div>
+                <div class="stats-card-content" id="statsWeekdayChart"></div>
+            </div>
+
+            <!-- Trip Efficiency Analysis -->
+            <div class="stats-card stats-card-full">
+                <div class="stats-card-header">
+                    <h2>Trip Efficiency Analysis</h2>
+                    <span class="stats-card-meta">Optimal: 15-25 min, $15+ | Target: $30/hr, $2/mi</span>
+                </div>
+                <div class="trip-efficiency-summary" id="tripEfficiencySummary">
+                    <div class="efficiency-stat optimal">
+                        <span class="efficiency-stat-value" id="effOptimalCount">0</span>
+                        <span class="efficiency-stat-label">Optimal Trips</span>
+                        <span class="efficiency-stat-detail">15-25 min, $15+</span>
+                    </div>
+                    <div class="efficiency-stat acceptable">
+                        <span class="efficiency-stat-value" id="effAcceptableCount">0</span>
+                        <span class="efficiency-stat-label">Acceptable</span>
+                        <span class="efficiency-stat-detail">$8+ any duration</span>
+                    </div>
+                    <div class="efficiency-stat short">
+                        <span class="efficiency-stat-value" id="effShortCount">0</span>
+                        <span class="efficiency-stat-label">Short</span>
+                        <span class="efficiency-stat-detail">&lt;15 min</span>
+                    </div>
+                    <div class="efficiency-stat long">
+                        <span class="efficiency-stat-value" id="effLongCount">0</span>
+                        <span class="efficiency-stat-label">Long</span>
+                        <span class="efficiency-stat-detail">&gt;25 min</span>
+                    </div>
+                    <div class="efficiency-stat low-pay">
+                        <span class="efficiency-stat-value" id="effLowPayCount">0</span>
+                        <span class="efficiency-stat-label">Low Pay</span>
+                        <span class="efficiency-stat-detail">&lt;$8</span>
+                    </div>
+                </div>
+                <div class="trip-efficiency-metrics">
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg $/Hour</span>
+                        <span class="efficiency-metric-value" id="effAvgPerHour">$0</span>
+                        <span class="efficiency-metric-target">Target: $30</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg $/Mile</span>
+                        <span class="efficiency-metric-value" id="effAvgPerMile">$0</span>
+                        <span class="efficiency-metric-target">Target: $2</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Avg Trip Duration</span>
+                        <span class="efficiency-metric-value" id="effAvgDuration">0 min</span>
+                        <span class="efficiency-metric-target">Optimal: 15-25</span>
+                    </div>
+                    <div class="efficiency-metric">
+                        <span class="efficiency-metric-label">Efficiency Score</span>
+                        <span class="efficiency-metric-value" id="effScore">0%</span>
+                        <span class="efficiency-metric-target">% optimal trips</span>
+                    </div>
+                </div>
+                <div class="trip-efficiency-list" id="tripEfficiencyList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Page -->
+    <div class="page page-reports" id="pageReports">
+        <div class="page-container">
+            <div class="page-header">
+                <div class="page-header-content">
+                    <h1>Reports</h1>
+                    <p>Analyze your delivery performance and earnings over time</p>
+                </div>
+                <div class="page-header-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="printReport('summary')">Print Summary</button>
+                    <button class="btn btn-secondary btn-sm" onclick="printReport('monthly')">Print Monthly</button>
+                    <button class="btn btn-primary btn-sm" onclick="printReport('trips')">Export All</button>
+                </div>
+            </div>
+
+            <!-- Totals Overview (for reports/exports) -->
+            <div class="reports-stats-grid">
+                <div class="report-stat-card primary">
+                    <span class="report-stat-label">Total Earned</span>
+                    <span class="report-stat-value" id="reportEarnings">$0</span>
+                </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Deliveries</span>
+                    <span class="report-stat-value" id="reportTrips">0</span>
+                </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Miles Driven</span>
+                    <span class="report-stat-value" id="reportMiles">0</span>
+                </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Total Tips</span>
+                    <span class="report-stat-value" id="reportTips">$0</span>
+                </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Active Days</span>
+                    <span class="report-stat-value" id="reportDays">0</span>
+                </div>
+                <div class="report-stat-card">
+                    <span class="report-stat-label">Date Range</span>
+                    <span class="report-stat-value report-stat-value-sm" id="reportDateRange">-</span>
+                </div>
+            </div>
+
+            <!-- Historical Data Sections -->
+            <div class="reports-grid">
+                <div class="report-card">
+                    <div class="report-card-header">
+                        <h2>Monthly Breakdown</h2>
+                    </div>
+                    <div class="report-card-content" id="monthlyTable"></div>
+                </div>
+                <div class="report-card">
+                    <div class="report-card-header">
+                        <h2>Top Earning Days</h2>
+                    </div>
+                    <div class="report-card-content" id="topDays"></div>
+                </div>
+            </div>
+
+            <!-- Weekday Totals (simple, for reports - efficiency analysis is on Stats) -->
+            <div class="report-card report-card-full">
+                <div class="report-card-header">
+                    <h2>Weekday Totals</h2>
+                    <span class="report-card-meta">Total earnings by day of week</span>
+                </div>
+                <div class="report-card-content" id="weekdayChart"></div>
+            </div>
+
+            <!-- Refunds Tracking Section -->
+            <div class="report-card report-card-full refunds-section">
+                <div class="report-card-header">
+                    <h2>Refunds Tracker</h2>
+                    <span class="report-card-meta">Track order value refunds and receipts</span>
+                    <button class="btn btn-sm btn-primary" onclick="showAddRefundModal()">+ Add Refund</button>
+                </div>
+                <div class="refunds-summary" id="refundsSummary">
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Total Refunds</span>
+                        <span class="refund-stat-value" id="totalRefundsCount">0</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Total Value</span>
+                        <span class="refund-stat-value refund-value-negative" id="totalRefundsValue">$0.00</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Pending</span>
+                        <span class="refund-stat-value" id="pendingRefundsCount">0</span>
+                    </div>
+                    <div class="refund-stat">
+                        <span class="refund-stat-label">Resolved</span>
+                        <span class="refund-stat-value" id="resolvedRefundsCount">0</span>
+                    </div>
+                </div>
+                <div class="report-card-content refunds-list" id="refundsList">
+                    <div class="refunds-empty">No refunds recorded yet. Click "+ Add Refund" to track one.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Refund Modal -->
+    <div class="modal" id="addRefundModal">
+        <div class="modal-backdrop" onclick="closeAddRefundModal()"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h2>Add Refund</h2>
+                <button class="modal-close" onclick="closeAddRefundModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addRefundForm" onsubmit="submitRefund(event)">
+                    <div class="form-group">
+                        <label for="refundDate">Date</label>
+                        <input type="date" id="refundDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundPlatform">Platform</label>
+                        <select id="refundPlatform" required>
+                            <option value="">Select platform...</option>
+                            <option value="DoorDash">DoorDash</option>
+                            <option value="Uber Eats">Uber Eats</option>
+                            <option value="Grubhub">Grubhub</option>
+                            <option value="Instacart">Instacart</option>
+                            <option value="Amazon Flex">Amazon Flex</option>
+                            <option value="Spark">Spark</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundAmount">Refund Amount</label>
+                        <input type="number" id="refundAmount" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundReason">Reason</label>
+                        <select id="refundReason" required>
+                            <option value="">Select reason...</option>
+                            <option value="Order cancelled">Order cancelled</option>
+                            <option value="Customer unavailable">Customer unavailable</option>
+                            <option value="Restaurant closed">Restaurant closed</option>
+                            <option value="Wrong order">Wrong order</option>
+                            <option value="Missing items">Missing items</option>
+                            <option value="Damaged items">Damaged items</option>
+                            <option value="Late delivery">Late delivery</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundNotes">Notes (optional)</label>
+                        <textarea id="refundNotes" rows="2" placeholder="Additional details..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundReceipt">Receipt/Screenshot (optional)</label>
+                        <div class="file-upload-area" id="receiptUploadArea">
+                            <input type="file" id="refundReceipt" accept="image/*,.pdf" onchange="handleReceiptUpload(event)">
+                            <div class="file-upload-placeholder" id="receiptPlaceholder">
+                                <span class="file-upload-icon">+</span>
+                                <span>Click or drag to upload receipt</span>
+                            </div>
+                            <div class="file-upload-preview" id="receiptPreview" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="refundStatus">Status</label>
+                        <select id="refundStatus">
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="disputed">Disputed</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddRefundModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Refund</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Refund Modal -->
+    <div class="modal" id="viewRefundModal">
+        <div class="modal-backdrop" onclick="closeViewRefundModal()"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h2>Refund Details</h2>
+                <button class="modal-close" onclick="closeViewRefundModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="viewRefundBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeViewRefundModal()">Close</button>
+                <button class="btn btn-danger" id="deleteRefundBtn" onclick="deleteCurrentRefund()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature: Interactive Maps -->
+    <div class="page page-feature" id="pageFeatureMaps">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">M</div>
+                <h1>Interactive Maps</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">Visualize your daily routes with Mapbox-powered maps showing every pickup and dropoff.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Route Visualization</h3>
+                        <p>See your entire day's journey plotted on a dark-themed map with connected route lines.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Pickup & Dropoff Markers</h3>
+                        <p>Each stop is marked with numbered pins—pickup points and delivery destinations clearly distinguished.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Trip-by-Trip Navigation</h3>
+                        <p>Click any trip to zoom in and see the exact route, addresses, and earnings for that delivery.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('routes')">Explore Your Routes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature: Earnings Breakdown -->
+    <div class="page page-feature" id="pageFeatureEarnings">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">$</div>
+                <h1>Earnings Breakdown</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">See base fare, tips, incentives, and refunds for every trip you complete.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Complete Payment Details</h3>
+                        <p>Every trip shows base fare, customer tip, promotions, incentives, and any order refunds.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Daily Totals</h3>
+                        <p>Quick stats bar shows your day's total earnings, trip count, miles driven, and tips received.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Trip Comparison</h3>
+                        <p>Scrollable trip list lets you compare earnings across deliveries and spot your best performers.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('routes')">View Your Earnings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature: Detailed Reports -->
+    <div class="page page-feature" id="pageFeatureReports">
+        <div class="feature-page">
+            <button class="back-btn" onclick="showPage('home')">&larr; Back to Home</button>
+            <div class="feature-page-header">
+                <div class="feature-page-icon">R</div>
+                <h1>Detailed Reports</h1>
+            </div>
+            <div class="feature-page-content">
+                <p class="feature-lead">Analyze your performance with monthly summaries and earnings trends.</p>
+                <div class="feature-highlights">
+                    <div class="feature-highlight">
+                        <h3>Monthly Breakdown</h3>
+                        <p>See earnings, trips, and averages grouped by month to track your progress over time.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Top Earning Days</h3>
+                        <p>Quickly identify your best days and analyze what made them successful.</p>
+                    </div>
+                    <div class="feature-highlight">
+                        <h3>Day of Week Analysis</h3>
+                        <p>Visual chart reveals which weekdays bring the highest earnings so you can plan accordingly.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showPage('reports')">See Your Reports</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map View -->
+    <div class="map-view" id="mapView">
+        <div class="map-header">
+            <button class="back-btn" onclick="showPage('routes')">
+                <span>&larr;</span> Back to Routes
+            </button>
+            <div class="map-title">
+                <h2 id="mapDate">Loading...</h2>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="printDayReport()">Print Day</button>
+                <button class="nav-btn" id="prevBtn" onclick="navigateDay(-1)">&larr; Prev</button>
+                <button class="nav-btn" id="nextBtn" onclick="navigateDay(1)">Next &rarr;</button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat stat-primary">
+                <span class="stat-label">Earnings</span>
+                <span class="stat-val" id="dayEarnings">$0.00</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Trips</span>
+                <span class="stat-val" id="dayTrips">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Miles</span>
+                <span class="stat-val" id="dayMiles">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Tips</span>
+                <span class="stat-val" id="dayTips">$0.00</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Start</span>
+                <span class="stat-val" id="dayStart">-</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">End</span>
+                <span class="stat-val" id="dayEnd">-</span>
+            </div>
+        </div>
+
+        <div class="map-layout">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-header-top">
+                        <h3 class="sidebar-title">Trips</h3>
+                        <button class="btn btn-sm btn-primary" onclick="openTripEntryForDay()">+ Add Trip</button>
+                    </div>
+                    <div class="sidebar-search">
+                        <input type="text" placeholder="Search trips..." oninput="filterTrips(this.value)">
+                    </div>
+                </div>
+                <div class="trip-list" id="tripList"></div>
+            </div>
+
+            <div class="map-container">
+                <div id="map"></div>
+
+                <div class="detail-panel" id="tripDetail">
+                    <div class="detail-header">
+                        <span class="detail-title">Trip #<span id="detailNumber">1</span></span>
+                        <button class="detail-close" onclick="closeDetail()">&times;</button>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Earnings</div>
+                        <div class="detail-value earnings" id="detailEarnings">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Distance</div>
+                        <div class="detail-value" id="detailDistance">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value" id="detailDuration">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Base Fare</div>
+                        <div class="detail-value" id="detailBase">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Tip</div>
+                        <div class="detail-value tip" id="detailTip">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Incentives</div>
+                        <div class="detail-value" id="detailIncentive">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Order Refund</div>
+                        <div class="detail-value refund" id="detailRefund">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Time</div>
+                        <div class="detail-value" id="detailTime">-</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Pickup</div>
+                        <div class="detail-addr">
+                            <div class="detail-addr-icon pickup">P</div>
+                            <div class="detail-addr-text" id="detailPickup">-</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-label">Drop-off</div>
+                        <div class="detail-addr">
+                            <div class="detail-addr-icon dropoff">D</div>
+                            <div class="detail-addr-text" id="detailDropoff">-</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section detail-uuid-section" id="detailUuidSection" style="display:none;">
+                        <div class="detail-label">Trip ID</div>
+                        <a href="#" id="detailUuidLink" class="detail-uuid-link" target="_blank" rel="noopener"></a>
+                    </div>
+
+                    <button class="btn btn-secondary btn-print-trip" onclick="printTripTicket()">Print Trip Ticket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Print Area (only shows during print) -->
+    <div class="print-area" id="printArea"></div>
+
+    <!-- Trip Entry Modal -->
+    <div class="trip-entry-modal" id="tripEntryModal">
+        <div class="trip-entry-overlay" onclick="closeTripEntry()"></div>
+        <div class="trip-entry-content">
+            <div class="trip-entry-header">
+                <h2>Add Offline Trip</h2>
+                <button class="trip-entry-close" onclick="closeTripEntry()">&times;</button>
+            </div>
+            <form id="tripEntryForm" onsubmit="saveTripEntry(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="entryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="entryTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Restaurant / Pickup Name</label>
+                    <input type="text" id="entryRestaurant" placeholder="e.g., McDonald's, Chipotle" required>
+                </div>
+                <div class="form-group">
+                    <label>Pickup Address</label>
+                    <input type="text" id="entryPickup" placeholder="123 Main St, City, State">
+                </div>
+                <div class="form-group">
+                    <label>Drop-off Address</label>
+                    <input type="text" id="entryDropoff" placeholder="456 Oak Ave, City, State">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Distance (miles)</label>
+                        <input type="number" id="entryDistance" step="0.1" min="0" placeholder="3.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (mins)</label>
+                        <input type="number" id="entryDuration" step="1" min="0" placeholder="15">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Base Fare ($)</label>
+                        <input type="number" id="entryBase" step="0.01" min="0" placeholder="5.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tip ($)</label>
+                        <input type="number" id="entryTip" step="0.01" min="0" placeholder="3.00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Incentive ($)</label>
+                        <input type="number" id="entryIncentive" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="entryPlatform">
+                            <option value="uber">Uber Eats</option>
+                            <option value="doordash">DoorDash</option>
+                            <option value="grubhub">Grubhub</option>
+                            <option value="spark">Spark</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes (optional)</label>
+                    <textarea id="entryNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTripEntry()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Batch Upload Modal -->
+    <div class="trip-entry-modal" id="batchUploadModal">
+        <div class="trip-entry-overlay" onclick="closeBatchUpload()"></div>
+        <div class="trip-entry-content">
+            <div class="trip-entry-header">
+                <h2>Batch Upload Trips</h2>
+                <button class="trip-entry-close" onclick="closeBatchUpload()">&times;</button>
+            </div>
+            <div class="batch-upload-content">
+                <p class="batch-info">Upload a CSV file with multiple offline trips. <a href="data/offline_trips_template.csv" download>Download template</a></p>
+                
+                <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="upload-icon">??</div>
+                    <p>Drag & drop CSV file here</p>
+                    <p class="upload-or">or</p>
+                    <label class="btn btn-secondary upload-btn">
+                        Browse Files
+                        <input type="file" id="batchFileInput" accept=".csv" onchange="handleFileSelect(event)" hidden>
+                    </label>
+                </div>
+                
+                <div class="batch-preview" id="batchPreview" style="display: none;">
+                    <h3>Preview (<span id="previewCount">0</span> trips)</h3>
+                    <div class="preview-table-wrap">
+                        <table class="preview-table" id="previewTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Restaurant</th>
+                                    <th>Platform</th>
+                                    <th>Earnings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeBatchUpload()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="importBtn" onclick="importBatchTrips()" disabled>Import Trips</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Modal -->
+    <div class="onboarding-modal" id="onboardingModal">
+        <div class="onboarding-overlay" onclick="closeOnboarding()"></div>
+        <div class="onboarding-content">
+            <button class="onboarding-close" onclick="closeOnboarding()">&times;</button>
+            
+            <!-- Progress Steps -->
+            <div class="onboarding-progress">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span>Connect</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span>Verify</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span>Setup</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Connect Platform -->
+            <div class="onboarding-step active" id="onboardingStep1">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </div>
+                <h2>Connect Your Platform</h2>
+                <p class="step-description">Sign in with your delivery platform to automatically import your trip history and verify your driver status.</p>
+                
+                <div class="platform-buttons">
+                    <button class="platform-btn uber" onclick="connectPlatform('uber')">
+                        <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                        </svg>
+                        <span class="platform-name">Uber</span>
+                        <span class="platform-subtitle">Uber Eats & Rides</span>
+                    </button>
+                    <button class="platform-btn doordash" onclick="connectPlatform('doordash')">
+                        <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        <span class="platform-name">DoorDash</span>
+                        <span class="platform-subtitle">Coming Soon</span>
+                    </button>
+                    <button class="platform-btn instacart" onclick="connectPlatform('instacart')">
+                        <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        </svg>
+                        <span class="platform-name">Instacart</span>
+                        <span class="platform-subtitle">Coming Soon</span>
+                    </button>
+                </div>
+                
+                <div class="step-divider">
+                    <span>or</span>
+                </div>
+                
+                <button class="btn btn-outline btn-full" onclick="skipToManual()">
+                    Continue without connecting
+                </button>
+                <p class="step-note">You can manually enter trips or upload CSV exports</p>
+            </div>
+
+            <!-- Step 2: Verify Identity -->
+            <div class="onboarding-step" id="onboardingStep2">
+                <div class="step-icon success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4"/>
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                </div>
+                <h2>Verify Your Account</h2>
+                <p class="step-description">We found your driver profile! Confirm your details below.</p>
+                
+                <div class="verify-card">
+                    <div class="verify-avatar" id="verifyAvatar">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="verify-info">
+                        <div class="verify-name" id="verifyName">Driver Name</div>
+                        <div class="verify-detail" id="verifyEmail">email@example.com</div>
+                        <div class="verify-badges">
+                            <span class="verify-badge"><span class="badge-icon">✓</span> Verified Driver</span>
+                            <span class="verify-badge platform" id="verifyPlatform">Uber Eats</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="verify-stats">
+                    <div class="verify-stat">
+                        <span class="verify-stat-value" id="verifyTrips">-</span>
+                        <span class="verify-stat-label">Lifetime Trips</span>
+                    </div>
+                    <div class="verify-stat">
+                        <span class="verify-stat-value" id="verifySince">-</span>
+                        <span class="verify-stat-label">Driver Since</span>
+                    </div>
+                    <div class="verify-stat">
+                        <span class="verify-stat-value" id="verifyRating">-</span>
+                        <span class="verify-stat-label">Rating</span>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">Back</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)">Confirm & Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Setup Preferences -->
+            <div class="onboarding-step" id="onboardingStep3">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </div>
+                <h2>Quick Setup</h2>
+                <p class="step-description">Customize your experience with a few quick preferences.</p>
+                
+                <div class="setup-options">
+                    <div class="setup-option">
+                        <div class="setup-option-info">
+                            <span class="setup-option-title">Weekly Goal</span>
+                            <span class="setup-option-desc">Set your target weekly earnings</span>
+                        </div>
+                        <div class="setup-option-input">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="setupGoal" value="500" min="0" step="50">
+                        </div>
+                    </div>
+                    <div class="setup-option">
+                        <div class="setup-option-info">
+                            <span class="setup-option-title">Mileage Rate</span>
+                            <span class="setup-option-desc">IRS standard rate for tax deductions</span>
+                        </div>
+                        <div class="setup-option-input">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="setupMileage" value="0.67" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="setup-option">
+                        <div class="setup-option-info">
+                            <span class="setup-option-title">Dark Mode</span>
+                            <span class="setup-option-desc">Easy on the eyes during night shifts</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="setupDarkMode" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">Back</button>
+                    <button class="btn btn-primary btn-lg" onclick="completeOnboarding()">
+                        Start Tracking
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
